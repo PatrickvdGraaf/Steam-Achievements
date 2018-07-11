@@ -29,9 +29,11 @@ object DataModule {
 
     @Singleton
     @Provides
-    internal fun provideGamesRepository(context: Context, api: SteamApiService, gamesDao: GamesDao,
-                                        userRepository: UserRepository)
-            : GamesRepository = GamesDataSource(api, gamesDao, userRepository)
+    internal fun provideGamesRepository(api: SteamApiService, gamesDao: GamesDao,
+                                        userRepository: UserRepository,
+                                        achievementsRepository: AchievementRepository)
+            : GamesRepository = GamesDataSource(api, gamesDao, userRepository,
+            achievementsRepository)
 
     @Singleton
     @Provides

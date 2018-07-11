@@ -22,7 +22,7 @@ interface GamesDao {
     fun delete(vararg games: Game)
 
     @Query("SELECT * FROM games")
-    fun getGamesForUser(): Observable<List<Game>>
+    fun getGamesForUser(): Single<List<Game>>
 
     @Query("SELECT appId FROM games")
     fun getGameIds(): Single<List<String>>

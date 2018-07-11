@@ -13,4 +13,6 @@ interface GamesRepository {
     fun updateGame(game: Game)
     fun getGameIds(): Single<List<String>>
     fun getGame(appId: String): Single<Game>
+    fun getGamesFromApi(): Observable<List<Game>>
+    fun getGamesFromDb(): Observable<List<Game>>
 }

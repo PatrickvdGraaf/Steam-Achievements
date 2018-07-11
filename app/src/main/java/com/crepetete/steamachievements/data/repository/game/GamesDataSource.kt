@@ -29,13 +29,12 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun getGamesFromDb(): Observable<List<Game>> {
+    override fun getGamesFromDb(): Observable<List<Game>> {
         return dao.getGamesForUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .toObservable()
     }
 
-    private fun getGamesFromApi(): Observable<List<Game>> {
+    override fun getGamesFromApi(): Observable<List<Game>> {
         val userId = userRepository.getUserId()
         return api.getGamesForUser(userId)
                 .map {

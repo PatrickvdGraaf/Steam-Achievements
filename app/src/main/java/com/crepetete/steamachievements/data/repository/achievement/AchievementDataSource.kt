@@ -5,11 +5,11 @@ import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.utils.isConnectedToInternet
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -20,25 +20,28 @@ class AchievementDataSource @Inject constructor(private val context: Context,
                                                 private val userRepository: UserRepository)
     : AchievementRepository {
     override fun getAchievements(appId: String): Observable<List<Achievement>> {
-        val observable = if (context.isConnectedToInternet()) {
-            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
-        } else {
-            getAchievementsFromDb(appId)
-        }
+//        val observable = if (context.isConnectedToInternet()) {
+//            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
+//        } else {
+//            getAchievementsFromDb(appId)
+//        }
 
-        return observable
+        return getAchievementsFromApi(listOf(appId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId)
+    private fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId).toObservable()
 
     override fun getAchievementsFromApi(appIds: List<String>): Observable<List<Achievement>> {
-        return Observable.fromIterable(appIds)
-                // Get a Single<List<Achievement> for every FileModel
-                .flatMapSingle {
-                    getAchievementsFromApi(it)
-                }
+        return Observable.fromIterable(appIds).flatMap {
+            try {
+                getAchievementsFromApi(it).toObservable()
+            } catch (e: HttpException) {
+                Timber.e(e)
+                Observable.fromArray(listOf<Achievement>())
+            }
+        }
     }
 
     private fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {

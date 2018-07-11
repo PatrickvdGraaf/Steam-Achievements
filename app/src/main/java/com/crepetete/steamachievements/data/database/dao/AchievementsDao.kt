@@ -21,7 +21,7 @@ interface AchievementsDao {
     fun getAchievements(appId: String, name: String?): Single<List<Achievement>>
 
     @Query("SELECT * FROM achievements WHERE appId=:appId")
-    fun getAchievementsForGame(appId: String): Observable<List<Achievement>>
+    fun getAchievementsForGame(appId: String): Single<List<Achievement>>
 
     @Query("SELECT name FROM achievements WHERE name = :name  AND appId = :appId LIMIT 1")
     fun getAchievementKeys(name: String, appId: String): String?
