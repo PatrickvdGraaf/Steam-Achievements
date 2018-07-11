@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_24dp"
+        android:title="@string/action_search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:icon="@drawable/ic_sort_24dp"
+        android:title="@string/action_sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menuSortPlaytime"
+                android:title="Playtime" />
+            <item
+                android:id="@+id/menuSortName"
+                android:title="Name" />
+            <item
+                android:id="@+id/menuSortCompletion"
+                android:title="Completion" />
+        </menu>
+    </item>
+    <!-- Settings, should always be in the overflow -->
+    <!--<item-->
+    <!--android:id="@+id/action_settings"-->
+    <!--app:showAsAction="never"-->
+    <!--android:title="@string/action_settings" />-->
+
+</menu>
