@@ -9,6 +9,7 @@ import android.content.Context
 import com.crepetete.steamachievements.utils.getDaysFromNow
 import com.crepetete.steamachievements.utils.toHours
 import com.squareup.moshi.Json
+import java.text.DecimalFormat
 import java.util.*
 
 @Entity(tableName = "games",
@@ -38,7 +39,7 @@ data class Game(
     private var achievements: MutableList<Achievement>? = null
 
     fun achievementsWereAdded(): Boolean {
-        return achievements == null
+        return achievements != null
     }
 
     fun setAchievementsAdded() {
@@ -73,7 +74,8 @@ data class Game(
     fun getAmountOfAchievements(): Int = achievements?.size ?: 0
 
     fun getAchievementsText() = when {
-        hasCompletedAchievements() -> "${getCompletedAchievements().size}/${achievements?.size} (${getPercentageCompleted()}%) achievements."
+        hasCompletedAchievements() ->
+            "${getCompletedAchievements().size}/${achievements?.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."
         hasAchievements() -> "${achievements?.size ?: 0} achievements."
         else -> ""
     }

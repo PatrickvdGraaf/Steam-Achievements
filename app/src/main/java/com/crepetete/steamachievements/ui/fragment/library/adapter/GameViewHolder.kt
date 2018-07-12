@@ -75,7 +75,6 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
         }
 
         if (game.hasAchievements()) {
-            progressBar.isIndeterminate = false
             achievementsTextView.visibility = View.VISIBLE
             val percentage = game.getPercentageCompleted().toInt()
             if (percentage > 0 && progressBar.progress == 0) {
@@ -87,10 +86,8 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
             achievementsTextView.setCompletedFlag(game.isCompleted())
         } else if (!game.achievementsWereAdded()) {
             achievementsTextView.visibility = View.VISIBLE
-            progressBar.isIndeterminate = true
             achievementsTextView.text = "Loading Achievements."
         } else {
-            progressBar.isIndeterminate = false
             achievementsTextView.visibility = View.GONE
         }
     }

@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import timber.log.Timber
 
 class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
     private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
+    private lateinit var scrollToTopButton: FloatingActionButton
 
     companion object {
         const val TAG = "LIBRARY_FRAGMENT"
@@ -37,6 +39,22 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
         val listView = view.findViewById<RecyclerView>(R.id.list_games)
         listView.adapter = gamesAdapter
         listView.layoutManager = LinearLayoutManager(context)
+
+        scrollToTopButton = view.findViewById(R.id.fab)
+        scrollToTopButton.setOnClickListener {
+            listView.smoothScrollToPosition(0)
+        }
+
+        listView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy <= 0) {
+                    scrollToTopButton.hide()
+                } else {
+                    scrollToTopButton.show()
+                }
+            }
+        })
 
         return view
     }
