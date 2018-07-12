@@ -12,8 +12,8 @@ interface GamesDao {
     @Insert(onConflict = IGNORE)
     fun insert(games: List<Game>)
 
-    @Query("SELECT * FROM games WHERE appId = :appId")
-    fun getGame(appId: String): Single<List<Game>>
+    @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
+    fun getGame(appId: String): Single<Game>
 
     @Update(onConflict = REPLACE)
     fun update(games: List<Game>)

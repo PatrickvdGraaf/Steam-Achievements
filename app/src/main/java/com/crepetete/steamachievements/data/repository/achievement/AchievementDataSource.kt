@@ -1,53 +1,45 @@
 package com.crepetete.steamachievements.data.repository.achievement
 
-import android.content.Context
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
 import com.crepetete.steamachievements.data.api.response.achievement.DataClass
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.utils.isConnectedToInternet
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class AchievementDataSource @Inject constructor(private val context: Context,
-                                                private val api: SteamApiService,
+class AchievementDataSource @Inject constructor(private val api: SteamApiService,
                                                 private val dao: AchievementsDao,
                                                 private val userRepository: UserRepository)
     : AchievementRepository {
-    override fun getAchievements(appId: String): Observable<List<Achievement>> {
-        return if (context.isConnectedToInternet()) {
-            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
-        } else {
-            getAchievementsFromDb(appId)
-        }
-    }
+    override fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId)
 
-    private fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId).toObservable()
-
-    override fun getAchievementsFromApi(appIds: List<String>): Observable<List<Achievement>> {
-        val dbRequests = mutableListOf<Observable<List<Achievement>>>()
+    override fun getAchievementsFromApi(appIds: List<String>): Single<List<Achievement>> {
+        val tasks = mutableListOf<Observable<List<Achievement>>>()
         appIds.forEach {
-            dbRequests.add(getAchievementsFromDb(it))
+            tasks.add(getAchievementsFromApi(it).toObservable())
         }
-
-        return if (context.isConnectedToInternet()) {
-            val apiRequests = mutableListOf<Observable<List<Achievement>>>()
-            appIds.forEach {
-                apiRequests.add(getAchievementsFromApi(it).toObservable())
-            }
-            Observable.concatArray(Observable.merge(dbRequests), Observable.merge(apiRequests))
-        } else {
-            Observable.merge(dbRequests)
-        }
-
+        return Observable.fromIterable(tasks)
+                .flatMap {
+                    it.observeOn(Schedulers.computation())
+                }
+                .toList()
+                .map {
+                    val allAchievements = mutableListOf<Achievement>()
+                    it.forEach { list ->
+                        allAchievements.addAll(list)
+                    }
+                    allAchievements
+                }
+                .map { achievements ->
+                    achievements.forEach { it.updatedAt = Calendar.getInstance().time }
+                    achievements
+                }
     }
 
     private fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
@@ -67,6 +59,7 @@ class AchievementDataSource @Inject constructor(private val context: Context,
                 .onErrorReturn {
                     AchievedAchievementResponse(DataClass())
                 }
+
                 .map {
                     if (it.playerStats.success) {
                         val ownedAchievements = it.playerStats.achievements

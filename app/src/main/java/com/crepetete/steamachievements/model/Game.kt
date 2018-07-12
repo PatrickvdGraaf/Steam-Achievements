@@ -47,6 +47,10 @@ data class Game(
         }
     }
 
+    fun addAchievements(achievements: List<Achievement>) {
+        achievements.forEach { addAchievement(it) }
+    }
+
     fun addAchievement(achievement: Achievement) {
         if (achievement.appId == appId) {
             if (achievements == null) {

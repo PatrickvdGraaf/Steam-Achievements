@@ -12,6 +12,7 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
+import timber.log.Timber
 
 class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
     private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
@@ -42,6 +43,7 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
     }
 
     override fun updateGames(games: List<Game>) {
+        Timber.d("Updating games.")
         gamesAdapter.updateGames(games)
     }
 

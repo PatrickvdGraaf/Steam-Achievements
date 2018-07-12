@@ -20,7 +20,7 @@ interface SteamApiService {
                         @Query("key") key: String = API_KEY,
                         @Query("include_appinfo") includeAppInfo: Int = 1,
                         @Query("include_played_free_games") includeFreeGames: Int = 1)
-            : Observable<BaseGameResponse>
+            : Single<BaseGameResponse>
 
     @GET("ISteamUserStats/GetSchemaForGame/v2/")
     fun getSchemaForGame(@Query("appid") appId: String,
