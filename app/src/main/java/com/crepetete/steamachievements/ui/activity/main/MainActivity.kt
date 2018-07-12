@@ -134,6 +134,10 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         title = "$persona's Games"
     }
 
+    override fun setTitle(title: String) {
+        this.title = title
+    }
+
     override fun showAchievements(achievements: List<Achievement>, appId: String) {
 //        gamesAdapter.addAchievementsForGame(achievements, appId)
     }

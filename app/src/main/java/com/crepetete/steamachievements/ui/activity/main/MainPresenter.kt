@@ -26,6 +26,11 @@ class MainPresenter(mainView: MainView,
 
     private var navBarListener: NavbarInteractionListener? = null
 
+    private var persona = "Unknown"
+
+    @IdRes
+    private var selectedNavItem = R.id.menu_library
+
     @Inject
     lateinit var userRepository: UserRepository
 
@@ -43,10 +48,19 @@ class MainPresenter(mainView: MainView,
     private fun getPlayer() {
         disposable.add(userRepository.getPlayer(playerId)
                 .subscribe({
-                    view.showPlayerDetails(it.persona)
+                    persona = it.persona
+                    updateTitle()
                 }, {
                     Timber.e(it)
                 }))
+    }
+
+    private fun updateTitle() {
+        when (selectedNavItem) {
+            R.id.menu_profile -> view.setTitle("Profile")
+            R.id.menu_achievements -> view.setTitle("$persona's Achievements")
+            else -> view.setTitle("$persona's Library")
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -54,7 +68,8 @@ class MainPresenter(mainView: MainView,
         var tag: String? = null
         val transaction = fragmentManager.beginTransaction()
 
-        when (item.itemId) {
+        selectedNavItem = item.itemId
+        when (selectedNavItem) {
             R.id.menu_profile -> {
                 tag = ProfileFragment.TAG
                 fragment = fragmentManager.findFragmentByTag(tag)
@@ -83,6 +98,8 @@ class MainPresenter(mainView: MainView,
         } else {
             null
         }
+
+        updateTitle()
 
         transaction.replace(containerId, fragment, tag)
                 .addToBackStack(null)

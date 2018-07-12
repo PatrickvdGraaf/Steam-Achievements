@@ -25,17 +25,6 @@ class AchievementPresenter(achievementsView: AchievementsView)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    //                    val allAchievements = it.size
-//                    val allPlayerAchievements = it.filter { a -> a.achieved }.size
-//                    val completionPercentage = if (allAchievements > 0) {
-//                        (allPlayerAchievements.toDouble() / allAchievements.toDouble()) * 100.0
-//                    } else {
-//                        0.0
-//                    }
-//
-//                    view.setTotalAchievementsInfo(allPlayerAchievements)
-//                    view.setCompletionPercentage(completionPercentage)
-
                     view.setTotalAchievementsInfo(it.filter { it.achieved }.size)
                     val achievementsForGame = HashMap<String, MutableList<Achievement>>()
                     it.forEach { achievement ->
