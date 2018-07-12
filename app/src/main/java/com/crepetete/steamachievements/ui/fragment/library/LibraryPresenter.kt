@@ -20,17 +20,6 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
 
     override fun onViewCreated() {
         view.showLoading()
-//        disposable.add(gamesRepository.getGamesFromDb()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({
-//                    view.updateGames(it)
-//                }, {
-//                    Timber.e(it)
-//                    view.hideLoading()
-//                    view.showError("Error while loading games.")
-//                }))
-
         disposable.add(gamesRepository.getGamesFromApi()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

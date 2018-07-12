@@ -35,7 +35,26 @@ data class Game(
         var lastUpdated: Long = Calendar.getInstance().time.time
 ) {
     @Ignore
-    var achievements: List<Achievement>? = listOf()
+    private var achievements: MutableList<Achievement>? = null
+
+    fun achievementsWereAdded(): Boolean {
+        return achievements == null
+    }
+
+    fun setAchievementsAdded() {
+        if (achievements == null) {
+            achievements = mutableListOf()
+        }
+    }
+
+    fun addAchievement(achievement: Achievement) {
+        if (achievement.appId == appId) {
+            if (achievements == null) {
+                achievements = mutableListOf()
+            }
+            achievements!!.add(achievement)
+        }
+    }
 
     fun getFullLogoUrl(): String {
         return "http://media.steampowered.com/steamcommunity/public/images/apps/$appId/$logoUrl.jpg"
@@ -47,7 +66,7 @@ data class Game(
 
     fun hasAchievements() = achievements?.isNotEmpty() ?: false
 
-    private fun getAmountOfAchievements() = achievements?.size?.toLong() ?: 0L
+    fun getAmountOfAchievements(): Int = achievements?.size ?: 0
 
     fun getAchievementsText() = when {
         hasCompletedAchievements() -> "${getCompletedAchievements().size}/${achievements?.size} (${getPercentageCompleted()}%) achievements."

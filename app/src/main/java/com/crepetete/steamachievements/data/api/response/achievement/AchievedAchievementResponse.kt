@@ -4,10 +4,10 @@ import com.squareup.moshi.Json
 
 data class AchievedAchievementResponse(@Json(name = "playerstats") val playerStats: DataClass)
 
-data class DataClass(val steamID: String,
-                     val gamaName: String,
+data class DataClass(val steamID: String = "-1",
+                     val gamaName: String = "",
                      val achievements: List<AchievedAchievement> = listOf(),
-                     val success: Boolean)
+                     val success: Boolean = false)
 
 data class AchievedAchievement(
         @Json(name = "apiname")

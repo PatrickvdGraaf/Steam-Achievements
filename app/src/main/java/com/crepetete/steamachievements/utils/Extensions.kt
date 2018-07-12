@@ -113,6 +113,7 @@ fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         setProgress(percentage, true)
     } else {
+        progress = percentage
         val animation = ObjectAnimator.ofInt(this, "progress",
                 this.progress, percentage)
         animation.duration = duration

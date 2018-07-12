@@ -2,9 +2,12 @@ package com.crepetete.steamachievements.data.repository.achievement
 
 import android.content.Context
 import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
+import com.crepetete.steamachievements.data.api.response.achievement.DataClass
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.utils.isConnectedToInternet
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,28 +23,31 @@ class AchievementDataSource @Inject constructor(private val context: Context,
                                                 private val userRepository: UserRepository)
     : AchievementRepository {
     override fun getAchievements(appId: String): Observable<List<Achievement>> {
-//        val observable = if (context.isConnectedToInternet()) {
-//            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
-//        } else {
-//            getAchievementsFromDb(appId)
-//        }
-
-        return getAchievementsFromApi(listOf(appId))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        return if (context.isConnectedToInternet()) {
+            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
+        } else {
+            getAchievementsFromDb(appId)
+        }
     }
 
     private fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId).toObservable()
 
     override fun getAchievementsFromApi(appIds: List<String>): Observable<List<Achievement>> {
-        return Observable.fromIterable(appIds).flatMap {
-            try {
-                getAchievementsFromApi(it).toObservable()
-            } catch (e: HttpException) {
-                Timber.e(e)
-                Observable.fromArray(listOf<Achievement>())
-            }
+        val dbRequests = mutableListOf<Observable<List<Achievement>>>()
+        appIds.forEach {
+            dbRequests.add(getAchievementsFromDb(it))
         }
+
+        return if (context.isConnectedToInternet()) {
+            val apiRequests = mutableListOf<Observable<List<Achievement>>>()
+            appIds.forEach {
+                apiRequests.add(getAchievementsFromApi(it).toObservable())
+            }
+            Observable.concatArray(Observable.merge(dbRequests), Observable.merge(apiRequests))
+        } else {
+            Observable.merge(dbRequests)
+        }
+
     }
 
     private fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
@@ -51,13 +57,16 @@ class AchievementDataSource @Inject constructor(private val context: Context,
             it.map { achievement -> achievement.appId = appId }
             it
         }.flatMap {
-            getPlayerAchievementsForGame(appId, it)
+            getAchievedStatusForAchievementsForGame(appId, it)
         }
     }
 
-    override fun getPlayerAchievementsForGame(appId: String,
-                                              allAchievements: List<Achievement>): Single<List<Achievement>> {
+    override fun getAchievedStatusForAchievementsForGame(appId: String,
+                                                         allAchievements: List<Achievement>): Single<List<Achievement>> {
         return api.getAchievementsForPlayer(appId, userRepository.getUserId())
+                .onErrorReturn {
+                    AchievedAchievementResponse(DataClass())
+                }
                 .map {
                     if (it.playerStats.success) {
                         val ownedAchievements = it.playerStats.achievements
@@ -89,13 +98,6 @@ class AchievementDataSource @Inject constructor(private val context: Context,
 
     override fun updateAchievementIntoDb(achievement: List<Achievement>) {
         Single.fromCallable { dao.update(achievement) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({
-                    Timber.d("Updated ${achievement.size} achievements in the Database")
-                }, {
-                    Timber.d(it)
-                })
     }
 
     override fun getAllAchievements(): Single<List<Achievement>> {

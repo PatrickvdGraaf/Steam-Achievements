@@ -4,7 +4,6 @@ import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.data.repository.user.UserRepository
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -25,8 +24,6 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
 
     override fun getGames(): Observable<List<Game>> {
         return Observable.concatArray(getGamesFromDb(), getGamesFromApi())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun getGamesFromDb(): Observable<List<Game>> {
@@ -50,53 +47,61 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         val gameIds = games.map { game -> game.appId }
         return achievementsRepository.getAchievementsFromApi(gameIds)
                 .flatMap { achievements ->
-                    Observable.fromCallable { addAchievementsToGames(games, achievements) }
+                    // Add achievements to the games in the list.
+                    if (achievements.isNotEmpty()) {
+                        val game = games.find { game -> game.appId == achievements[0].appId }
+                        achievements.forEach { achievement ->
+                            game?.addAchievement(achievement)
+                        }
+                        Timber.d("Added ${game?.getAmountOfAchievements()} achievements to ${game?.name}")
+                    }
+                    Observable.fromArray(games)
+                }.flatMap {
+                    // Let other classes know that we tried to set the achievements (applies to
+                    // games without achievements, clears loading status for ViewHolders for
+                    // example.
+                    games.forEach {
+                        if (!it.achievementsWereAdded()) {
+                            it.setAchievementsAdded()
+                        }
+                    }
+                    Observable.fromArray(games)
                 }
     }
 
-    private fun addAchievementsToGames(games: List<Game>, achievements: List<Achievement>): List<Game> {
-        games.map {
-            it.achievements = achievements.filter { achievement -> achievement.appId == it.appId }
-        }
-        return games
-    }
-
     private fun insertOrUpdateGames(games: List<Game>, userId: String) {
-        getGameIds()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({ ids ->
-                    val newGames = games
-                            .filter { !ids.contains(it.appId) }
-                            .map {
-                                it.lastUpdated = Calendar.getInstance().time.time
-                                it
-                            }
-                    if (newGames.isNotEmpty()) {
-                        newGames.map {
-                            it.userId = userId
-                        }
-                        newGames.forEach {
-                            insertGame(it)
-                        }
+        getGameIds().subscribe({ ids ->
+            val newGames = games
+                    .filter { !ids.contains(it.appId) }
+                    .map {
+                        it.lastUpdated = Calendar.getInstance().time.time
+                        it
                     }
+            if (newGames.isNotEmpty()) {
+                newGames.map {
+                    it.userId = userId
+                }
+                newGames.forEach {
+                    insertGame(it)
+                }
+            }
 
-                    val updatedGames = games
-                            .filter {
-                                ids.contains(it.appId) && it.shouldUpdate()
-                            }.map {
-                                it.lastUpdated = Calendar.getInstance().time.time
-                                it.userId = userId
-                                it
-                            }
-                    if (updatedGames.isNotEmpty()) {
-                        updatedGames.forEach {
-                            updateGame(it)
-                        }
+            val updatedGames = games
+                    .filter {
+                        ids.contains(it.appId) && it.shouldUpdate()
+                    }.map {
+                        it.lastUpdated = Calendar.getInstance().time.time
+                        it.userId = userId
+                        it
                     }
-                }, {
-                    Timber.e(it)
-                })
+            if (updatedGames.isNotEmpty()) {
+                updatedGames.forEach {
+                    updateGame(it)
+                }
+            }
+        }, {
+            Timber.e(it)
+        })
     }
 
     override fun getGame(appId: String): Single<Game> {
