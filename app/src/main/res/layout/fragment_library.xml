@@ -26,6 +26,6 @@
         app:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:pressedTranslationZ="12dp"
+        app:pressedTranslationZ="8dp"
         app:rippleColor="@color/colorPrimaryLight" />
 </android.support.constraint.ConstraintLayout>

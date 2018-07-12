@@ -49,6 +49,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         handleIntent(intent)
 
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)
+        navigation.selectedItemId = R.id.menu_library
         navigation.setOnNavigationItemSelectedListener(presenter)
 
         presenter.onViewCreated()

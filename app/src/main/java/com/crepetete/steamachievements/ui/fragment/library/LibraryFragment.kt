@@ -32,6 +32,11 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.getGamesFromDatabase()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_library, container, false)

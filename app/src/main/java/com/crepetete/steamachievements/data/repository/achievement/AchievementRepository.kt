@@ -1,8 +1,6 @@
 package com.crepetete.steamachievements.data.repository.achievement
 
 import com.crepetete.steamachievements.model.Achievement
-import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 
 interface AchievementRepository {
@@ -17,5 +15,6 @@ interface AchievementRepository {
     fun updateAchievementIntoDb(achievement: List<Achievement>)
 
     fun getAchievedStatusForAchievementsForGame(appId: String, allAchievements: List<Achievement>): Single<List<Achievement>>
+    fun getAchievementsFromDb(appIds: List<String>): Single<List<Achievement>>
     fun getAchievementsFromDb(appId: String): Single<List<Achievement>>
 }

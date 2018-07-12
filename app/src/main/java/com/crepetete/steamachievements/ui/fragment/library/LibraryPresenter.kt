@@ -7,7 +7,6 @@ import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,35 +19,32 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     lateinit var gamesRepository: GamesRepository
 
     override fun onViewCreated() {
-        getGamesFromDatabase()
         getGamesFromApi()
     }
 
-    private fun getGamesFromDatabase() {
+    internal fun getGamesFromDatabase() {
         view.showLoading()
         disposable.add(gamesRepository.getGamesFromDb()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    view.hideLoading()
                     view.updateGames(it)
                 }, {
                     Timber.e(it)
                     view.hideLoading()
-                    view.showError("Error while loading games.")
+                    view.showError("Error while updating games.")
                 }))
     }
 
     private fun getGamesFromApi() {
-        view.showLoading()
         disposable.add(gamesRepository.getGamesFromApi()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    view.hideLoading()
                     view.updateGames(it)
                 }, {
                     Timber.e(it)
-                    view.hideLoading()
                     view.showError("Error while loading games.")
                 }))
     }

@@ -40,27 +40,35 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
     private fun getAchievementsForGames(games: List<Game>): Single<List<Game>> {
         val gameIds = games.map { game -> game.appId }
 
-        return achievementsRepository.getAchievementsFromApi(gameIds)
-                .map { achievements ->
-                    // Add achievements to the games in the list.
-                    if (achievements.isNotEmpty()) {
-                        games.forEach { game ->
-                            game.addAchievements(achievements.filter { it.appId == game.appId })
-                        }
+        val s = Single.concat(
+                achievementsRepository.getAchievementsFromApi(gameIds),
+                achievementsRepository.getAchievementsFromDb(gameIds))
+                .firstOrError()
+
+        return s.map { achievements ->
+            // Add achievements to the games in the list.
+            if (achievements.isNotEmpty()) {
+                games.forEach { game ->
+                    val achievementsForGame = achievements.filter {
+                        it.appId == game.appId
                     }
-                    games
-                }.map {
-                    // Let other classes know that we tried to set the achievements (applies to
-                    // games without achievements, clears loading status for ViewHolders for
-                    // example.
-                    games.forEach {
-                        if (!it.achievementsWereAdded()) {
-                            it.setAchievementsAdded()
-                        }
-                        it.userId = userRepository.getUserId()
-                    }
-                    games
+                    game.addAchievements(achievementsForGame)
+                    achievementsRepository.insertAchievementsIntoDb(achievementsForGame, game.appId)
                 }
+            }
+            games
+        }.map {
+            // Let other classes know that we tried to set the achievements (applies to
+            // games without achievements, clears loading status for ViewHolders for
+            // example.
+            games.forEach {
+                if (!it.achievementsWereAdded()) {
+                    it.setAchievementsAdded()
+                }
+                it.userId = userRepository.getUserId()
+            }
+            games
+        }
     }
 
     private fun insertOrUpdateGames(games: List<Game>, userId: String) {
@@ -113,7 +121,7 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                 })
     }
 
-    fun insertGame(game: Game) {
+    private fun insertGame(game: Game) {
         Single.fromCallable { dao.insert(listOf(game)) }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(Schedulers.io())

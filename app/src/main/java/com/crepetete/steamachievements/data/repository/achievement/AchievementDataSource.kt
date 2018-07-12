@@ -7,9 +7,9 @@ import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.model.Achievement
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -17,6 +17,26 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                                                 private val dao: AchievementsDao,
                                                 private val userRepository: UserRepository)
     : AchievementRepository {
+    override fun getAchievementsFromDb(appIds: List<String>): Single<List<Achievement>> {
+        val tasks = mutableListOf<Observable<List<Achievement>>>()
+        appIds.forEach {
+            tasks.add(getAchievementsFromDb(it).toObservable())
+        }
+
+        return Observable.fromIterable(tasks)
+                .flatMap {
+                    it.observeOn(Schedulers.computation())
+                }
+                .toList()
+                .map {
+                    val allAchievements = mutableListOf<Achievement>()
+                    it.forEach { list ->
+                        allAchievements.addAll(list)
+                    }
+                    allAchievements
+                }
+    }
+
     override fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId)
 
     override fun getAchievementsFromApi(appIds: List<String>): Single<List<Achievement>> {
@@ -24,6 +44,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
         appIds.forEach {
             tasks.add(getAchievementsFromApi(it).toObservable())
         }
+
         return Observable.fromIterable(tasks)
                 .flatMap {
                     it.observeOn(Schedulers.computation())
@@ -81,11 +102,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
         if (achievements.isEmpty()) {
             return
         }
-
-        achievements.forEach {
-            it.appId = appId
-            it.updatedAt = Calendar.getInstance().time
-        }
+        Timber.d("Insert achievements")
         dao.insert(achievements)
     }
 
