@@ -119,7 +119,6 @@ class GamesAdapter(private val baseView: BaseView,
             displayedGames = sortedGames
             notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 
     interface Listener {

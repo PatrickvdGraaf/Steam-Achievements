@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
@@ -29,6 +28,13 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
                 setLoaderIndicator(loadingIndicator)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initially gets games from DB.
+        presenter.getGamesFromDatabase()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

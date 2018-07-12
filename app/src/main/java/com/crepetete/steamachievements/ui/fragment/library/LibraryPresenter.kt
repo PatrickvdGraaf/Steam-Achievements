@@ -20,16 +20,17 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     lateinit var gamesRepository: GamesRepository
 
     override fun onViewCreated() {
-        getGamesFromDatabase()
+        // Will update data when the view is created.
         getGamesFromApi()
     }
 
-    private fun getGamesFromDatabase() {
+    fun getGamesFromDatabase() {
         view.showLoading()
         disposable.add(gamesRepository.getGamesFromDb()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    view.hideLoading()
                     view.updateGames(it)
                 }, {
                     Timber.e(it)
@@ -39,17 +40,14 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     }
 
     private fun getGamesFromApi() {
-        view.showLoading()
         disposable.add(gamesRepository.getGamesFromApi()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    view.hideLoading()
                     view.updateGames(it)
                 }, {
                     Timber.e(it)
-                    view.hideLoading()
-                    view.showError("Error while loading games.")
+                    view.showError("Error while updating games.")
                 }))
     }
 
