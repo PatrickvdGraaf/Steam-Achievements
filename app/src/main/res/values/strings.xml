@@ -16,4 +16,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_sort_playtime">Playtime</string>
+    <string name="menu_sort_name">Name</string>
+    <string name="menu_sort_completion">Completion</string>
 </resources>

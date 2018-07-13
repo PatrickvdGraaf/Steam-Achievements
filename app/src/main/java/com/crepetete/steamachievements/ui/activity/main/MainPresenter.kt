@@ -34,6 +34,8 @@ class MainPresenter(mainView: MainView,
     @Inject
     lateinit var userRepository: UserRepository
 
+    private var currentTag = LibraryFragment.TAG
+
     override fun onViewCreated() {
         getPlayer()
 
@@ -65,28 +67,27 @@ class MainPresenter(mainView: MainView,
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var fragment: Fragment? = null
-        var tag: String? = null
         val transaction = fragmentManager.beginTransaction()
 
         selectedNavItem = item.itemId
         when (selectedNavItem) {
             R.id.menu_profile -> {
-                tag = ProfileFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = ProfileFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = ProfileFragment.getInstance(playerId, this)
                 }
             }
             R.id.menu_library -> {
-                tag = LibraryFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = LibraryFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = LibraryFragment.getInstance(playerId, this)
                 }
             }
             R.id.menu_achievements -> {
-                tag = AchievementsFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = AchievementsFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = AchievementsFragment.getInstance(playerId, this)
                 }
@@ -101,10 +102,15 @@ class MainPresenter(mainView: MainView,
 
         updateTitle()
 
-        transaction.replace(containerId, fragment, tag)
+        transaction.replace(containerId, fragment, currentTag)
                 .addToBackStack(null)
                 .commit()
         return true
+    }
+
+    fun onRefreshClicked() {
+        val fragment = fragmentManager.findFragmentByTag(currentTag)
+
     }
 
     fun onSearchQueryChanged(query: String) {

@@ -35,6 +35,7 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.getGamesFromDatabase()
+        presenter.getGamesFromApi()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

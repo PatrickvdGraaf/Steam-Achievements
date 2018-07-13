@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
@@ -123,6 +124,10 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         }
         R.id.menuSortPlaytime -> {
             presenter.onSortingMerhodChanged(GamesAdapter.PLAYTIME)
+            true
+        }
+        R.id.action_refresh -> {
+            Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
             true
         }
         else -> {

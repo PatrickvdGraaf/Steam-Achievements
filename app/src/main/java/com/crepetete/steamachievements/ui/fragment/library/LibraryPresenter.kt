@@ -19,7 +19,6 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     lateinit var gamesRepository: GamesRepository
 
     override fun onViewCreated() {
-        getGamesFromApi()
     }
 
     internal fun getGamesFromDatabase() {
@@ -37,7 +36,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 }))
     }
 
-    private fun getGamesFromApi() {
+    internal fun getGamesFromApi() {
         disposable.add(gamesRepository.getGamesFromApi()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
