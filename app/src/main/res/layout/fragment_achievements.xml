@@ -14,7 +14,7 @@
         android:labelFor="@id/textview_total_achievements"
         android:paddingBottom="8dp"
         android:text="Total Achievements"
-        android:textColor="@color/colorPrimaryLight"
+        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -36,7 +36,7 @@
         android:labelFor="@id/textview_completion"
         android:paddingBottom="8dp"
         android:text="Completion"
-        android:textColor="@color/colorPrimaryLight"
+        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textview_total_achievements" />
