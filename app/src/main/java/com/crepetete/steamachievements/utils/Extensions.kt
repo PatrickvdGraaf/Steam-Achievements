@@ -16,6 +16,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -44,6 +45,16 @@ fun List<Game>.sortByPlaytime(): List<Game> {
         when {
             o1.playTime == o2.playTime -> 0
             o1.playTime > o2.playTime -> -1
+            else -> 1
+        }
+    })
+}
+
+fun List<Achievement>.sortByLastAchieved(): List<Achievement> {
+    return sortedWith(kotlin.Comparator { o1, o2 ->
+        when {
+            o1.unlockTime == o2.unlockTime -> 0
+            o1.unlockTime.after(o2.unlockTime) -> -1
             else -> 1
         }
     })

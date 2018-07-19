@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.model
 
 import android.arch.persistence.room.Entity
+import android.text.format.DateFormat
 import com.squareup.moshi.Json
 import java.util.*
 
@@ -25,9 +26,13 @@ data class Achievement(
         @Json(name = "icongray")
         val iconGrayUrl: String,
         var achieved: Boolean = false,
-        var unlockTime: Int = 0,
+        var unlockTime: Date,
         var updatedAt: Date?
-)
+) {
+    fun getDateString(): String {
+        return DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
+    }
+}
 
 data class AchievementKeys(
         val appId: String,

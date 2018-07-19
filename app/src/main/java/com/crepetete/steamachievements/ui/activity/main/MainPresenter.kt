@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager
 import android.view.MenuItem
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BasePresenter
+import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
@@ -22,7 +23,6 @@ class MainPresenter(mainView: MainView,
                     private val fragmentManager: FragmentManager,
                     private val playerId: String) : BasePresenter<MainView>(mainView),
         BottomNavigationView.OnNavigationItemSelectedListener, LoadingIndicator {
-    private var disposable: CompositeDisposable = CompositeDisposable()
 
     private var navBarListener: NavbarInteractionListener? = null
 
@@ -110,7 +110,9 @@ class MainPresenter(mainView: MainView,
 
     fun onRefreshClicked() {
         val fragment = fragmentManager.findFragmentByTag(currentTag)
-
+        if (fragment is RefreshableFragment<*>) {
+            fragment.refresh()
+        }
     }
 
     fun onSearchQueryChanged(query: String) {

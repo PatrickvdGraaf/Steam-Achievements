@@ -5,7 +5,6 @@ import com.crepetete.steamachievements.data.repository.game.GamesRepository
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -13,7 +12,6 @@ import javax.inject.Inject
 
 class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(libraryView),
         GamesAdapter.Listener {
-    private var disposable: CompositeDisposable = CompositeDisposable()
 
     @Inject
     lateinit var gamesRepository: GamesRepository
@@ -42,6 +40,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     view.updateGames(it)
+                    view.hideLoading()
                 }, {
                     Timber.e(it)
                     view.showError("Error while loading games.")

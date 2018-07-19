@@ -21,6 +21,7 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
     private var progress = 0f
     private var min = 0
     private var max = 100
+    private var totalProgress = 0f
     /**
      * Start the progress at 12 o'clock
      */
@@ -63,7 +64,10 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas.drawOval(rectF, backgroundPaint)
+//        canvas.drawOval(rectF, backgroundPaint)
+        val backgroundAngle = 360 * totalProgress / max
+        canvas.drawArc(rectF, startAngle, backgroundAngle, false, backgroundPaint)
+
         val angle = 360 * progress / max
         canvas.drawArc(rectF, startAngle, angle, false, foregroundPaint)
     }
@@ -100,6 +104,18 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
             }
         }
         valueAnimator.start()
+        startBackgroundAnimation()
+    }
+
+    private fun startBackgroundAnimation() {
+        val valueAnimator = ValueAnimator.ofFloat(totalProgress, max.toFloat())
+        valueAnimator.interpolator = DecelerateInterpolator() // increase the speed first and then decrease
+        valueAnimator.duration = 400
+        valueAnimator.addUpdateListener { animation ->
+            val p = animation.animatedValue as Float
+            this.setTotalProgress(p)
+        }
+        valueAnimator.start()
     }
 
     /**
@@ -120,6 +136,11 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
 
     private fun setProgress(progress: Float) {
         this.progress = progress
+        invalidate()
+    }
+
+    private fun setTotalProgress(progress: Float) {
+        this.totalProgress = progress
         invalidate()
     }
 }

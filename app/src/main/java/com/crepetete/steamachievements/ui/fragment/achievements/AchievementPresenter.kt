@@ -3,8 +3,8 @@ package com.crepetete.steamachievements.ui.fragment.achievements
 import com.crepetete.steamachievements.base.BasePresenter
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.utils.sortByLastAchieved
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.*
@@ -12,8 +12,6 @@ import javax.inject.Inject
 
 class AchievementPresenter(achievementsView: AchievementsView)
     : BasePresenter<AchievementsView>(achievementsView) {
-    private var disposable: CompositeDisposable = CompositeDisposable()
-
     @Inject
     lateinit var achievementsRepository: AchievementRepository
 
@@ -28,6 +26,7 @@ class AchievementPresenter(achievementsView: AchievementsView)
                 .subscribe({
                     view.setTotalAchievementsInfo(it.filter { it.achieved }.size)
                     calculateCompletionPercentage(it)
+                    view.showLatestAchievements(getLatestAchievements(it, it.size))
                 }, {
                     Timber.e(it)
                 }))
@@ -62,5 +61,9 @@ class AchievementPresenter(achievementsView: AchievementsView)
         percentages.forEach { percentagesSum += it }
         val percentage = (percentagesSum / (percentages.size * 100.0) * 100.0)
         view.setCompletionPercentage(percentage)
+    }
+
+    private fun getLatestAchievements(achievements: List<Achievement>, size: Int = 20): List<Achievement> {
+        return achievements.filter { it.achieved }.sortByLastAchieved().take(size)
     }
 }

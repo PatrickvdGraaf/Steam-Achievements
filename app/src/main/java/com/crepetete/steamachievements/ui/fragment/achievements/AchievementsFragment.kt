@@ -4,15 +4,20 @@ package com.crepetete.steamachievements.ui.fragment.achievements
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
+import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.fragment.achievements.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
 import java.text.DecimalFormat
+
 
 class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsView {
     companion object {
@@ -32,6 +37,11 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     private lateinit var textViewAllAchievements: TextView
     private lateinit var textViewCompletion: TextView
     private lateinit var circularProgressBar: CircularProgressBar
+    private lateinit var recyclerViewLatestAchievements: RecyclerView
+
+    private val achievementsAdapter by lazy {
+        HorizontalAchievementsAdapter(this)
+    }
 
     private var achievementCount = 0
     private var completionPercentage = 0.0
@@ -39,7 +49,8 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievements, container, false)
+        val view = inflater.inflate(R.layout.fragment_achievements, container,
+                false)
 
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
@@ -48,6 +59,13 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         circularProgressBar.addListener(ValueAnimator.AnimatorUpdateListener {
             updatePercentageText(it.animatedValue as Float)
         })
+
+        recyclerViewLatestAchievements = view.findViewById(R.id.latest_achievements_recyclerview)
+
+        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
+                false)
+
+        recyclerViewLatestAchievements.adapter = achievementsAdapter
 
         if (achievementCount > 0) {
             setTotalAchievementsInfo(achievementCount)
@@ -65,6 +83,10 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     override fun setCompletionPercentage(percentage: Double) {
         completionPercentage = percentage
         circularProgressBar.setProgressWithAnimation(percentage.toFloat())
+    }
+
+    override fun showLatestAchievements(achievements: List<Achievement>) {
+        achievementsAdapter.setRecentAchievements(achievements)
     }
 
     override fun instantiatePresenter(): AchievementPresenter {

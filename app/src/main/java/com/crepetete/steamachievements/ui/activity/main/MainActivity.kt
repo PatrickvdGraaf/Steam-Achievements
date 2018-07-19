@@ -17,6 +17,7 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 
 
@@ -34,6 +35,8 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
     private lateinit var loadingIndicator: ProgressBar
 
     private lateinit var userId: String
+
+    private var fragmentTag = LibraryFragment.TAG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,7 +130,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
             true
         }
         R.id.action_refresh -> {
-            Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show()
+            presenter.onRefreshClicked()
             true
         }
         else -> {

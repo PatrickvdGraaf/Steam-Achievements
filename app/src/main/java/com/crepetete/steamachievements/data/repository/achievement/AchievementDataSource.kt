@@ -84,12 +84,15 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                 .map {
                     if (it.playerStats.success) {
                         val ownedAchievements = it.playerStats.achievements
+                                .filter { it.achieved != 0 }
+
                         ownedAchievements.map { ownedAchievement ->
-                            allAchievements.filter { it.name == ownedAchievement.apiName }
-                                    .forEach {
-                                        it.unlockTime = ownedAchievement.unlockTime
-                                        it.achieved = ownedAchievement.achieved != 0
-                                    }
+                            allAchievements.filter {
+                                it.name == ownedAchievement.apiName
+                            }.forEach {
+                                it.unlockTime = ownedAchievement.getUnlockDate()
+                                it.achieved = ownedAchievement.achieved != 0
+                            }
                         }
                         allAchievements
                     } else {
