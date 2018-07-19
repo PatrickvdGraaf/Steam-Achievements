@@ -9,8 +9,11 @@ import com.crepetete.steamachievements.ui.activity.main.MainPresenter
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementPresenter
 import com.crepetete.steamachievements.ui.fragment.library.LibraryPresenter
 import com.crepetete.steamachievements.ui.fragment.profile.ProfilePresenter
+import io.reactivex.disposables.CompositeDisposable
 
 abstract class BasePresenter<out V : BaseView>(protected val view: V) {
+    protected var disposable: CompositeDisposable = CompositeDisposable()
+
     /**
      * The injector used to inject required dependencies
      */
@@ -28,6 +31,7 @@ abstract class BasePresenter<out V : BaseView>(protected val view: V) {
         inject()
     }
 
+
     /**
      * This method may be called when the presenter view is created
      */
@@ -36,7 +40,9 @@ abstract class BasePresenter<out V : BaseView>(protected val view: V) {
     /**
      * This method may be called when the presenter view is destroyed
      */
-    open fun onViewDestroyed() {}
+    open fun onViewDestroyed() {
+        disposable.dispose()
+    }
 
     /**
      * Injects the required dependencies

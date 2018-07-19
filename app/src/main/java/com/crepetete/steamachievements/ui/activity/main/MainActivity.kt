@@ -10,12 +10,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 
 
@@ -33,6 +35,8 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
     private lateinit var loadingIndicator: ProgressBar
 
     private lateinit var userId: String
+
+    private var fragmentTag = LibraryFragment.TAG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +129,10 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
             presenter.onSortingMerhodChanged(GamesAdapter.PLAYTIME)
             true
         }
+        R.id.action_refresh -> {
+            presenter.onRefreshClicked()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -132,6 +140,10 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
 
     override fun showPlayerDetails(persona: String) {
         title = "$persona's Games"
+    }
+
+    override fun setTitle(title: String) {
+        this.title = title
     }
 
     override fun showAchievements(achievements: List<Achievement>, appId: String) {

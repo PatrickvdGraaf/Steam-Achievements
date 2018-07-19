@@ -86,7 +86,7 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
             achievementsTextView.setCompletedFlag(game.isCompleted())
         } else if (!game.achievementsWereAdded()) {
             achievementsTextView.visibility = View.VISIBLE
-            achievementsTextView.text = "Loading Achievements."
+            achievementsTextView.text = "Loading Achievements..."
         } else {
             achievementsTextView.visibility = View.GONE
         }

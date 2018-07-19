@@ -10,25 +10,25 @@
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_refresh_24dp"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:icon="@drawable/ic_sort_24dp"
         android:title="@string/action_sort"
         app:showAsAction="ifRoom">
         <menu>
             <item
                 android:id="@+id/menuSortPlaytime"
-                android:title="Playtime" />
+                android:title="@string/menu_sort_playtime" />
             <item
                 android:id="@+id/menuSortName"
-                android:title="Name" />
+                android:title="@string/menu_sort_name" />
             <item
                 android:id="@+id/menuSortCompletion"
-                android:title="Completion" />
+                android:title="@string/menu_sort_completion" />
         </menu>
     </item>
-    <!-- Settings, should always be in the overflow -->
-    <!--<item-->
-    <!--android:id="@+id/action_settings"-->
-    <!--app:showAsAction="never"-->
-    <!--android:title="@string/action_settings" />-->
-
 </menu>

@@ -13,14 +13,10 @@ import com.crepetete.steamachievements.base.BasePresenter
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
 import com.crepetete.steamachievements.utils.TEST_USER_ID
-import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
 
 class LoginPresenter(private val loginView: LoginView) : BasePresenter<LoginView>(loginView) {
-
-    private var disposable: CompositeDisposable = CompositeDisposable()
-
     @Inject
     lateinit var userRepository: UserRepository
 

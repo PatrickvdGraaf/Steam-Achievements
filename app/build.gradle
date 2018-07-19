@@ -28,6 +28,7 @@ android {
 }
 
 def support_version = '27.1.1'
+def lifecycle_version = "1.1.1"
 def retrofit_version = '2.3.0'
 def okhttp_version = '3.10.0'
 def dagger_version = '2.14.1'
@@ -44,6 +45,9 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$support_version"
     implementation "com.android.support:cardview-v7:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
 
     // Logging
     implementation 'com.jakewharton.timber:timber:4.7.0'

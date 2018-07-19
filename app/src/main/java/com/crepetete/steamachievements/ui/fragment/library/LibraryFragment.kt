@@ -8,13 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseFragment
+import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 import timber.log.Timber
 
-class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
+class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
     private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
     private lateinit var scrollToTopButton: FloatingActionButton
 
@@ -35,6 +36,7 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.getGamesFromDatabase()
+        presenter.getGamesFromApi()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +66,11 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
         return view
     }
 
+    override fun refresh() {
+        showLoading()
+        presenter.getGamesFromApi()
+    }
+
     override fun updateGames(games: List<Game>) {
         Timber.d("Updating games.")
         gamesAdapter.updateGames(games)
@@ -85,7 +92,7 @@ class LibraryFragment : BaseFragment<LibraryPresenter>(), LibraryView, NavbarInt
         arguments?.let {
             userId = it.getString(KEY_PLAYER_ID)
             if (userId.isBlank()) {
-                // TODO go to login page.
+                context.startActivity(LoginActivity.getInstance(context))
             }
         }
 
