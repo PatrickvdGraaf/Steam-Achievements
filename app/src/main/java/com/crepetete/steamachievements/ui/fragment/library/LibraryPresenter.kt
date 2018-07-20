@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
+import android.widget.ImageView
 import com.crepetete.steamachievements.base.BasePresenter
 import com.crepetete.steamachievements.data.repository.game.GamesRepository
 import com.crepetete.steamachievements.model.Game
@@ -9,6 +10,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
+
+
 
 class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(libraryView),
         GamesAdapter.Listener {
@@ -47,8 +50,8 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 }))
     }
 
-    override fun onGameSelected(game: Game) {
-        // TODO
+    override fun onGameSelected(game: Game, imageView: ImageView) {
+        view.showGameActivity(game.appId, imageView)
     }
 
     override fun updateGame(game: Game) {

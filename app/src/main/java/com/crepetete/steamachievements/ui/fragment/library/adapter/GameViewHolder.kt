@@ -64,7 +64,9 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
                 })
 
         listener?.let { l ->
-            view.setOnClickListener { l.onGameSelected(game) }
+            view.setOnClickListener {
+                l.onGameSelected(game, imageView)
+            }
         }
 
         if (game.recentPlayTime > 0) {

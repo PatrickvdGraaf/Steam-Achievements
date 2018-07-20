@@ -7,13 +7,16 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
 import timber.log.Timber
+
 
 class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
     private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
@@ -64,6 +67,10 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
         })
 
         return view
+    }
+
+    override fun showGameActivity(appId: String, imageView: ImageView) {
+        activity?.startGameActivity(appId, imageView)
     }
 
     override fun refresh() {

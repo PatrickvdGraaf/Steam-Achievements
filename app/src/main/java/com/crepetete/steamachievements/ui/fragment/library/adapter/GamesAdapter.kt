@@ -5,9 +5,9 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseView
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.utils.sortByCompletion
 import com.crepetete.steamachievements.utils.sortByName
@@ -123,7 +123,7 @@ class GamesAdapter(private val baseView: BaseView,
     }
 
     interface Listener {
-        fun onGameSelected(game: Game)
+        fun onGameSelected(game: Game, imageView: ImageView)
         fun updateGame(game: Game)
         fun addDisposable(task: Disposable)
     }

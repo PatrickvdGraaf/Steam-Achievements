@@ -105,7 +105,6 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
         if (achievements.isEmpty()) {
             return
         }
-        Timber.d("Insert achievements")
         dao.insert(achievements)
     }
 

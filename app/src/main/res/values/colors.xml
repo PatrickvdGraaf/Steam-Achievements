@@ -7,5 +7,5 @@
 
     <color name="colorGameViewHolderBackground">@color/colorPrimaryDark</color>
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
-    <color name="statusbar_translucent">#aa000000</color>
+    <color name="statusbar_translucent">#64000000</color>
 </resources>
