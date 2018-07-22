@@ -95,7 +95,7 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
     fun setProgressWithAnimation(progress: Float) {
         val valueAnimator = ValueAnimator.ofFloat(this.progress, progress)
         valueAnimator.interpolator = DecelerateInterpolator() // increase the speed first and then decrease
-        valueAnimator.duration = 300
+        valueAnimator.duration = 800
         valueAnimator.addUpdateListener { animation ->
             val p = animation.animatedValue as Float
             this.setProgress(p)
@@ -110,7 +110,7 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
     private fun startBackgroundAnimation() {
         val valueAnimator = ValueAnimator.ofFloat(totalProgress, max.toFloat())
         valueAnimator.interpolator = DecelerateInterpolator() // increase the speed first and then decrease
-        valueAnimator.duration = 400
+        valueAnimator.duration = 0
         valueAnimator.addUpdateListener { animation ->
             val p = animation.animatedValue as Float
             this.setTotalProgress(p)

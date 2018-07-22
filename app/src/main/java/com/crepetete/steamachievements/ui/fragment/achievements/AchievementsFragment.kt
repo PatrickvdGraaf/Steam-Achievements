@@ -14,8 +14,8 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
-import com.crepetete.steamachievements.ui.fragment.achievements.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
+import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import java.text.DecimalFormat
 
 
@@ -86,7 +86,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     }
 
     override fun showLatestAchievements(achievements: List<Achievement>) {
-        achievementsAdapter.setRecentAchievements(achievements)
+        achievementsAdapter.setAchievements(achievements)
     }
 
     override fun instantiatePresenter(): AchievementPresenter {

@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
@@ -18,7 +17,7 @@ import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
-import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
 
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
