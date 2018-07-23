@@ -4,4 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="progressBar_dimen">150dp</dimen>
+    <dimen name="text_label">12sp</dimen>
+    <dimen name="text_header">18sp</dimen>
 </resources>

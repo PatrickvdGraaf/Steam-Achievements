@@ -9,7 +9,6 @@ import com.crepetete.steamachievements.model.Achievement
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -63,7 +62,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                 }
     }
 
-    private fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
+    override fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
         return api.getSchemaForGame(appId).map { response ->
             response.game.availableGameStats?.achievements ?: listOf()
         }.map {
@@ -85,7 +84,6 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                     if (it.playerStats.success) {
                         val ownedAchievements = it.playerStats.achievements
                                 .filter { it.achieved != 0 }
-
                         ownedAchievements.map { ownedAchievement ->
                             allAchievements.filter {
                                 it.name == ownedAchievement.apiName

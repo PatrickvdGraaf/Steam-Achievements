@@ -17,4 +17,5 @@ interface AchievementRepository {
     fun getAchievedStatusForAchievementsForGame(appId: String, allAchievements: List<Achievement>): Single<List<Achievement>>
     fun getAchievementsFromDb(appIds: List<String>): Single<List<Achievement>>
     fun getAchievementsFromDb(appId: String): Single<List<Achievement>>
+    fun getAchievementsFromApi(appId: String): Single<List<Achievement>>
 }

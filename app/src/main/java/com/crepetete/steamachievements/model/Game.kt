@@ -48,6 +48,10 @@ data class Game(
         }
     }
 
+    fun setAchievements(achievements: List<Achievement>){
+        this.achievements = achievements.toMutableList()
+    }
+
     fun addAchievements(achievements: List<Achievement>) {
         achievements.forEach { addAchievement(it) }
     }

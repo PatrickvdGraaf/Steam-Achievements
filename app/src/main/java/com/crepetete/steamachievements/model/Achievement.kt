@@ -26,11 +26,15 @@ data class Achievement(
         @Json(name = "icongray")
         val iconGrayUrl: String,
         var achieved: Boolean = false,
-        var unlockTime: Date,
+        var unlockTime: Date?,
         var updatedAt: Date?
 ) {
     fun getDateString(): String {
-        return DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
+        return if (unlockTime != null) {
+            DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
+        }else{
+            "Locked"
+        }
     }
 }
 
