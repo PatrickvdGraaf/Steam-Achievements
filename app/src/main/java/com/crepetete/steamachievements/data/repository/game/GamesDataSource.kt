@@ -4,6 +4,7 @@ import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.data.repository.user.UserRepository
+import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -29,12 +30,17 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         return api.getGamesForUser(userId)
                 .map {
                     it.response.games
-                }.flatMap {
-                    getAchievementsForGames(it)
                 }
+//                .flatMap {
+//                    getAchievementsForGames(it)
+//                }
                 .doAfterSuccess {
                     insertOrUpdateGames(it, userId)
                 }
+    }
+
+    fun getAchievementsForGame(game: Game): Single<List<Achievement>> {
+        return achievementsRepository.getAchievementsFromApi(listOf(game.appId))
     }
 
     private fun getAchievementsForGames(games: List<Game>): Single<List<Game>> {

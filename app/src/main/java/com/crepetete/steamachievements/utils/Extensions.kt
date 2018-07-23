@@ -52,11 +52,35 @@ fun List<Game>.sortByPlaytime(): List<Game> {
 
 fun List<Achievement>.sortByLastAchieved(): List<Achievement> {
     return sortedWith(kotlin.Comparator { o1, o2 ->
-        when {
-            o1.unlockTime == o2.unlockTime -> 0
-            o1.unlockTime.after(o2.unlockTime) -> -1
-            else -> 1
+        try {
+            if (o1.unlockTime != null && o2.unlockTime != null) {
+                when {
+                    o1.unlockTime == o2.unlockTime -> 0
+                    o1.unlockTime!!.after(o2.unlockTime) -> -1
+                    else -> 1
+                }
+            } else if (o1.unlockTime == null && o2.unlockTime != null){
+                1
+            } else if (o1.unlockTime == null && o2.unlockTime == null){
+                0
+            } else {
+                -1
+            }
+        } catch (e: Exception){
+            e.printStackTrace()
+            0
         }
+
+    })
+}
+
+fun List<Achievement>.sortByNotAchieved(): List<Achievement> {
+    return sortedWith(kotlin.Comparator { o1, o2 ->
+            when {
+                o1.achieved == o2.achieved -> 0
+                o1.achieved && !o2.achieved -> 1
+                else -> -1
+            }
     })
 }
 
