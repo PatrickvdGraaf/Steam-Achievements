@@ -40,6 +40,7 @@ class GamePresenter(gameView: GameView, private val gameId: String) : BasePresen
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     view.setAchievements(it)
+
                 }, {
                     Timber.e(it)
                 }))

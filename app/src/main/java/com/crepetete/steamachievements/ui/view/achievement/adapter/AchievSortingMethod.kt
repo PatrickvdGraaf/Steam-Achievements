@@ -7,5 +7,6 @@ package com.crepetete.steamachievements.ui.view.achievement.adapter
  */
 enum class AchievSortingMethod (val value: Int, val description: String) {
     ACHIEVED(1, "Achieved"),
-    NOT_ACHIEVED(2, "Not Achieved")
+    NOT_ACHIEVED(2, "Not Achieved"),
+    RARITY(2, "Global completion rate")
 }

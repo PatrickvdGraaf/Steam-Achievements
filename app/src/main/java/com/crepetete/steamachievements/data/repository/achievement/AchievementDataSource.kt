@@ -70,6 +70,23 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
             it
         }.flatMap {
             getAchievedStatusForAchievementsForGame(appId, it)
+        }.flatMap {
+            getGlobalStats(appId, it)
+        }.map {
+            updateAchievementIntoDb(it)
+            it
+        }
+    }
+
+    private fun getGlobalStats(appId: String, achievements: List<Achievement>): Single<List<Achievement>> {
+        return api.getGlobalAchievementStats(appId).map {
+            it.achievementpercentages.achievements.map { response ->
+                achievements.filter { it.name == response.name }.forEach { achievement ->
+                    achievement.percentage = response.percent
+                }
+            }
+
+            achievements
         }
     }
 
