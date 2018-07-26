@@ -6,11 +6,18 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
+import com.crepetete.steamachievements.model.Player
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 
 class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
+    private lateinit var imageViewProfile: ImageView
+    private lateinit var textViewPersona: TextView
+
     /**
      * Instantiates the presenter the Activity is based on.
      */
@@ -35,6 +42,17 @@ class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        imageViewProfile = view.findViewById(R.id.imageview_profile)
+        textViewPersona = view.findViewById(R.id.persona)
+        return view
+    }
+
+    override fun onPlayerLoaded(player: Player) {
+        textViewPersona.text = player.persona
+
+        Glide.with(context)
+                .load(player.avatarFullUrl)
+                .into(imageViewProfile)
     }
 }

@@ -67,4 +67,9 @@ class UserDataSource @Inject constructor(private val context: Context,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
     }
+
+    override fun getCurrentPlayer(): Single<Player?> {
+        return dao.getPlayerById(getUserId())
+                .map { it[0] }
+    }
 }
