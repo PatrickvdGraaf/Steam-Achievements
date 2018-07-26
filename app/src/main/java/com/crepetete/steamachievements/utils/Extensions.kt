@@ -59,14 +59,14 @@ fun List<Achievement>.sortByLastAchieved(): List<Achievement> {
                     o1.unlockTime!!.after(o2.unlockTime) -> -1
                     else -> 1
                 }
-            } else if (o1.unlockTime == null && o2.unlockTime != null){
+            } else if (o1.unlockTime == null && o2.unlockTime != null) {
                 1
-            } else if (o1.unlockTime == null && o2.unlockTime == null){
+            } else if (o1.unlockTime == null && o2.unlockTime == null) {
                 0
             } else {
                 -1
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             0
         }
@@ -76,11 +76,21 @@ fun List<Achievement>.sortByLastAchieved(): List<Achievement> {
 
 fun List<Achievement>.sortByNotAchieved(): List<Achievement> {
     return sortedWith(kotlin.Comparator { o1, o2 ->
-            when {
-                o1.achieved == o2.achieved -> 0
-                o1.achieved && !o2.achieved -> 1
-                else -> -1
-            }
+        when {
+            o1.achieved == o2.achieved -> 0
+            o1.achieved && !o2.achieved -> 1
+            else -> -1
+        }
+    })
+}
+
+fun List<Achievement>.sortByRarity(): List<Achievement> {
+    return sortedWith(kotlin.Comparator { o1, o2 ->
+        when {
+            o1.percentage > o2.percentage -> 1
+            o1.percentage < o2.percentage -> -1
+            else -> 0
+        }
     })
 }
 

@@ -8,6 +8,7 @@ import com.crepetete.steamachievements.base.BaseView
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.utils.sortByLastAchieved
 import com.crepetete.steamachievements.utils.sortByNotAchieved
+import com.crepetete.steamachievements.utils.sortByRarity
 
 class HorizontalAchievementsAdapter(private val baseView: BaseView,
                                     private var sortingMethod: AchievSortingMethod
@@ -40,7 +41,8 @@ class HorizontalAchievementsAdapter(private val baseView: BaseView,
     fun updateSortingMethod(specificMethod: AchievSortingMethod? = null): String {
         sortingMethod = specificMethod ?: when (sortingMethod) {
             AchievSortingMethod.ACHIEVED -> AchievSortingMethod.NOT_ACHIEVED
-            AchievSortingMethod.NOT_ACHIEVED -> AchievSortingMethod.ACHIEVED
+            AchievSortingMethod.NOT_ACHIEVED -> AchievSortingMethod.RARITY
+            AchievSortingMethod.RARITY -> AchievSortingMethod.ACHIEVED
         }
         sort()
         return sortingMethod.description
@@ -50,6 +52,7 @@ class HorizontalAchievementsAdapter(private val baseView: BaseView,
         when (sortingMethod) {
             AchievSortingMethod.ACHIEVED -> { setAchievements(achievements.sortByLastAchieved()) }
             AchievSortingMethod.NOT_ACHIEVED -> { setAchievements(achievements.sortByNotAchieved()) }
+            AchievSortingMethod.RARITY -> {setAchievements(achievements.sortByRarity())}
         }
     }
 }

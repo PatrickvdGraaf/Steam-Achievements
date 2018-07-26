@@ -24,7 +24,7 @@ class AchievementViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         imageViewIcon.setOnClickListener {
             AlertDialog.Builder(context)
                     .setTitle(achievement.displayName)
-                    .setMessage(achievement.description)
+                    .setMessage(getDescription(achievement))
                     .show()
         }
 
@@ -35,5 +35,14 @@ class AchievementViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                     achievement.iconGrayUrl
                 })
                 .into(imageViewIcon)
+    }
+
+    private fun getDescription(achievement: Achievement): String {
+        return if (achievement.description != null) {
+            "Global achievement rate: ${achievement.percentage}%\n\n" +
+                    "${achievement.description}"
+        } else {
+            "\"Global achievement rate: ${achievement.percentage}%"
+        }
     }
 }

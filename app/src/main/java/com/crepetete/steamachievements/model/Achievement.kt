@@ -27,12 +27,13 @@ data class Achievement(
         val iconGrayUrl: String,
         var achieved: Boolean = false,
         var unlockTime: Date?,
-        var updatedAt: Date?
+        var updatedAt: Date?,
+        var percentage: Float = 0.0f
 ) {
     fun getDateString(): String {
         return if (unlockTime != null) {
             DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
-        }else{
+        } else {
             "Locked"
         }
     }
