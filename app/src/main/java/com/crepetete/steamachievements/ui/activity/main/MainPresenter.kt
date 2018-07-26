@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager
 import android.view.MenuItem
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BasePresenter
+import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
@@ -22,12 +23,18 @@ class MainPresenter(mainView: MainView,
                     private val fragmentManager: FragmentManager,
                     private val playerId: String) : BasePresenter<MainView>(mainView),
         BottomNavigationView.OnNavigationItemSelectedListener, LoadingIndicator {
-    private var disposable: CompositeDisposable = CompositeDisposable()
 
     private var navBarListener: NavbarInteractionListener? = null
 
+    private var persona = "Unknown"
+
+    @IdRes
+    private var selectedNavItem = R.id.menu_library
+
     @Inject
     lateinit var userRepository: UserRepository
+
+    private var currentTag = LibraryFragment.TAG
 
     override fun onViewCreated() {
         getPlayer()
@@ -43,35 +50,44 @@ class MainPresenter(mainView: MainView,
     private fun getPlayer() {
         disposable.add(userRepository.getPlayer(playerId)
                 .subscribe({
-                    view.showPlayerDetails(it.persona)
+                    persona = it.persona
+                    updateTitle()
                 }, {
                     Timber.e(it)
                 }))
     }
 
+    private fun updateTitle() {
+        when (selectedNavItem) {
+            R.id.menu_profile -> view.setTitle("Profile")
+            R.id.menu_achievements -> view.setTitle("$persona's Achievements")
+            else -> view.setTitle("$persona's Library")
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var fragment: Fragment? = null
-        var tag: String? = null
         val transaction = fragmentManager.beginTransaction()
 
-        when (item.itemId) {
+        selectedNavItem = item.itemId
+        when (selectedNavItem) {
             R.id.menu_profile -> {
-                tag = ProfileFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = ProfileFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = ProfileFragment.getInstance(playerId, this)
                 }
             }
             R.id.menu_library -> {
-                tag = LibraryFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = LibraryFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = LibraryFragment.getInstance(playerId, this)
                 }
             }
             R.id.menu_achievements -> {
-                tag = AchievementsFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(tag)
+                currentTag = AchievementsFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
                     fragment = AchievementsFragment.getInstance(playerId, this)
                 }
@@ -84,10 +100,19 @@ class MainPresenter(mainView: MainView,
             null
         }
 
-        transaction.replace(containerId, fragment, tag)
+        updateTitle()
+
+        transaction.replace(containerId, fragment, currentTag)
                 .addToBackStack(null)
                 .commit()
         return true
+    }
+
+    fun onRefreshClicked() {
+        val fragment = fragmentManager.findFragmentByTag(currentTag)
+        if (fragment is RefreshableFragment<*>) {
+            fragment.refresh()
+        }
     }
 
     fun onSearchQueryChanged(query: String) {

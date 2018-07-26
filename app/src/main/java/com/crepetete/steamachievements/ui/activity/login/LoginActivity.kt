@@ -11,7 +11,9 @@ import kotlinx.android.synthetic.main.activity_login.*
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginView {
     companion object {
         fun getInstance(context: Context): Intent {
-            return Intent(context, LoginActivity::class.java)
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            return intent
         }
     }
 

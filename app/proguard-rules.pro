@@ -26,3 +26,17 @@
     @com.squareup.moshi.* <methods>;
 }
 -keep @com.squareup.moshi.JsonQualifier interface *
+
+-keep class com.squareup.** { *; }
+-keep interface com.squareup.** { *; }
+-dontwarn com.squareup.okhttp.**
+-keep class retrofit.** { *; }
+
+-keepclasseswithmembers class * {
+    @retrofit.http.* <methods>;
+}
+
+-keep interface retrofit.** { *;}
+-keep interface com.squareup.** { *; }
+-dontwarn rx.**
+-dontwarn retrofit.**

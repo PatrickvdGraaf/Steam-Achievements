@@ -1,20 +1,27 @@
 package com.crepetete.steamachievements.data.api.response.achievement
 
 import com.squareup.moshi.Json
+import timber.log.Timber
+import java.util.*
 
 data class AchievedAchievementResponse(@Json(name = "playerstats") val playerStats: DataClass)
 
-data class DataClass(val steamID: String,
-                     val gamaName: String,
+data class DataClass(val steamID: String = "-1",
+                     val gameName: String = "",
                      val achievements: List<AchievedAchievement> = listOf(),
-                     val success: Boolean)
+                     val success: Boolean = false)
 
 data class AchievedAchievement(
         @Json(name = "apiname")
         val apiName: String,
         val achieved: Int,
-        @Json(name = "unlockTime")
-        val unlockTime: Int,
+        @Json(name = "unlocktime")
+        val unlockTime: Long,
         val name: String?,
         val description: String?
-)
+) {
+    fun getUnlockDate(): Date {
+        Timber.d("Created Unlock Date From Long: $unlockTime")
+        return Date(unlockTime * 1000L)
+    }
+}

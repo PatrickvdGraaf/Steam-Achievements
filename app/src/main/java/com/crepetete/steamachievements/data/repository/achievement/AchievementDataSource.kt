@@ -1,72 +1,114 @@
 package com.crepetete.steamachievements.data.repository.achievement
 
-import android.content.Context
 import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
+import com.crepetete.steamachievements.data.api.response.achievement.DataClass
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.model.Achievement
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class AchievementDataSource @Inject constructor(private val context: Context,
-                                                private val api: SteamApiService,
+class AchievementDataSource @Inject constructor(private val api: SteamApiService,
                                                 private val dao: AchievementsDao,
                                                 private val userRepository: UserRepository)
     : AchievementRepository {
-    override fun getAchievements(appId: String): Observable<List<Achievement>> {
-//        val observable = if (context.isConnectedToInternet()) {
-//            Observable.concatArray(getAchievementsFromDb(appId), getAchievementsFromApi(listOf(appId)))
-//        } else {
-//            getAchievementsFromDb(appId)
-//        }
-
-        return getAchievementsFromApi(listOf(appId))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    private fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId).toObservable()
-
-    override fun getAchievementsFromApi(appIds: List<String>): Observable<List<Achievement>> {
-        return Observable.fromIterable(appIds).flatMap {
-            try {
-                getAchievementsFromApi(it).toObservable()
-            } catch (e: HttpException) {
-                Timber.e(e)
-                Observable.fromArray(listOf<Achievement>())
-            }
+    override fun getAchievementsFromDb(appIds: List<String>): Single<List<Achievement>> {
+        val tasks = mutableListOf<Observable<List<Achievement>>>()
+        appIds.forEach {
+            tasks.add(getAchievementsFromDb(it).toObservable())
         }
+
+        return Observable.fromIterable(tasks)
+                .flatMap {
+                    it.observeOn(Schedulers.computation())
+                }
+                .toList()
+                .map {
+                    val allAchievements = mutableListOf<Achievement>()
+                    it.forEach { list ->
+                        allAchievements.addAll(list)
+                    }
+                    allAchievements
+                }
     }
 
-    private fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
+    override fun getAchievementsFromDb(appId: String) = dao.getAchievementsForGame(appId)
+
+    override fun getAchievementsFromApi(appIds: List<String>): Single<List<Achievement>> {
+        val tasks = mutableListOf<Observable<List<Achievement>>>()
+        appIds.forEach {
+            tasks.add(getAchievementsFromApi(it).toObservable())
+        }
+
+        return Observable.fromIterable(tasks)
+                .flatMap {
+                    it.observeOn(Schedulers.computation())
+                }
+                .toList()
+                .map {
+                    val allAchievements = mutableListOf<Achievement>()
+                    it.forEach { list ->
+                        allAchievements.addAll(list)
+                    }
+                    allAchievements
+                }
+                .map { achievements ->
+                    achievements.forEach { it.updatedAt = Calendar.getInstance().time }
+                    achievements
+                }
+    }
+
+    override fun getAchievementsFromApi(appId: String): Single<List<Achievement>> {
         return api.getSchemaForGame(appId).map { response ->
             response.game.availableGameStats?.achievements ?: listOf()
         }.map {
             it.map { achievement -> achievement.appId = appId }
             it
         }.flatMap {
-            getPlayerAchievementsForGame(appId, it)
+            getAchievedStatusForAchievementsForGame(appId, it)
+        }.flatMap {
+            getGlobalStats(appId, it)
+        }.map {
+            updateAchievementIntoDb(it)
+            it
         }
     }
 
-    override fun getPlayerAchievementsForGame(appId: String,
-                                              allAchievements: List<Achievement>): Single<List<Achievement>> {
+    private fun getGlobalStats(appId: String, achievements: List<Achievement>): Single<List<Achievement>> {
+        return api.getGlobalAchievementStats(appId).map {
+            it.achievementpercentages.achievements.map { response ->
+                achievements.filter { it.name == response.name }.forEach { achievement ->
+                    achievement.percentage = response.percent
+                }
+            }
+
+            achievements
+        }
+    }
+
+    override fun getAchievedStatusForAchievementsForGame(appId: String,
+                                                         allAchievements: List<Achievement>): Single<List<Achievement>> {
         return api.getAchievementsForPlayer(appId, userRepository.getUserId())
+                .onErrorReturn {
+                    AchievedAchievementResponse(DataClass())
+                }
+
                 .map {
                     if (it.playerStats.success) {
                         val ownedAchievements = it.playerStats.achievements
+                                .filter { it.achieved != 0 }
+
                         ownedAchievements.map { ownedAchievement ->
-                            allAchievements.filter { it.name == ownedAchievement.apiName }
-                                    .forEach {
-                                        it.unlockTime = ownedAchievement.unlockTime
-                                        it.achieved = ownedAchievement.achieved != 0
-                                    }
+                            allAchievements.filter {
+                                it.name == ownedAchievement.apiName
+                            }.forEach {
+                                it.unlockTime = ownedAchievement.getUnlockDate()
+                                it.achieved = ownedAchievement.achieved != 0
+                            }
                         }
                         allAchievements
                     } else {
@@ -79,23 +121,11 @@ class AchievementDataSource @Inject constructor(private val context: Context,
         if (achievements.isEmpty()) {
             return
         }
-
-        achievements.forEach {
-            it.appId = appId
-            it.updatedAt = Calendar.getInstance().time
-        }
         dao.insert(achievements)
     }
 
     override fun updateAchievementIntoDb(achievement: List<Achievement>) {
         Single.fromCallable { dao.update(achievement) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({
-                    Timber.d("Updated ${achievement.size} achievements in the Database")
-                }, {
-                    Timber.d(it)
-                })
     }
 
     override fun getAllAchievements(): Single<List<Achievement>> {

@@ -64,7 +64,7 @@ class GameDiffCallback(
                 && oldGame.recentPlayTime == newGame.recentPlayTime
                 && oldGame.iconUrl == newGame.iconUrl
                 && oldGame.logoUrl == newGame.logoUrl
-                && oldGame.achievements?.size == newGame.achievements?.size
+                && oldGame.getAmountOfAchievements() == newGame.getAmountOfAchievements()
     }
 
     @Nullable

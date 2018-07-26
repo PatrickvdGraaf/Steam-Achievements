@@ -41,5 +41,5 @@ object DataModule {
                                               api: SteamApiService,
                                               achievementsDao: AchievementsDao,
                                               userRep: UserRepository)
-            : AchievementRepository = AchievementDataSource(context, api, achievementsDao, userRep)
+            : AchievementRepository = AchievementDataSource(api, achievementsDao, userRep)
 }

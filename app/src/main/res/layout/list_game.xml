@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:drawablePadding="8dp"
-                android:drawableStart="@drawable/ic_recent_black_24dp"
+                android:drawableStart="@drawable/ic_recent_24dp"
                 android:gravity="center_vertical"
                 android:paddingBottom="8dp"
                 android:paddingEnd="16dp"

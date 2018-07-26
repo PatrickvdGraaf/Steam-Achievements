@@ -83,14 +83,6 @@ class GamesAdapter(private val baseView: BaseView,
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun addAchievementsForGame(achievements: List<Achievement>, appId: String) {
-        allGames.filter { it.appId == appId }
-                .forEach {
-                    it.achievements = achievements
-                    notifyDataSetChanged()
-                }
-    }
-
     fun sort(@SortingType type: Int) {
         sortMethod = type
         sort()
@@ -127,6 +119,7 @@ class GamesAdapter(private val baseView: BaseView,
             displayedGames = sortedGames
             notifyDataSetChanged()
         }
+        notifyDataSetChanged()
     }
 
     interface Listener {

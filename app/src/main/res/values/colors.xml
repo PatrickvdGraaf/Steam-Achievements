@@ -5,7 +5,11 @@
     <color name="colorPrimaryLight">#3d4048</color>
     <color name="colorAccent">#ffffff</color>
 
+    <color name="colorTextLabel">#a3a3a3</color>
+
+    <color name="transparant">#00000000</color>
+
     <color name="colorGameViewHolderBackground">@color/colorPrimaryDark</color>
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
-    <color name="statusbar_translucent">#aa000000</color>
+    <color name="statusbar_translucent">#64000000</color>
 </resources>

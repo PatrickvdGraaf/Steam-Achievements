@@ -9,6 +9,7 @@ import android.content.Context
 import com.crepetete.steamachievements.utils.getDaysFromNow
 import com.crepetete.steamachievements.utils.toHours
 import com.squareup.moshi.Json
+import java.text.DecimalFormat
 import java.util.*
 
 @Entity(tableName = "games",
@@ -35,7 +36,34 @@ data class Game(
         var lastUpdated: Long = Calendar.getInstance().time.time
 ) {
     @Ignore
-    var achievements: List<Achievement>? = listOf()
+    private var achievements: MutableList<Achievement>? = null
+
+    fun achievementsWereAdded(): Boolean {
+        return achievements != null
+    }
+
+    fun setAchievementsAdded() {
+        if (achievements == null) {
+            achievements = mutableListOf()
+        }
+    }
+
+    fun setAchievements(achievements: List<Achievement>){
+        this.achievements = achievements.toMutableList()
+    }
+
+    fun addAchievements(achievements: List<Achievement>) {
+        achievements.forEach { addAchievement(it) }
+    }
+
+    fun addAchievement(achievement: Achievement) {
+        if (achievement.appId == appId) {
+            if (achievements == null) {
+                achievements = mutableListOf()
+            }
+            achievements!!.add(achievement)
+        }
+    }
 
     fun getFullLogoUrl(): String {
         return "http://media.steampowered.com/steamcommunity/public/images/apps/$appId/$logoUrl.jpg"
@@ -47,10 +75,11 @@ data class Game(
 
     fun hasAchievements() = achievements?.isNotEmpty() ?: false
 
-    private fun getAmountOfAchievements() = achievements?.size?.toLong() ?: 0L
+    fun getAmountOfAchievements(): Int = achievements?.size ?: 0
 
     fun getAchievementsText() = when {
-        hasCompletedAchievements() -> "${getCompletedAchievements().size}/${achievements?.size} (${getPercentageCompleted()}%) achievements."
+        hasCompletedAchievements() ->
+            "${getCompletedAchievements().size}/${achievements?.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."
         hasAchievements() -> "${achievements?.size ?: 0} achievements."
         else -> ""
     }
