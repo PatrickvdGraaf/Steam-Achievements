@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "67359617507",
+    "firebase_url": "https://steam-achievements-6d97a.firebaseio.com",
+    "project_id": "steam-achievements-6d97a",
+    "storage_bucket": "steam-achievements-6d97a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67359617507:android:93619cfda1bc24e6",
+        "android_client_info": {
+          "package_name": "com.crepetete.steamachievements"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67359617507-e7s4dm49b7846pnapamfe4kr6fl480uu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA65ar4LqIZ-GUZDw5vS_Sa1QYk89IEuJo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
