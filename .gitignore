@@ -5,3 +5,6 @@
 /.idea/modules.xml
 /.idea/workspace.xml
 /build
+/app/google-services.json
+app/libs/
+libs/
