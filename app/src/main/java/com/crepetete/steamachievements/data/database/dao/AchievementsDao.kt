@@ -3,7 +3,6 @@ package com.crepetete.steamachievements.data.database.dao
 import android.arch.persistence.room.*
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.AchievementKeys
-import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao

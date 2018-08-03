@@ -17,6 +17,18 @@ class AchievementPresenter(achievementsView: AchievementsView)
 
     override fun onViewCreated() {
         loadAchievementStats()
+        loadBestDay()
+    }
+
+    private fun loadBestDay(){
+        disposable.add(achievementsRepository.getBestAchievementsDay()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    view.showBestDay(it)
+                }, {
+                    Timber.e(it)
+                }))
     }
 
     private fun loadAchievementStats() {

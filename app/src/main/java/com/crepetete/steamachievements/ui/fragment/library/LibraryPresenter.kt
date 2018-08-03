@@ -25,19 +25,34 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     lateinit var achievementsRepository: AchievementRepository
 
     override fun onViewCreated() {
+        getGamesFromDatabase()
     }
 
-    internal fun getGamesFromDatabase() {
-        disposable.add(gamesRepository.getGamesFromDb()
+    private fun getGamesFromDatabase() {
+        disposable.add(gamesRepository.getGameIds()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    view.hideLoading()
-                    view.updateGames(it)
+                .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                    if (it.isEmpty()){
+                        getGamesFromApi()
+                    } else {
+                        it.forEach {
+                            disposable.add(gamesRepository.getGame(it)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe({ game ->
+                                        view.addGame(game)
+
+                                        getAchievementsFromDb(game.appId)
+
+                                    }, {
+                                        Timber.e(it)
+                                        view.showError("Error while loading games.")
+                                    }))
+                            getGamesFromApi()
+                        }
+                    }
                 }, {
                     Timber.e(it)
-                    view.hideLoading()
-                    view.showError("Error while updating games.")
                 }))
     }
 
@@ -49,13 +64,24 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 .subscribe({
                     view.updateGames(it)
                     view.hideLoading()
-
-                    it.forEach {
-                        getAchievementsForGame(it.appId)
-                    }
                 }, {
                     Timber.e(it)
                     view.showError("Error while loading games.")
+                }))
+    }
+
+    private fun insertGame(game: Game){
+        gamesRepository.insert(game)
+    }
+
+    private fun getAchievementsFromDb(appId: String) {
+        disposable.add(achievementsRepository.getAchievementsFromDb(appId)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    view.updateAchievementsForGame(appId, it)
+                }, {
+                    Timber.e(it)
                 }))
     }
 
@@ -73,8 +99,10 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
 
     private fun updateAchievements(appId: String, achievements: List<Achievement>) {
         disposable.add(Single
-                .fromCallable { achievementsRepository.insertAchievementsIntoDb(achievements,
-                        appId) }
+                .fromCallable {
+                    achievementsRepository.insertAchievementsIntoDb(achievements,
+                            appId)
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe())

@@ -25,15 +25,19 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         return dao.getGamesForUser()
     }
 
+    override fun insert(game: Game) {
+        dao.insert(game)
+    }
+
     override fun getGamesFromApi(): Single<List<Game>> {
         val userId = userRepository.getUserId()
         return api.getGamesForUser(userId)
                 .map {
                     it.response.games
                 }
-//                .flatMap {
-//                    getAchievementsForGames(it)
-//                }
+                .flatMap {
+                    getAchievementsForGames(it)
+                }
                 .doAfterSuccess {
                     insertOrUpdateGames(it, userId)
                 }

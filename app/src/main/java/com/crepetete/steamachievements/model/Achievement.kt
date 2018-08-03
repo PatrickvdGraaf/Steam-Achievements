@@ -37,6 +37,14 @@ data class Achievement(
             "Locked"
         }
     }
+
+    fun getDateStringNoTime(): String? {
+        return if (unlockTime != null) {
+            DateFormat.format("dd-MM-yyyy", unlockTime).toString()
+        } else {
+            null
+        }
+    }
 }
 
 data class AchievementKeys(

@@ -71,13 +71,20 @@ class GamesAdapter(private val baseView: BaseView,
         notifyDataSetChanged()
     }
 
-    fun updateAchievementsForGame(appId: String, achievements: List<Achievement>){
+    fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
         getListData().forEachIndexed { i: Int, game: Game ->
-            if (game.appId == appId){
+            if (game.appId == appId) {
                 game.setAchievements(achievements)
                 notifyItemChanged(i)
             }
         }
+    }
+
+    fun addGame(game: Game) {
+        val newGames = mutableListOf<Game>()
+        newGames.addAll(allGames)
+        newGames.add(game)
+        updateGames(newGames)
     }
 
     fun updateGames(updatedGames: List<Game>) {

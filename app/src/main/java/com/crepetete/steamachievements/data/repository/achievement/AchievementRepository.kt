@@ -11,6 +11,8 @@ interface AchievementRepository {
 
     fun getAchievementsFromApi(appIds: List<String>): Single<List<Achievement>>
 
+    fun getBestAchievementsDay(): Single<Pair<String, Int>>
+
     // API
     fun updateAchievementIntoDb(achievement: List<Achievement>)
 

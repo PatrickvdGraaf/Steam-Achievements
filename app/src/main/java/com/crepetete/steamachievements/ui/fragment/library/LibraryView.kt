@@ -6,6 +6,7 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 
 interface LibraryView : BaseView {
+    fun addGame(game: Game)
     fun updateGames(games: List<Game>)
     fun showGameActivity(appId: String, imageView: ImageView)
     fun updateAchievementsForGame(appId: String, achievements: List<Achievement>)

@@ -8,3 +8,4 @@
 /app/google-services.json
 app/libs/
 libs/
+/app/src/main/java/com/crepetete/steamachievements/utils/Constants.kt

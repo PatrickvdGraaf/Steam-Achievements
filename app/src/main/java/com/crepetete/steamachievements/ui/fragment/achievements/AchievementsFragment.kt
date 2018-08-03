@@ -36,6 +36,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
 
     private lateinit var textViewAllAchievements: TextView
     private lateinit var textViewCompletion: TextView
+    private lateinit var bestDayTextView: TextView
     private lateinit var circularProgressBar: CircularProgressBar
     private lateinit var recyclerViewLatestAchievements: RecyclerView
 
@@ -55,6 +56,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
         circularProgressBar = view.findViewById(R.id.custom_progressBar)
+        bestDayTextView = view.findViewById(R.id.best_day_textView)
 
         circularProgressBar.addListener(ValueAnimator.AnimatorUpdateListener {
             updatePercentageText(it.animatedValue as Float)
@@ -83,6 +85,10 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     override fun setCompletionPercentage(percentage: Double) {
         completionPercentage = percentage
         circularProgressBar.setProgressWithAnimation(percentage.toFloat())
+    }
+
+    override fun showBestDay(day: Pair<String,Int>) {
+        bestDayTextView.text = "${day.first}; ${day.second} achievements."
     }
 
     override fun showLatestAchievements(achievements: List<Achievement>) {

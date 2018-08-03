@@ -39,8 +39,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.getGamesFromDatabase()
-        presenter.getGamesFromApi()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -70,6 +68,9 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
         return view
     }
 
+    override fun addGame(game: Game) {
+        gamesAdapter.addGame(game)
+    }
 
     override fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
         gamesAdapter.updateAchievementsForGame(appId, achievements)

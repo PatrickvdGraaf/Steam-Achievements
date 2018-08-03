@@ -7,4 +7,5 @@ interface AchievementsView : BaseView {
     fun setTotalAchievementsInfo(achievementCount: Int)
     fun setCompletionPercentage(percentage: Double)
     fun showLatestAchievements(achievements: List<Achievement>)
+    fun showBestDay(day: Pair<String, Int>)
 }

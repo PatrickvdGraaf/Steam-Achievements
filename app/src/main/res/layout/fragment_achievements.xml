@@ -83,4 +83,29 @@
         app:layout_constraintTop_toBottomOf="@id/custom_progressBar"
         card_view:cardUseCompatPadding="true" />
 
+    <LinearLayout
+        android:id="@+id/container_recent_playtime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@+id/best_day_textView"
+            android:text="Best day:"
+            android:textColor="@color/colorTextLabel"
+            android:textSize="@dimen/text_label" />
+
+        <TextView
+            android:id="@+id/best_day_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

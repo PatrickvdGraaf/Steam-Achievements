@@ -4,11 +4,13 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.IGNORE
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import com.crepetete.steamachievements.model.Game
-import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
 interface GamesDao {
+    @Insert(onConflict = IGNORE)
+    fun insert(games: Game)
+
     @Insert(onConflict = IGNORE)
     fun insert(games: List<Game>)
 
