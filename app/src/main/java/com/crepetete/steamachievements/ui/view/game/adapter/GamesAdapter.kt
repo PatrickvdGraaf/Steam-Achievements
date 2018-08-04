@@ -17,7 +17,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 
 class GamesAdapter(private val baseView: BaseView,
@@ -90,7 +89,9 @@ class GamesAdapter(private val baseView: BaseView,
     fun updateGames(updatedGames: List<Game>) {
         allGames = updatedGames
 
+        // TODO uncomment or fix.
         sort(list = updatedGames)
+//        notifyDataSetChanged()
     }
 
     private fun getDiff(oldGames: List<Game>, newGames: List<Game>): Single<DiffUtil.DiffResult> {
@@ -122,21 +123,22 @@ class GamesAdapter(private val baseView: BaseView,
             }
         }
 
-        if (listener != null) {
-            listener.addDisposable(getDiff(getListData(), sortedGames)
-                    .subscribe({
-                        displayedGames = sortedGames
-                        it.dispatchUpdatesTo(this)
-                    }, {
-                        Timber.e(it)
-                        displayedGames = sortedGames
-                        notifyDataSetChanged()
-                    }))
-        } else {
+        // TODO working with this listener causes issues when inserting a lot of games at once.
+//        if (listener != null) {
+//            listener.addDisposable(getDiff(getListData(), sortedGames)
+//                    .subscribe({
+//                        displayedGames = sortedGames
+//                        it.dispatchUpdatesTo(this)
+//                    }, {
+//                        Timber.e(it)
+//                        displayedGames = sortedGames
+//                        notifyDataSetChanged()
+//                    }))
+//        } else {
             displayedGames = sortedGames
             notifyDataSetChanged()
-        }
-        notifyDataSetChanged()
+//        }
+//        notifyDataSetChanged()
     }
 
     interface Listener {

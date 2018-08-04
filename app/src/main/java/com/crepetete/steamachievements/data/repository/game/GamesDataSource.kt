@@ -17,6 +17,7 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                                           private val userRepository: UserRepository,
                                           private val achievementsRepository: AchievementRepository)
     : GamesRepository {
+
     override fun getGameIds(): Single<List<String>> {
         return dao.getGameIds()
     }
@@ -25,10 +26,25 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         return dao.getGamesForUser()
     }
 
+    /**
+     * Inserts a single Game in the database.
+     */
     override fun insert(game: Game) {
         dao.insert(game)
     }
 
+    /**
+     * Inserts a list of Games into the database.
+     */
+    override fun insert(games: List<Game>) {
+        dao.insert(games)
+    }
+
+    /**
+     * Retrieves all owned games from API.
+     * It also retrieves the Achievements for each games from the API before the list is returned.
+     * This is because Achievements are retrieved in a separate call.
+     */
     override fun getGamesFromApi(): Single<List<Game>> {
         val userId = userRepository.getUserId()
         return api.getGamesForUser(userId)

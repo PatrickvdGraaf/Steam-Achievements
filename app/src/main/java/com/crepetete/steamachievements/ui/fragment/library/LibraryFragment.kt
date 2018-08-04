@@ -82,7 +82,10 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
 
     override fun refresh() {
         showLoading()
-        presenter.getGamesFromApi()
+
+        // TODO swap.
+//        presenter.getGamesFromApi()
+        presenter.getGameIdsFromDb()
     }
 
     override fun updateGames(games: List<Game>) {

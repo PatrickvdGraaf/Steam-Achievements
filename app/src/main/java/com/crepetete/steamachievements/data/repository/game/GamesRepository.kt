@@ -11,4 +11,5 @@ interface GamesRepository {
     fun getGamesFromApi(): Single<List<Game>>
     fun getGamesFromDb(): Single<List<Game>>
     fun insert(game: Game)
+    fun insert(games: List<Game>)
 }
