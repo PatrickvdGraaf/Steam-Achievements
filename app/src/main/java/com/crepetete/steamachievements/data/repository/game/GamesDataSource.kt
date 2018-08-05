@@ -4,7 +4,6 @@ import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.data.repository.user.UserRepository
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -18,10 +17,17 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                                           private val achievementsRepository: AchievementRepository)
     : GamesRepository {
 
+
+    /**
+     * Retrieves a list of all Game IDs in the database.
+     */
     override fun getGameIds(): Single<List<String>> {
         return dao.getGameIds()
     }
 
+    /**
+     * Retrieves a list of all Games in the database.
+     */
     override fun getGamesFromDb(): Single<List<Game>> {
         return dao.getGamesForUser()
     }
@@ -52,26 +58,17 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                     it.response.games
                 }
                 .flatMap {
-                    getAchievementsForGames(it)
+                    addAchievementsToGamesFromApi(it)
                 }
                 .doAfterSuccess {
                     insertOrUpdateGames(it, userId)
                 }
     }
 
-    fun getAchievementsForGame(game: Game): Single<List<Achievement>> {
-        return achievementsRepository.getAchievementsFromApi(listOf(game.appId))
-    }
-
-    private fun getAchievementsForGames(games: List<Game>): Single<List<Game>> {
+    private fun addAchievementsToGamesFromApi(games: List<Game>): Single<List<Game>> {
         val gameIds = games.map { game -> game.appId }
 
-        val s = Single.concat(
-                achievementsRepository.getAchievementsFromApi(gameIds),
-                achievementsRepository.getAchievementsFromDb(gameIds))
-                .firstOrError()
-
-        return s.map { achievements ->
+        return achievementsRepository.getAchievementsFromApi(gameIds).map { achievements ->
             // Add achievements to the games in the list.
             if (achievements.isNotEmpty()) {
                 games.forEach { game ->
@@ -83,17 +80,17 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
                 }
             }
             games
-        }.map {
+        }.map { updatedGames ->
             // Let other classes know that we tried to set the achievements (applies to
             // games without achievements, clears loading status for ViewHolders for
             // example.
-            games.forEach {
+            updatedGames.forEach {
                 if (!it.achievementsWereAdded()) {
                     it.setAchievementsAdded()
                 }
                 it.userId = userRepository.getUserId()
             }
-            games
+            updatedGames
         }
     }
 
@@ -132,8 +129,16 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         })
     }
 
-    override fun getGame(appId: String): Single<Game> {
+    override fun getGameFromDb(appId: String): Single<Game> {
+        var game: Game? = null
         return dao.getGame(appId)
+                .flatMap {
+                    game = it
+                    achievementsRepository.getAchievementsFromDb(it.appId)
+                }.map {
+                    game?.setAchievements(it)
+                    game
+                }
     }
 
     override fun updateGame(game: Game) {

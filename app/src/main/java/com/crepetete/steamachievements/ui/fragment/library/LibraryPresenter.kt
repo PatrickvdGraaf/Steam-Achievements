@@ -4,7 +4,6 @@ import android.widget.ImageView
 import com.crepetete.steamachievements.base.BasePresenter
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.data.repository.game.GamesRepository
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
 import io.reactivex.Single
@@ -24,12 +23,16 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
     @Inject
     lateinit var achievementsRepository: AchievementRepository
 
+    /**
+     * When the view is created, we first retreive all games from the Database. This call will
+     * automatically update the games via an API call when all or zero games we're retrieved.
+     */
     override fun onViewCreated() {
         getGameIdsFromDb()
     }
 
     /**
-     * Retrieves a list of all Game's appIds, which will be used to make a getGame call for each id
+     * Retrieves a list of all Game's appIds, which will be used to make a getGameFromDb call for each id
      * in the list, unless the list is empty. Then if will skip to retrieving all games from the API
      * for an update.
      *
@@ -58,16 +61,17 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 }))
     }
 
+    /**
+     * Retrieves a single game from the database.
+     *
+     * @param appId ID of the requested Game.
+     */
     private fun getGameFromDb(appId: String) {
-        disposable.add(gamesRepository.getGame(appId)
+        disposable.add(gamesRepository.getGameFromDb(appId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ game ->
                     view.addGame(game)
-
-                    // TODO uncomment
-                    getAchievementsFromDb(game.appId)
-
                 }, {
                     Timber.e(it)
                 }))
@@ -108,6 +112,9 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 }))
     }
 
+    /**
+     * Inserts a list of games into the Room database.
+     */
     private fun insertGamesInDb(games: List<Game>) {
         disposable.add(Single.fromCallable { gamesRepository.insert(games) }
                 .subscribeOn(Schedulers.io())
@@ -119,40 +126,10 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 }))
     }
 
-    private fun getAchievementsFromDb(appId: String) {
-        disposable.add(achievementsRepository.getAchievementsFromDb(appId)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    view.updateAchievementsForGame(appId, it)
-                }, {
-                    Timber.e(it)
-                }))
-    }
-
-    private fun getAchievementsForGame(appId: String) {
-        disposable.add(achievementsRepository.getAchievementsFromApi(appId)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    view.updateAchievementsForGame(appId, it)
-                    updateAchievements(appId, it)
-                }, {
-                    Timber.e(it)
-                }))
-    }
-
-    private fun updateAchievements(appId: String, achievements: List<Achievement>) {
-        disposable.add(Single
-                .fromCallable {
-                    achievementsRepository.insertAchievementsIntoDb(achievements,
-                            appId)
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe())
-    }
-
+    /**
+     * Listener method for the [GamesAdapter.Listener]. Makes the view open a new [GameActivity] for
+     * the selected [Game].
+     */
     override fun onGameSelected(game: Game, imageView: ImageView) {
         view.showGameActivity(game.appId, imageView)
     }

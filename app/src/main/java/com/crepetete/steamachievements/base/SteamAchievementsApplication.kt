@@ -22,20 +22,13 @@ class SteamAchievementsApplication : Application() {
 
     /** A tree which logs important information for crash reporting.  */
     private class CrashReportingTree : Timber.Tree() {
-        override fun log(priority: Int, tag: String?, @NonNull message: String, t: Throwable?) {
+        override fun log(priority: Int, tag: String?, @NonNull message: String, throwable: Throwable?) {
             if (priority == Log.VERBOSE || priority == Log.DEBUG) {
                 return
             }
 
-            SaCrashLibrary.log(priority, tag ?: "", message)
-
-            if (t != null) {
-                if (priority == Log.ERROR) {
-                    SaCrashLibrary.logError(t)
-                } else if (priority == Log.WARN) {
-                    SaCrashLibrary.logWarning(t)
-                }
-            }
+            val t = throwable ?: Exception(message)
+            SaCrashLibrary.log(priority, tag ?: "", message, t)
         }
     }
 }

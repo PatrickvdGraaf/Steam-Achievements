@@ -22,7 +22,7 @@ class GamePresenter(gameView: GameView, private val gameId: String) : BasePresen
 
     private fun getGameFromDb() {
         view.showLoading()
-        disposable.add(gamesRepository.getGame(gameId)
+        disposable.add(gamesRepository.getGameFromDb(gameId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

@@ -107,7 +107,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
     }
 
     /**
-     * Inserts a list of games into the database.
+     * A list of games have been received from the presenter and need to be updated in our adapter.
      */
     override fun updateGames(games: List<Game>) {
         Timber.d("Updating games.")
