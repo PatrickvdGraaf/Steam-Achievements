@@ -102,7 +102,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
      * automatically calls the API for an update.
      */
     override fun refresh() {
-        showLoading()
         presenter.getGameIdsFromDb()
     }
 
