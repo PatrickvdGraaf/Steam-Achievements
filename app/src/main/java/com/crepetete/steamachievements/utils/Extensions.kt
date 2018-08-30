@@ -18,6 +18,14 @@ import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
+import io.reactivex.Single
+import io.reactivex.annotations.CheckReturnValue
+import io.reactivex.annotations.SchedulerSupport
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
+import io.reactivex.internal.functions.ObjectHelper
+import io.reactivex.internal.observers.ConsumerSingleObserver
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -169,4 +177,19 @@ fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: 
 
 fun Date.getDaysFromNow(): Long {
     return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
+}
+
+@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.NONE)
+fun Disposable.subscribe(onSuccess: Consumer<Any>): Disposable {
+    val onErrorConsumer = Consumer<Throwable> {
+        Timber.e(it)
+    }
+
+    ObjectHelper.requireNonNull<Consumer<Any>>(onSuccess, "onSuccess is null")
+    ObjectHelper.requireNonNull(onErrorConsumer, "onError is null")
+
+    val s = ConsumerSingleObserver<Any>(onSuccess, onErrorConsumer)
+    Single.subscribe(s)
+    return s
 }
