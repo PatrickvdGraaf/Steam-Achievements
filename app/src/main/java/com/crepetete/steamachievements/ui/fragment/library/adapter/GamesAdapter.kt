@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseView
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.utils.sortByCompletion
 import com.crepetete.steamachievements.utils.sortByName
@@ -54,6 +53,8 @@ class GamesAdapter(private val baseView: BaseView,
     override fun onBindViewHolder(holder: GameViewHolder, position: Int) {
         val game = getListData()[position]
         holder.bind(game, listener)
+
+        updateAchievementsForGame(game.appId)
     }
 
     fun updateSearchQuery(query: String) {
@@ -74,6 +75,10 @@ class GamesAdapter(private val baseView: BaseView,
         allGames = updatedGames
 
         sort(list = updatedGames)
+    }
+
+    private fun updateAchievementsForGame(appId: String) {
+//        listener?.updateAchievementsForGame(appId)
     }
 
     private fun getDiff(oldGames: List<Game>, newGames: List<Game>): Single<DiffUtil.DiffResult> {
@@ -125,6 +130,7 @@ class GamesAdapter(private val baseView: BaseView,
     interface Listener {
         fun onGameSelected(game: Game)
         fun updateGame(game: Game)
+        fun updateAchievementsForGame(appId: String)
         fun addDisposable(task: Disposable)
     }
 }

@@ -32,7 +32,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
         disposable.add(gamesRepository.getGameIds()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                    if (it.isEmpty()){
+                    if (it.isEmpty()) {
                         getGamesFromApi()
                     } else {
                         it.forEach {
@@ -45,14 +45,13 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                                         getAchievementsFromDb(game.appId)
 
                                     }, {
-                                        Timber.e(it)
-                                        view.showError("Error while loading games.")
+                                        onError(it)
                                     }))
                             getGamesFromApi()
                         }
                     }
                 }, {
-                    Timber.e(it)
+                    onError(it)
                 }))
     }
 
@@ -65,12 +64,17 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                     view.updateGames(it)
                     view.hideLoading()
                 }, {
-                    Timber.e(it)
-                    view.showError("Error while loading games.")
+                    onError(it)
                 }))
     }
 
-    private fun insertGame(game: Game){
+    private fun onError(throwable: Throwable? = null,
+                        message: String = "Error while loading games.") {
+        Timber.e(throwable)
+        view.showError(message)
+    }
+
+    private fun insertGame(game: Game) {
         gamesRepository.insert(game)
     }
 
@@ -81,7 +85,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 .subscribe({
                     view.updateAchievementsForGame(appId, it)
                 }, {
-                    Timber.e(it)
+                    onError(it, "Error while getting achievements from DB")
                 }))
     }
 
@@ -93,7 +97,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                     view.updateAchievementsForGame(appId, it)
                     updateAchievements(appId, it)
                 }, {
-                    Timber.e(it)
+                    onError(it, "Error while getting achievements from DB")
                 }))
     }
 

@@ -65,15 +65,15 @@
                 android:layout_height="wrap_content"
                 android:text="Playtime"
                 android:textColor="@color/colorAccent"
-                android:textSize="@dimen/text_header"/>
+                android:textSize="@dimen/text_header" />
 
             <LinearLayout
                 android:id="@+id/container_recent_playtime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -118,13 +118,13 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="16dp"
                 android:id="@+id/container_achievements_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_sort_achievements"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_total_playtime">
 
                 <TextView
@@ -132,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:text="Achievements"
                     android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/text_header"/>
+                    android:textSize="@dimen/text_header" />
 
                 <TextView
                     android:id="@+id/sorting_textview"
@@ -140,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:text="Sorted by: Achieved"
                     android:textColor="@color/colorTextLabel"
-                    android:textSize="@dimen/text_label"/>
+                    android:textSize="@dimen/text_label" />
             </LinearLayout>
 
             <Button
@@ -148,14 +148,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/transparant"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:text="@string/action_sort"
                 android:textColor="@color/colorAccent"
                 android:textSize="14sp"
-                android:foreground="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="@+id/container_achievements_header"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/container_achievements_header" />
 
             <android.support.v7.widget.RecyclerView
@@ -169,6 +169,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/container_achievements_header"
                 card_view:cardUseCompatPadding="true" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:labelFor="@+id/graph_textView"
+                android:text="Achievements over time"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="@dimen/text_label"
+                app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph"
+                android:layout_width="match_parent"
+                android:layout_height="200dip"
+                app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
