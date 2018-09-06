@@ -100,6 +100,8 @@ data class Game(
 
     private fun getCompletedAchievements() = achievements?.filter { it.achieved } ?: listOf()
 
+    fun hasRecentPlaytime() = recentPlayTime > 0
+
     fun isCompleted() = getPercentageCompleted() >= 100L
 
     fun shouldUpdate(): Boolean {

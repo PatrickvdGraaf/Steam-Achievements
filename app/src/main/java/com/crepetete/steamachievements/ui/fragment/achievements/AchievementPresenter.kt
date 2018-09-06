@@ -9,16 +9,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
 
-class AchievementPresenter(achievementsView: AchievementsView)
+class AchievementPresenter(achievementsView: AchievementsView,
+                           private val achievementsRepository: AchievementRepository,
+                           private val gamesRepository: GamesRepository)
     : BasePresenter<AchievementsView>(achievementsView) {
-    @Inject
-    lateinit var achievementsRepository: AchievementRepository
-
-    @Inject
-    lateinit var gamesRepository: GamesRepository
-
     /**
      * Loads all achievements from the database once the view is created. It also starts the
      * calculation to determine the users best achievements day.

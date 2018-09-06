@@ -11,18 +11,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import javax.inject.Inject
 
 
-class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(libraryView),
+class LibraryPresenter(libraryView: LibraryView,
+                       private val gamesRepository: GamesRepository,
+                       private val achievementsRepository: AchievementRepository)
+    : BasePresenter<LibraryView>(libraryView),
         GamesAdapter.Listener {
-
-    @Inject
-    lateinit var gamesRepository: GamesRepository
-
-    @Inject
-    lateinit var achievementsRepository: AchievementRepository
-
     /**
      * When the view is created, we first retreive all games from the Database. This call will
      * automatically update the games via an API call when all or zero games we're retrieved.
@@ -107,7 +102,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     showDebugToast("Inserted game in the database.")
-                },{
+                }, {
                     Timber.e(it)
                 }))
     }
@@ -121,7 +116,7 @@ class LibraryPresenter(libraryView: LibraryView) : BasePresenter<LibraryView>(li
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     showDebugToast("Inserted games in the database.")
-                },{
+                }, {
                     Timber.e(it)
                 }))
     }

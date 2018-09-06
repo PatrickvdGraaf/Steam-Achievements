@@ -103,10 +103,6 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         achievementsAdapter.setAchievements(achievements)
     }
 
-    override fun instantiatePresenter(): AchievementPresenter {
-        return AchievementPresenter(this)
-    }
-
     /**
      * Updates the percentage text in the center of the circular ProgressBar
      *

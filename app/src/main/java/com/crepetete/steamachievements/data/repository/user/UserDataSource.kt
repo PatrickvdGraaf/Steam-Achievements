@@ -1,11 +1,9 @@
 package com.crepetete.steamachievements.data.repository.user
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.PlayerDao
 import com.crepetete.steamachievements.model.Player
-import com.crepetete.steamachievements.utils.isConnectedToInternet
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,8 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class UserDataSource @Inject constructor(private val context: Context,
-                                         private val sharedPreferences: SharedPreferences,
+class UserDataSource @Inject constructor(private val sharedPreferences: SharedPreferences,
                                          private val api: SteamApiService,
                                          private val dao: PlayerDao)
     : UserRepository {
@@ -27,11 +24,7 @@ class UserDataSource @Inject constructor(private val context: Context,
     }
 
     override fun getPlayer(userId: String): Observable<Player> {
-        val observable = if (context.isConnectedToInternet()) {
-            Observable.concat(getPlayerFromDb(userId), getPlayerFromApi(userId))
-        } else {
-            getPlayerFromDb(userId)
-        }
+        val observable = Observable.concat(getPlayerFromDb(userId), getPlayerFromApi(userId))
         return observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

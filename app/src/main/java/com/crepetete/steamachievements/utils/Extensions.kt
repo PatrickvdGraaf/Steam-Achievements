@@ -18,7 +18,6 @@ import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
-import io.reactivex.Single
 import io.reactivex.annotations.CheckReturnValue
 import io.reactivex.annotations.SchedulerSupport
 import io.reactivex.disposables.Disposable
@@ -105,8 +104,8 @@ fun List<Achievement>.sortByRarity(): List<Achievement> {
 fun Long.toHours(context: Context? = null): String {
     val hours = this / 60
     val minutes = this % 60
-    var hoursAbbr = ""
-    var minAbbr = ""
+    var hoursAbbr = "h"
+    var minAbbr = "m"
     if (context != null) {
         hoursAbbr = context.getString(R.string.abbr_hours)
         minAbbr = context.getString(R.string.abbr_minutes)
@@ -177,19 +176,4 @@ fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: 
 
 fun Date.getDaysFromNow(): Long {
     return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
-}
-
-@CheckReturnValue
-@SchedulerSupport(SchedulerSupport.NONE)
-fun Disposable.subscribe(onSuccess: Consumer<Any>): Disposable {
-    val onErrorConsumer = Consumer<Throwable> {
-        Timber.e(it)
-    }
-
-    ObjectHelper.requireNonNull<Consumer<Any>>(onSuccess, "onSuccess is null")
-    ObjectHelper.requireNonNull(onErrorConsumer, "onError is null")
-
-    val s = ConsumerSingleObserver<Any>(onSuccess, onErrorConsumer)
-    Single.subscribe(s)
-    return s
 }

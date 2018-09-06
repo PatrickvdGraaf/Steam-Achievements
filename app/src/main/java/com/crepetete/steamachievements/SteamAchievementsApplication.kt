@@ -1,17 +1,25 @@
-package com.crepetete.steamachievements.base
+package com.crepetete.steamachievements
 
+import android.app.Activity
 import android.app.Application
 import android.support.annotation.NonNull
 import android.util.Log
-import com.crepetete.steamachievements.BuildConfig
+import com.crepetete.steamachievements.injection.DaggerAppComponent
 import com.crepetete.steamachievements.utils.SaCrashLibrary
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import javax.inject.Inject
 
 
-class SteamAchievementsApplication : Application() {
+class SteamAchievementsApplication : Application(), HasActivityInjector {
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+
     override fun onCreate() {
         super.onCreate()
+        DaggerAppComponent.builder().application(this).build().inject(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
@@ -19,6 +27,8 @@ class SteamAchievementsApplication : Application() {
             Timber.plant(CrashReportingTree())
         }
     }
+
+    override fun activityInjector() = dispatchingAndroidInjector
 
     /** A tree which logs important information for crash reporting.  */
     private class CrashReportingTree : Timber.Tree() {

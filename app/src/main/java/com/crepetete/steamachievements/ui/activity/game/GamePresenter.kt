@@ -6,21 +6,29 @@ import com.crepetete.steamachievements.data.repository.game.GamesRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import javax.inject.Inject
 
-class GamePresenter(gameView: GameView, private val gameId: String) : BasePresenter<GameView>(gameView) {
-    @Inject
-    lateinit var gamesRepository: GamesRepository
+class GamePresenter(gameView: GameView,
+                    private val gamesRepository: GamesRepository,
+                    private val achievementsRepository: AchievementRepository)
+    : BasePresenter<GameView>(gameView) {
 
-    @Inject
-    lateinit var achievementsRepository: AchievementRepository
+    private var _gameId: String? = null
 
     override fun onViewCreated() {
-        getGameFromDb()
-        getAchievementsForGame()
+        val id = _gameId
+        if (id != null) {
+            getGameFromDb(id)
+            getAchievementsForGame(id)
+        }
     }
 
-    private fun getGameFromDb() {
+    fun setGameId(gameId: String) {
+        _gameId = gameId
+        getGameFromDb(gameId)
+        getAchievementsForGame(gameId)
+    }
+
+    private fun getGameFromDb(gameId: String) {
         view.showLoading()
         disposable.add(gamesRepository.getGameFromDb(gameId)
                 .subscribeOn(Schedulers.io())
@@ -34,13 +42,12 @@ class GamePresenter(gameView: GameView, private val gameId: String) : BasePresen
                 }))
     }
 
-    private fun getAchievementsForGame(){
+    private fun getAchievementsForGame(gameId: String) {
         disposable.add(achievementsRepository.getAchievementsFromApi(listOf(gameId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     view.setAchievements(it)
-
                 }, {
                     Timber.e(it)
                 }))
