@@ -14,11 +14,9 @@ import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
 import com.crepetete.steamachievements.utils.TEST_USER_ID
 import timber.log.Timber
-import javax.inject.Inject
 
-class LoginPresenter(private val loginView: LoginView) : BasePresenter<LoginView>(loginView) {
-    @Inject
-    lateinit var userRepository: UserRepository
+class LoginPresenter(private val loginView: LoginView,
+                     private val userRepository: UserRepository) : BasePresenter<LoginView>(loginView) {
 
     private val realm = loginView.getContext().getString(R.string.app_name)
 

@@ -177,7 +177,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
         Single.fromCallable { dao.update(achievement) }
     }
 
-    override fun getAllAchievements(): Single<List<Achievement>> {
+    override fun getAllAchievementsFromDb(): Single<List<Achievement>> {
         return dao.getAchievements()
     }
 }

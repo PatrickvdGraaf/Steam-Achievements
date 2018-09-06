@@ -5,11 +5,9 @@ import com.crepetete.steamachievements.data.repository.user.UserRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import javax.inject.Inject
 
-class ProfilePresenter(profileView: ProfileView) : BasePresenter<ProfileView>(profileView) {
-    @Inject
-    lateinit var userRepository: UserRepository
+class ProfilePresenter(profileView: ProfileView, private val userRepository: UserRepository)
+    : BasePresenter<ProfileView>(profileView) {
 
     override fun onViewCreated() {
         loadCurrentUser()

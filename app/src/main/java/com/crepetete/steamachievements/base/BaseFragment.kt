@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.View
 import android.widget.Toast
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import dagger.android.support.AndroidSupportInjection
 
 abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, Fragment() {
     protected lateinit var presenter: P
@@ -16,7 +17,11 @@ abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, Fragment() 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter = instantiatePresenter()
+    }
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     @CallSuper
@@ -42,11 +47,6 @@ abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, Fragment() 
     override fun hideLoading() {
         loadingIndicator?.hideLoading()
     }
-
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    protected abstract fun instantiatePresenter(): P
 
     override fun getContext(): Context {
         return activity!!

@@ -1,10 +1,14 @@
 package com.crepetete.steamachievements.ui.activity.main
 
 import android.app.SearchManager
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.IdRes
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
@@ -16,11 +20,25 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
+import com.crepetete.steamachievements.ui.fragment.library.NavbarInteractionListener
+import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
+import javax.inject.Inject
 
 
-class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
+class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
+        HasSupportFragmentInjector, BottomNavigationView.OnNavigationItemSelectedListener {
+
+    @Inject
+    lateinit var presenter: MainPresenter
+
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+
     companion object {
         private const val INTENT_USER_ID = "user_id"
 
@@ -31,11 +49,20 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         }
     }
 
+    @IdRes
+    private var selectedNavItem = R.id.menu_library
+
+    private var currentTag = LibraryFragment.TAG
+
+    private var navBarListener: NavbarInteractionListener? = null
+
+    @IdRes
+    private val containerId: Int = R.id.fragment_container
+    private val fragmentManager: FragmentManager = supportFragmentManager
+
     private lateinit var loadingIndicator: ProgressBar
 
     private lateinit var userId: String
-
-    private var fragmentTag = LibraryFragment.TAG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +75,31 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
             restoredId!!
         }
 
+        if (userId.isBlank()) {
+            openLoginActivity()
+            return
+        }
+
         loadingIndicator = findViewById(R.id.progressBar)
         handleIntent(intent)
 
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)
         navigation.selectedItemId = R.id.menu_library
-        navigation.setOnNavigationItemSelectedListener(presenter)
+        navigation.setOnNavigationItemSelectedListener(this)
+
+        val fragment: LibraryFragment = LibraryFragment.getInstance(userId, this)
+        fragmentManager.beginTransaction()
+                .replace(containerId, fragment, LibraryFragment.TAG)
+                .addToBackStack(null)
+                .commit()
+        navBarListener = fragment
+
+        presenter.player.observe(this, Observer {
+
+        })
 
         presenter.onViewCreated()
+        presenter.setPlayerId(userId)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -84,7 +128,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
             val query = intent.getStringExtra(SearchManager.QUERY)
-            presenter.onSearchQueryChanged(query)
+            navBarListener?.onSearchQueryUpdate(query)
         }
     }
 
@@ -101,13 +145,13 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                presenter.onSearchQueryChanged(newText)
+                navBarListener?.onSearchQueryUpdate(newText)
                 return true
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
+                navBarListener?.onSearchQueryUpdate(query)
                 searchView.clearFocus()
-                presenter.onSearchQueryChanged(query)
                 return false
             }
         })
@@ -117,15 +161,15 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menuSortCompletion -> {
-            presenter.onSortingMerhodChanged(GamesAdapter.COMPLETION)
+            navBarListener?.onSortingMethodChanged(GamesAdapter.COMPLETION)
             true
         }
         R.id.menuSortName -> {
-            presenter.onSortingMerhodChanged(GamesAdapter.NAME)
+            navBarListener?.onSortingMethodChanged(GamesAdapter.NAME)
             true
         }
         R.id.menuSortPlaytime -> {
-            presenter.onSortingMerhodChanged(GamesAdapter.PLAYTIME)
+            navBarListener?.onSortingMethodChanged(GamesAdapter.PLAYTIME)
             true
         }
         R.id.action_refresh -> {
@@ -135,6 +179,62 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        var fragment: Fragment? = null
+        val transaction = fragmentManager.beginTransaction()
+
+        selectedNavItem = item.itemId
+        when (selectedNavItem) {
+            R.id.menu_profile -> {
+                currentTag = ProfileFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
+                if (fragment == null) {
+                    fragment = ProfileFragment.getInstance(userId, this)
+                }
+            }
+            R.id.menu_library -> {
+                currentTag = LibraryFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
+                if (fragment == null) {
+                    fragment = LibraryFragment.getInstance(userId, this)
+                }
+            }
+            R.id.menu_achievements -> {
+                currentTag = AchievementsFragment.TAG
+                fragment = fragmentManager.findFragmentByTag(currentTag)
+                if (fragment == null) {
+                    fragment = AchievementsFragment.getInstance(userId, this)
+                }
+            }
+        }
+
+        navBarListener = if (fragment is NavbarInteractionListener) {
+            fragment
+        } else {
+            null
+        }
+
+        updateTitle()
+
+        transaction.replace(containerId, fragment, currentTag)
+                .addToBackStack(null)
+                .commit()
+        return true
+    }
+
+    private fun updateTitle() {
+        when (selectedNavItem) {
+            R.id.menu_profile -> setTitle("Profile")
+            R.id.menu_achievements -> setTitle("${presenter.player.value?.persona
+                    ?: "players"}'s Achievements")
+            else -> setTitle("${presenter.player.value?.persona ?: "players"}'s Library")
+        }
+    }
+
+    override fun getCurrentFragment(): Fragment? {
+        return fragmentManager.findFragmentByTag(currentTag)
     }
 
     override fun showPlayerDetails(persona: String) {
@@ -172,19 +272,9 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator {
         super.onDestroy()
     }
 
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    override fun instantiatePresenter(): MainPresenter {
-        val intentUserId = intent.getStringExtra(INTENT_USER_ID)
-        if (intentUserId.isBlank()) {
-            openLoginActivity()
-        }
-        return MainPresenter(this, R.id.fragment_container, supportFragmentManager,
-                intentUserId)
-    }
-
     override fun openLoginActivity() {
         startActivity(LoginActivity.getInstance(this))
     }
+
+    override fun supportFragmentInjector() = dispatchingAndroidInjector
 }

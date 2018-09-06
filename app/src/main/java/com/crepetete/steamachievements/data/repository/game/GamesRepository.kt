@@ -7,8 +7,9 @@ interface GamesRepository {
     // Database
     fun updateGame(game: Game)
     fun getGameIds(): Single<List<String>>
-    fun getGame(appId: String): Single<Game>
+    fun getGameFromDb(appId: String): Single<Game>
     fun getGamesFromApi(): Single<List<Game>>
     fun getGamesFromDb(): Single<List<Game>>
     fun insert(game: Game)
+    fun insert(games: List<Game>)
 }

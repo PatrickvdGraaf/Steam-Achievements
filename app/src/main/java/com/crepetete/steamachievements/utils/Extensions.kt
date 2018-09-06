@@ -18,6 +18,13 @@ import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
+import io.reactivex.annotations.CheckReturnValue
+import io.reactivex.annotations.SchedulerSupport
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
+import io.reactivex.internal.functions.ObjectHelper
+import io.reactivex.internal.observers.ConsumerSingleObserver
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -97,8 +104,8 @@ fun List<Achievement>.sortByRarity(): List<Achievement> {
 fun Long.toHours(context: Context? = null): String {
     val hours = this / 60
     val minutes = this % 60
-    var hoursAbbr = ""
-    var minAbbr = ""
+    var hoursAbbr = "h"
+    var minAbbr = "m"
     if (context != null) {
         hoursAbbr = context.getString(R.string.abbr_hours)
         minAbbr = context.getString(R.string.abbr_minutes)

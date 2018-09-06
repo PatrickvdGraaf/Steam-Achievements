@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.fragment.achievements
 
-
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,7 +16,6 @@ import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import java.text.DecimalFormat
-
 
 class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsView {
     companion object {
@@ -63,11 +61,9 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         })
 
         recyclerViewLatestAchievements = view.findViewById(R.id.latest_achievements_recyclerview)
-
-        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
-                false)
-
         recyclerViewLatestAchievements.adapter = achievementsAdapter
+        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
+                LinearLayoutManager.HORIZONTAL, false)
 
         if (achievementCount > 0) {
             setTotalAchievementsInfo(achievementCount)
@@ -77,28 +73,41 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         return view
     }
 
+    /**
+     * Shows the total amount of achievements.
+     */
     override fun setTotalAchievementsInfo(achievementCount: Int) {
         textViewAllAchievements.text = "$achievementCount"
         this.achievementCount = achievementCount
     }
 
+    /**
+     * Shows total completion percentage.
+     */
     override fun setCompletionPercentage(percentage: Double) {
         completionPercentage = percentage
         circularProgressBar.setProgressWithAnimation(percentage.toFloat())
     }
 
-    override fun showBestDay(day: Pair<String,Int>) {
+    /**
+     * Shows the date and amount of the day on which the user achieved most of his achievements.
+     */
+    override fun showBestDay(day: Pair<String, Int>) {
         bestDayTextView.text = "${day.first}; ${day.second} achievements."
     }
 
+    /**
+     * Shows the users latest achievements.
+     */
     override fun showLatestAchievements(achievements: List<Achievement>) {
         achievementsAdapter.setAchievements(achievements)
     }
 
-    override fun instantiatePresenter(): AchievementPresenter {
-        return AchievementPresenter(this)
-    }
-
+    /**
+     * Updates the percentage text in the center of the circular ProgressBar
+     *
+     * TODO make this a custom view.
+     */
     private fun updatePercentageText(percentage: Float) {
         val pattern = if (percentage < 100f) {
             "#,###0.000"

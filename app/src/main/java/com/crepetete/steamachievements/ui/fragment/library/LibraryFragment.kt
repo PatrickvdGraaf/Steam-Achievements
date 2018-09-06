@@ -41,15 +41,19 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_library, container, false)
 
+        // Initialise ListView and Adapter.
         val listView = view.findViewById<RecyclerView>(R.id.list_games)
         listView.adapter = gamesAdapter
         listView.layoutManager = LinearLayoutManager(context)
 
+
+        // Set up FAB to scroll up.
         scrollToTopButton = view.findViewById(R.id.fab)
         scrollToTopButton.setOnClickListener {
             listView.smoothScrollToPosition(0)
         }
 
+        // Hides/ shows the FAB if the user scrolls.
         listView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -64,32 +68,62 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
         return view
     }
 
+    /**
+     * Retrieved a new game from the presenter that needs to be added to the ListView.
+     */
     override fun addGame(game: Game) {
         gamesAdapter.addGame(game)
     }
 
+    /**
+     * Retrieved a list of achievements from the presenter, which need to be updated in the Adapter
+     * for a specific game.
+     *
+     * @param appId ID of the game that own the achievements
+     * @param achievements list of achievements for said game.
+     */
     override fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
         gamesAdapter.updateAchievementsForGame(appId, achievements)
     }
 
+    /**
+     * Opens the GameActivity.
+     *
+     * @param appId ID for the Game which needs to be shown.
+     * @param imageView Banner which displays the game's banner-image in the ListView, used to
+     * animate to the next view.
+     */
     override fun showGameActivity(appId: String, imageView: ImageView) {
         activity?.startGameActivity(appId, imageView)
     }
 
+    /**
+     * Refreshes the list of games by first refreshing the games from the database, and then
+     * automatically calls the API for an update.
+     */
     override fun refresh() {
-        showLoading()
-        presenter.getGamesFromApi()
+        presenter.getGameIdsFromDb()
     }
 
+    /**
+     * A list of games have been received from the presenter and need to be updated in our adapter.
+     */
     override fun updateGames(games: List<Game>) {
         Timber.d("Updating games.")
         gamesAdapter.updateGames(games)
     }
 
+    /**
+     * Listener method for an updated search query. Updates the displayed games in the adapter.
+     */
     override fun onSearchQueryUpdate(query: String) {
         gamesAdapter.updateSearchQuery(query)
     }
 
+    /**
+     * Listener method for the sorting button of this fragments Activity, Updates the adapter with a
+     * new sorting method.
+     */
     override fun onSortingMethodChanged(sortingMethod: Int) {
         gamesAdapter.sort(sortingMethod)
     }

@@ -7,7 +7,7 @@ interface AchievementRepository {
     // Database
     fun insertAchievementsIntoDb(achievements: List<Achievement>, appId: String)
 
-    fun getAllAchievements(): Single<List<Achievement>>
+    fun getAllAchievementsFromDb(): Single<List<Achievement>>
 
     fun getAchievementsFromApi(appIds: List<String>): Single<List<Achievement>>
 

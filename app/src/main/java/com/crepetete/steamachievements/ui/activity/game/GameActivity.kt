@@ -2,7 +2,11 @@ package com.crepetete.steamachievements.ui.activity.game
 
 import android.annotation.TargetApi
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -26,6 +30,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
+import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
@@ -40,8 +45,18 @@ fun Activity.startGameActivity(appId: String, imageView: ImageView) {
 }
 
 class GameActivity : BaseActivity<GamePresenter>(), GameView {
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun showError(error: String) {
+
+    }
+
+    private lateinit var viewModel: GameViewModel
+
     private val banner: ImageView by lazy { findViewById<ImageView>(R.id.banner) }
-    private val toolBar: Toolbar by lazy { findViewById<Toolbar>(R.id.main_toolbar) }
+    private val toolBar: Toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
     private val collapsingToolbarLayout by lazy { findViewById<CollapsingToolbarLayout>(R.id.main_collapsing) }
 
     // Recently Played
@@ -59,27 +74,39 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
+
+        // Inflate view and obtain an instance of the binding class.
+        val binding: ActivityGameBinding = DataBindingUtil.setContentView(this,
+                R.layout.activity_game)
+
+        // Specify the current activity as the lifecycle owner.
+        binding.setLifecycleOwner(this)
+
+        setContentView(binding.root)
         setSupportActionBar(toolBar)
+
+        val appId = intent.getStringExtra(INTENT_GAME_ID)
+
+        viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
+        viewModel.setAppId(appId)
+        viewModel.game.observe(this, Observer { game ->
+            setGameInfo(game)
+        })
 
         sortAchievementsButton.setOnClickListener {
             val desc = achievementsAdapter.updateSortingMethod()
             updateSortMethodText(desc)
         }
-
-        presenter.onViewCreated()
     }
 
     private fun updateSortMethodText(description: String) {
         sortMethodDescription.text = "Sorted by: $description"
     }
 
-    override fun onDestroy() {
-        presenter.onViewDestroyed()
-        super.onDestroy()
-    }
-
-    override fun setGameInfo(game: Game) {
+    override fun setGameInfo(game: Game?) {
+        if (game == null) {
+            return
+        }
         if (game.recentPlayTime <= 0) {
             recentPlayTimeContainer.visibility = View.GONE
         } else {
@@ -171,10 +198,10 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
     }
 
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    override fun instantiatePresenter(): GamePresenter {
-        return GamePresenter(this, intent.getStringExtra(INTENT_GAME_ID))
-    }
+//    /**
+//     * Instantiates the presenter the Activity is based on.
+//     */
+//    override fun instantiatePresenter(): GamePresenter {
+//        return GamePresenter(this, intent.getStringExtra(INTENT_GAME_ID))
+//    }
 }

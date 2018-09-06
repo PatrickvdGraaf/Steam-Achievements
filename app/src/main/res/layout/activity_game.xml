@@ -170,9 +170,11 @@
                 card_view:cardUseCompatPadding="true" />
 
             <TextView
+                android:id="@+id/graph_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                android:layout_marginTop="16dp"
                 android:labelFor="@+id/graph_textView"
                 android:text="Achievements over time"
                 android:textColor="@color/colorTextLabel"
@@ -182,7 +184,8 @@
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/graph"
                 android:layout_width="match_parent"
-                android:layout_height="200dip"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
