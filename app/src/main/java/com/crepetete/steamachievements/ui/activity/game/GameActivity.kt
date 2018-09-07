@@ -90,11 +90,15 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
         setSupportActionBar(toolBar)
 
         val appId = intent.getStringExtra(INTENT_GAME_ID)
+        presenter.setGameId(appId)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
         viewModel.setAppId(appId)
-        viewModel.game.observe(this, Observer { game ->
+        viewModel.gameLive.observe(this, Observer { game ->
             setGameInfo(game)
+        })
+        viewModel.achievementsLive.observe(this, Observer {
+            setAchievements(it?.data ?: listOf())
         })
 
         sortAchievementsButton.setOnClickListener {

@@ -24,8 +24,8 @@ class GamePresenter(gameView: GameView,
 
     fun setGameId(gameId: String) {
         _gameId = gameId
-        getGameFromDb(gameId)
-        getAchievementsForGame(gameId)
+//        getGameFromDb(gameId)
+//        getAchievementsForGame(gameId)
     }
 
     private fun getGameFromDb(gameId: String) {

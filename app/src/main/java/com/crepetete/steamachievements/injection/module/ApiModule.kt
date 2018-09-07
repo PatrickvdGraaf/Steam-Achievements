@@ -4,6 +4,7 @@ import android.content.Context
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.utils.BASE_URL
+import com.crepetete.steamachievements.utils.LiveDataCallAdapterFactory
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
@@ -27,13 +28,19 @@ class ApiModule {
     @Singleton
     fun provideRetrofitInterface(moshiConverterFactory: MoshiConverterFactory,
                                  rxJava2CallAdapterFactory: RxJava2CallAdapterFactory,
+                                 liveDataCallAdapterFactory: LiveDataCallAdapterFactory,
                                  okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(moshiConverterFactory)
             .addCallAdapterFactory(rxJava2CallAdapterFactory)
+            .addCallAdapterFactory(liveDataCallAdapterFactory)
             .client(okHttpClient)
             .build()
 
+
+    @Provides
+    @Singleton
+    fun provideLiveDataCallAdapter() = LiveDataCallAdapterFactory()
     /**
      * Provides an OkHttpClient with some base values and an Interceptor for debugging purposes.
      * @return the OkHttpClient
