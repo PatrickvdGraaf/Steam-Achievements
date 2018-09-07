@@ -6,7 +6,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -30,7 +29,6 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
-import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
@@ -74,15 +72,16 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//
+//        // Inflate view and obtain an instance of the binding class.
+//        val binding: ActivityGameBinding = DataBindingUtil.setContentView(this,
+//                R.layout.activity_game)
+//
+//        // Specify the current activity as the lifecycle owner.
+//        binding.setLifecycleOwner(this)
 
-        // Inflate view and obtain an instance of the binding class.
-        val binding: ActivityGameBinding = DataBindingUtil.setContentView(this,
-                R.layout.activity_game)
-
-        // Specify the current activity as the lifecycle owner.
-        binding.setLifecycleOwner(this)
-
-        setContentView(binding.root)
+//        setContentView(binding.root)
+        setContentView(R.layout.activity_game)
         setSupportActionBar(toolBar)
 
         val appId = intent.getStringExtra(INTENT_GAME_ID)

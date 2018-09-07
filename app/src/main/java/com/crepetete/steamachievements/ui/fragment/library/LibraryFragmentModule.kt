@@ -10,10 +10,12 @@ class LibraryFragmentModule {
     @Provides
     fun providesLibraryView(libraryFragment: LibraryFragment): LibraryView = libraryFragment
 
-    @Provides
-    fun providesLibraryPresenter(libraryView: LibraryView,
-                                 gamesRepository: GamesRepository,
-                                 achievementsRepository: AchievementRepository): LibraryPresenter {
-        return LibraryPresenter(libraryView, gamesRepository, achievementsRepository)
+    @Module
+    companion object {
+        @JvmStatic
+        @Provides
+        fun providesLibraryPresenter(libraryView: LibraryView,
+                                     gamesRepository: GamesRepository,
+                                     achievementsRepository: AchievementRepository) = LibraryPresenter(libraryView, gamesRepository, achievementsRepository)
     }
 }

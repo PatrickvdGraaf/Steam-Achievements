@@ -18,13 +18,6 @@ class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
     private lateinit var imageViewProfile: ImageView
     private lateinit var textViewPersona: TextView
 
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    override fun instantiatePresenter(): ProfilePresenter {
-        return ProfilePresenter(this)
-    }
-
     companion object {
         const val TAG = "PROFILE_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"

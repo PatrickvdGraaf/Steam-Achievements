@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
@@ -68,6 +69,17 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
         return view
     }
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        var userId: String
+        arguments?.let {
+            userId = it.getString(KEY_PLAYER_ID)
+            if (userId.isBlank()) {
+                context?.startActivity(LoginActivity.getInstance(context))
+            }
+        }
+    }
+
     /**
      * Retrieved a new game from the presenter that needs to be added to the ListView.
      */
@@ -126,20 +138,5 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
      */
     override fun onSortingMethodChanged(sortingMethod: Int) {
         gamesAdapter.sort(sortingMethod)
-    }
-
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    override fun instantiatePresenter(): LibraryPresenter {
-        var userId: String
-        arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID)
-            if (userId.isBlank()) {
-                context.startActivity(LoginActivity.getInstance(context))
-            }
-        }
-
-        return LibraryPresenter(this)
     }
 }

@@ -18,9 +18,6 @@ import com.crepetete.steamachievements.data.repository.game.GamesRepository
 import com.crepetete.steamachievements.data.repository.user.UserDataSource
 import com.crepetete.steamachievements.data.repository.user.UserRepository
 import com.crepetete.steamachievements.injection.module.ViewModelModule
-import com.crepetete.steamachievements.ui.activity.game.GameActivityComponent
-import com.crepetete.steamachievements.ui.activity.login.LoginActivityComponent
-import com.crepetete.steamachievements.ui.activity.main.MainActivityComponent
 import com.crepetete.steamachievements.utils.BASE_URL
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
@@ -44,15 +41,13 @@ import javax.inject.Singleton
  * We provide retrofit, okhttp, persistence db, shared pref etc here. There is an important detail
  * here. We have to add our subcomponents to AppModule.
  */
-@Module(includes = [ViewModelModule::class],
-        subcomponents = [(MainActivityComponent::class), (LoginActivityComponent::class),
-            (GameActivityComponent::class)])
+@Module(includes = [ViewModelModule::class])
 class AppModule {
     /*
     API Singletons
      */
-    @Singleton
     @Provides
+    @Singleton
     fun provideRetrofitInterface(moshiConverterFactory: MoshiConverterFactory,
                                  rxJava2CallAdapterFactory: RxJava2CallAdapterFactory,
                                  okHttpClient: OkHttpClient): Retrofit {
@@ -143,28 +138,27 @@ class AppModule {
     /*
     Repository Singletons
      */
-    @Singleton
     @Provides
+    @Singleton
     fun provideUserRepository(sharedPreferences: SharedPreferences,
                               api: SteamApiService,
                               dao: PlayerDao): UserRepository =
             UserDataSource(sharedPreferences, api, dao)
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideGamesRepository(api: SteamApiService, gamesDao: GamesDao,
                                userRepository: UserRepository,
                                achievementsRepository: AchievementRepository)
             : GamesRepository = GamesDataSource(api, gamesDao, userRepository,
             achievementsRepository)
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideGameRepository(gamesDao: GamesDao): GameRepository = GameRepository(gamesDao)
 
-
-    @Singleton
     @Provides
+    @Singleton
     fun provideAchievementRepository(api: SteamApiService,
                                      achievementsDao: AchievementsDao,
                                      userRep: UserRepository)
@@ -173,30 +167,30 @@ class AppModule {
     /*
     Room Singletons
      */
-    @Singleton
     @Provides
+    @Singleton
     internal fun providePlayerDatabase(application: Application) = Room
             .databaseBuilder(application, SteamDatabase::class.java, "players.db")
             .build()
 
-    @Singleton
     @Provides
+    @Singleton
     internal fun providePlayerDao(database: SteamDatabase): PlayerDao = database.playerDao()
 
-    @Singleton
     @Provides
+    @Singleton
     internal fun provideGamesDao(database: SteamDatabase): GamesDao = database.gamesDao()
 
-    @Singleton
     @Provides
+    @Singleton
     internal fun provideAchievementsDao(database: SteamDatabase): AchievementsDao =
             database.achievementsDao()
 
     /*
     Shared Preferences
      */
-    @Singleton
     @Provides
+    @Singleton
     fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
     }

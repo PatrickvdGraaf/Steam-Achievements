@@ -4,7 +4,9 @@ import android.app.Application
 import com.crepetete.steamachievements.SteamAchievementsApplication
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
+import dagger.android.support.AndroidSupportInjectionModule
 import javax.inject.Singleton
 
 /**
@@ -24,16 +26,18 @@ import javax.inject.Singleton
  */
 
 @Singleton
-@Component(modules = [(AndroidInjectionModule::class),
+@Component(modules = [(AndroidSupportInjectionModule::class),
     (AppModule::class),
     (ActivityBuilder::class)])
-interface AppComponent {
+interface AppComponent : AndroidInjector<DaggerApplication> {
+    fun inject(app: SteamAchievementsApplication)
+
+    override fun inject(instance: DaggerApplication?)
+
     @Component.Builder
     interface Builder {
         @BindsInstance
         fun application(application: Application): Builder
         fun build(): AppComponent
     }
-
-    fun inject(app: SteamAchievementsApplication)
 }
