@@ -8,7 +8,7 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import javax.inject.Inject
 
-class GameViewModel @Inject constructor(private val gameRepo: GameRepository) : ViewModel() {
+class GameViewModel @Inject constructor(private var gameRepo: GameRepository) : ViewModel() {
     private val _game = MutableLiveData<Game>()
     private val _achievements = MutableLiveData<List<Achievement>>()
     private var _appId: String? = null

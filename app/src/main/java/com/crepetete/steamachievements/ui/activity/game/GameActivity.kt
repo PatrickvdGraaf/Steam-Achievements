@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.ui.activity.game
 import android.annotation.TargetApi
 import android.app.Activity
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -32,6 +33,7 @@ import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import javax.inject.Inject
 
 
 private const val INTENT_GAME_ID = "gameId"
@@ -43,6 +45,9 @@ fun Activity.startGameActivity(appId: String, imageView: ImageView) {
 }
 
 class GameActivity : BaseActivity<GamePresenter>(), GameView {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
     override fun getContext(): Context {
         return this
     }
@@ -86,7 +91,7 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
         val appId = intent.getStringExtra(INTENT_GAME_ID)
 
-        viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
         viewModel.setAppId(appId)
         viewModel.game.observe(this, Observer { game ->
             setGameInfo(game)

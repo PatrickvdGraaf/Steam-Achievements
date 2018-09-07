@@ -7,13 +7,8 @@ import android.view.View
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_login.*
-import javax.inject.Inject
 
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginView {
-
-    @Inject
-    lateinit var presenter: LoginPresenter
-
     companion object {
         fun getInstance(context: Context): Intent {
             val intent = Intent(context, LoginActivity::class.java)

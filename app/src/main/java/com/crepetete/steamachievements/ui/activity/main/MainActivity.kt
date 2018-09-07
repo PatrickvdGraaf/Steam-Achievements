@@ -30,10 +30,6 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
         BottomNavigationView.OnNavigationItemSelectedListener {
-
-    @Inject
-    lateinit var presenter: MainPresenter
-
     companion object {
         private const val INTENT_USER_ID = "user_id"
 
