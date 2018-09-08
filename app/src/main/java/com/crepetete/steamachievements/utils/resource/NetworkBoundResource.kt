@@ -8,7 +8,7 @@ import com.crepetete.steamachievements.data.api.response.ApiEmptyResponse
 import com.crepetete.steamachievements.data.api.response.ApiErrorResponse
 import com.crepetete.steamachievements.data.api.response.ApiResponse
 import com.crepetete.steamachievements.data.api.response.ApiSuccessResponse
-import com.crepetete.steamachievements.utils.AppExecutors
+import com.crepetete.steamachievements.AppExecutors
 
 /**
  * A generic class that can provide a resource backed by both the sqlite database and the network.

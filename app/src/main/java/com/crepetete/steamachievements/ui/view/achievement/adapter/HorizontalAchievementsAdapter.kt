@@ -4,21 +4,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseView
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.utils.sortByLastAchieved
 import com.crepetete.steamachievements.utils.sortByNotAchieved
 import com.crepetete.steamachievements.utils.sortByRarity
 
-class HorizontalAchievementsAdapter(private val baseView: BaseView,
-                                    private var sortingMethod: AchievSortingMethod
-                                    = AchievSortingMethod.ACHIEVED)
+class HorizontalAchievementsAdapter(
+        private var sortingMethod: AchievSortingMethod = AchievSortingMethod.ACHIEVED)
     : RecyclerView.Adapter<AchievementViewHolder>() {
 
     private val achievements = mutableListOf<Achievement>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
-        val inflater = LayoutInflater.from(baseView.getContext())
+        val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.list_achievement, parent, false)
         return AchievementViewHolder(view)
     }
@@ -28,7 +26,7 @@ class HorizontalAchievementsAdapter(private val baseView: BaseView,
     }
 
     override fun onBindViewHolder(holder: AchievementViewHolder, position: Int) {
-        holder.bind(baseView.getContext(), achievements[position])
+        holder.bind(achievements[position])
     }
 
     fun setAchievements(achievements: List<Achievement>) {

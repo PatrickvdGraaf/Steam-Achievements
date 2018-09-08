@@ -80,7 +80,7 @@ class LibraryPresenter(libraryView: LibraryView,
      */
     private fun getGamesFromDb() {
         showDebugToast("Calling getGames from Db")
-        disposable.add(gamesRepository.getGamesFromApi()
+        disposable.add(gamesRepository.getGamesFromDb()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

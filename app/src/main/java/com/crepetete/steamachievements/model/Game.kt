@@ -48,7 +48,7 @@ data class Game(
         }
     }
 
-    fun setAchievements(achievements: List<Achievement>){
+    fun setAchievements(achievements: List<Achievement>) {
         this.achievements = achievements.toMutableList()
     }
 
@@ -65,9 +65,7 @@ data class Game(
         }
     }
 
-    fun getFullLogoUrl(): String {
-        return "http://media.steampowered.com/steamcommunity/public/images/apps/$appId/$logoUrl.jpg"
-    }
+    fun getFullLogoUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/$appId/$logoUrl.jpg"
 
     fun getRecentPlaytimeString(context: Context? = null) = recentPlayTime.toHours(context)
 

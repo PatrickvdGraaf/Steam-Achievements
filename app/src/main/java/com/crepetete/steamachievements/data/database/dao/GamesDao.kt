@@ -30,6 +30,9 @@ interface GamesDao {
     @Query("SELECT * FROM games")
     fun getGamesForUser(): Single<List<Game>>
 
+    @Query("SELECT * FROM games")
+    fun getGamesAsLiveData(): LiveData<List<Game>>
+
     @Query("SELECT appId FROM games")
     fun getGameIds(): Single<List<String>>
 }
