@@ -19,4 +19,10 @@
     <string name="menu_sort_playtime">Playtime</string>
     <string name="menu_sort_name">Name</string>
     <string name="menu_sort_completion">Completion</string>
+    <string name="header_playtime">Playtime</string>
+    <string name="header_recent_playtime">Recent playtime:</string>
+    <string name="header_total_playtime">Total playtime:</string>
+    <string name="header_achievements">Achievements</string>
+    <string name="sorting_method_achieved">Sorted by: Achieved</string>
+    <string name="header_achievements_over_time">Achievements over time</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.utils
+package com.crepetete.steamachievements
 
 import android.os.Handler
 import android.os.Looper

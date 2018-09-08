@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.data.repository.achievement
 
 import android.arch.lifecycle.LiveData
+import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.api.response.ApiResponse
@@ -8,7 +9,6 @@ import com.crepetete.steamachievements.data.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.data.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.utils.AppExecutors
 import com.crepetete.steamachievements.utils.RateLimiter
 import com.crepetete.steamachievements.utils.resource.NetworkBoundResource
 import com.crepetete.steamachievements.utils.resource.Resource
@@ -39,7 +39,8 @@ class AchievementsRepository @Inject constructor(
 
             override fun shouldFetch(data: List<Achievement>?): Boolean {
                 Timber.i(data?.toString() ?: "No data")
-                return data == null || data.isEmpty() || achievementsListRateLimit.shouldFetch(appId)
+                return data == null || data.isEmpty()
+                        || achievementsListRateLimit.shouldFetch(appId)
             }
 
             override fun loadFromDb(): LiveData<List<Achievement>> = dao.getAchievementsForGameAsLiveData(appId)
@@ -50,8 +51,9 @@ class AchievementsRepository @Inject constructor(
                 achievementsListRateLimit.reset(appId)
             }
 
-            override fun processResponse(response: ApiSuccessResponse<SchemaResponse>): SchemaResponse {
-                if (BuildConfig.DEBUG){
+            override fun processResponse(response: ApiSuccessResponse<SchemaResponse>)
+                    : SchemaResponse {
+                if (BuildConfig.DEBUG) {
                     Timber.i(response.body.toString())
                 }
                 return super.processResponse(response)
