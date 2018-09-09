@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.injection.annotation
+package com.crepetete.steamachievements.injection.helper.annotation
 
 import android.arch.lifecycle.ViewModel
 import dagger.MapKey

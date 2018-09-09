@@ -1,17 +1,14 @@
 package com.crepetete.steamachievements.injection
 
-import android.app.Activity
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
-import com.crepetete.steamachievements.ui.activity.game.GameActivityComponent
+import com.crepetete.steamachievements.ui.activity.game.GameActivityModule
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.activity.login.LoginActivityComponent
+import com.crepetete.steamachievements.ui.activity.login.LoginActivityModule
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
-import com.crepetete.steamachievements.ui.activity.main.MainActivityComponent
-import dagger.Binds
+import com.crepetete.steamachievements.ui.activity.main.MainActivityModule
+import com.crepetete.steamachievements.ui.activity.main.MainFragmentProvider
 import dagger.Module
-import dagger.android.ActivityKey
-import dagger.android.AndroidInjector
-import dagger.multibindings.IntoMap
+import dagger.android.ContributesAndroidInjector
 
 
 /**
@@ -20,22 +17,14 @@ import dagger.multibindings.IntoMap
  */
 @Module
 abstract class ActivityBuilder {
-    @Binds
-    @IntoMap
-    @ActivityKey(LoginActivity::class)
-    internal abstract fun bindLoginActivity(builder: LoginActivityComponent.Builder)
-            : AndroidInjector.Factory<out Activity>
+    @ContributesAndroidInjector(modules = [(LoginActivityModule::class)])
+    abstract fun bindLoginActivity(): LoginActivity
 
-    @Binds
-    @IntoMap
-    @ActivityKey(MainActivity::class)
-    internal abstract fun bindMainActivity(builder: MainActivityComponent.Builder)
-            : AndroidInjector.Factory<out Activity>
+    @ContributesAndroidInjector(modules = [(MainActivityModule::class),
+        (MainFragmentProvider::class)])
+    abstract fun bindMainActivity(): MainActivity
 
-    @Binds
-    @IntoMap
-    @ActivityKey(GameActivity::class)
-    internal abstract fun bindGameActivity(builder: GameActivityComponent.Builder)
-            : AndroidInjector.Factory<out Activity>
+    @ContributesAndroidInjector(modules = [(GameActivityModule::class)])
+    abstract fun bindGameActivity(): GameActivity
 
 }

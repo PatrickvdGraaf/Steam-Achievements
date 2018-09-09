@@ -39,7 +39,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     private lateinit var recyclerViewLatestAchievements: RecyclerView
 
     private val achievementsAdapter by lazy {
-        HorizontalAchievementsAdapter(this)
+        HorizontalAchievementsAdapter()
     }
 
     private var achievementCount = 0

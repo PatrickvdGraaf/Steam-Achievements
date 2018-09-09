@@ -6,4 +6,8 @@
     <dimen name="progressBar_dimen">150dp</dimen>
     <dimen name="text_label">12sp</dimen>
     <dimen name="text_header">18sp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="default_margin_halved">8dp</dimen>
+    <dimen name="default_margin_quarter">4dp</dimen>
+    <dimen name="text_button">14sp</dimen>
 </resources>

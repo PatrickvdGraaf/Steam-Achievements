@@ -1,19 +1,20 @@
 package com.crepetete.steamachievements.ui.fragment.profile
 
 import com.crepetete.steamachievements.data.repository.user.UserRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
 @Module
-class ProfileFragmentModule {
-    @Provides
-    fun providesProfileView(profileFragment: ProfileFragment): ProfileView {
-        return profileFragment
-    }
+abstract class ProfileFragmentModule {
+    @Binds
+    abstract fun providesProfileView(profileFragment: ProfileFragment): ProfileView
 
-    @Provides
-    fun providesProfilePresenter(libraryView: ProfileView,
-                                 userRepository: UserRepository): ProfilePresenter {
-        return ProfilePresenter(libraryView, userRepository)
+    @Module
+    companion object {
+        @JvmStatic
+        @Provides
+        fun providesProfilePresenter(libraryView: ProfileView,
+                                     userRepository: UserRepository) = ProfilePresenter(libraryView, userRepository)
     }
 }

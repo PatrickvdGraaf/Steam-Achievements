@@ -3,8 +3,8 @@ package com.crepetete.steamachievements.ui.activity.game
 import android.annotation.TargetApi
 import android.app.Activity
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.drawable.BitmapDrawable
@@ -29,29 +29,28 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.activity.game.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import com.jjoe64.graphview.GraphView
+import dagger.android.support.DaggerAppCompatActivity
+import javax.inject.Inject
 
 
 private const val INTENT_GAME_ID = "gameId"
 fun Activity.startGameActivity(appId: String, imageView: ImageView) {
-    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, imageView as View, "banner")
+    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+            imageView as View, "banner")
     startActivity(Intent(this, GameActivity::class.java).apply {
         putExtra(INTENT_GAME_ID, appId)
     }, options.toBundle())
 }
 
-class GameActivity : BaseActivity<GamePresenter>(), GameView {
-    override fun getContext(): Context {
-        return this
-    }
-
-    override fun showError(error: String) {
-
-    }
+class GameActivity : DaggerAppCompatActivity() {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: GameViewModel
 
@@ -68,9 +67,12 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
     // Achievements
     private val recyclerViewLatestAchievements by lazy { findViewById<RecyclerView>(R.id.latest_achievements_recyclerview) }
-    private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
+    private val achievementsAdapter by lazy { HorizontalAchievementsAdapter() }
     private val sortAchievementsButton by lazy { findViewById<Button>(R.id.button_sort_achievements) }
     private val sortMethodDescription by lazy { findViewById<TextView>(R.id.sorting_textview) }
+
+    // Achievements over Time Graph
+    private val achievementsOverTimeGraph by lazy { findViewById<GraphView>(R.id.graph) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,10 +89,14 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
 
         val appId = intent.getStringExtra(INTENT_GAME_ID)
 
-        viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
         viewModel.setAppId(appId)
         viewModel.game.observe(this, Observer { game ->
             setGameInfo(game)
+        })
+
+        viewModel.achievements.observe(this, Observer {
+            setAchievements(it?.data ?: listOf())
         })
 
         sortAchievementsButton.setOnClickListener {
@@ -103,7 +109,7 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
         sortMethodDescription.text = "Sorted by: $description"
     }
 
-    override fun setGameInfo(game: Game?) {
+    private fun setGameInfo(game: Game?) {
         if (game == null) {
             return
         }
@@ -120,7 +126,6 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
                 false)
 
         recyclerViewLatestAchievements.adapter = achievementsAdapter
-
 
         Glide.with(this)
                 .load(game.getFullLogoUrl())
@@ -151,8 +156,10 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
         setCollapsingToolbarColors(game.colorPrimaryDark)
     }
 
-    override fun setAchievements(achievements: List<Achievement>) {
+    private fun setAchievements(achievements: List<Achievement>) {
         achievementsAdapter.setAchievements(achievements)
+
+        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, achievements)
     }
 
     private fun setCollapsingToolbarColors(@ColorInt color: Int) {
@@ -161,7 +168,6 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
         collapsingToolbarLayout.setContentScrimColor(color)
         collapsingToolbarLayout.setStatusBarScrimColor(color)
     }
-
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context,
             R.color.statusbar_translucent)) {
@@ -183,25 +189,4 @@ class GameActivity : BaseActivity<GamePresenter>(), GameView {
     private fun setTranslucentStatusBarKiKat(window: Window) {
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     }
-
-    /**
-     * Displays the loading indicator of the view
-     */
-    override fun showLoading() {
-        //TODO
-    }
-
-    /**
-     * Hides the loading indicator of the view
-     */
-    override fun hideLoading() {
-
-    }
-
-//    /**
-//     * Instantiates the presenter the Activity is based on.
-//     */
-//    override fun instantiatePresenter(): GamePresenter {
-//        return GamePresenter(this, intent.getStringExtra(INTENT_GAME_ID))
-//    }
 }

@@ -23,7 +23,7 @@ class LibraryPresenter(libraryView: LibraryView,
      * automatically update the games via an API call when all or zero games we're retrieved.
      */
     override fun onViewCreated() {
-        getGameIdsFromDb()
+        getGamesFromDb()
     }
 
     /**
@@ -69,6 +69,28 @@ class LibraryPresenter(libraryView: LibraryView,
                     view.addGame(game)
                 }, {
                     Timber.e(it)
+                }))
+    }
+
+    /**
+     * Retrieves a list of all owned games from the API.
+     * When there are results it updates the View with the new information.
+     *
+     * TODO maybe not update each time this message it called, maybe use a timestamp?
+     */
+    private fun getGamesFromDb() {
+        showDebugToast("Calling getGames from Db")
+        disposable.add(gamesRepository.getGamesFromDb()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    view.updateGames(it)
+                    view.hideLoading()
+
+                    showDebugToast("Retrieved ${it.size} games from Db, starting  starting getGameFromApi")
+                    getGamesFromApi()
+                }, {
+                    onError(it)
                 }))
     }
 
@@ -150,7 +172,7 @@ class LibraryPresenter(libraryView: LibraryView,
     }
 
     override fun updateGame(game: Game) {
-        gamesRepository.updateGame(game)
+//        gamesRepository.updateGame(game)
     }
 
     override fun addDisposable(task: Disposable) {

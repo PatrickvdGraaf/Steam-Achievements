@@ -3,13 +3,14 @@ package com.crepetete.steamachievements.base
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import android.support.v4.app.Fragment
 import android.view.View
 import android.widget.Toast
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
-import dagger.android.support.AndroidSupportInjection
+import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 
-abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, Fragment() {
+abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, DaggerFragment() {
+    @Inject
     protected lateinit var presenter: P
 
     private var loadingIndicator: LoadingIndicator? = null
@@ -17,11 +18,6 @@ abstract class BaseFragment<P : BasePresenter<BaseView>> : BaseView, Fragment() 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onAttach(context: Context?) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     @CallSuper

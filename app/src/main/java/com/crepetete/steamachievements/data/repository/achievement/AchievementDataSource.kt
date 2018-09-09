@@ -146,9 +146,9 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                     AchievedAchievementResponse(DataClass())
                 }
 
-                .map {
-                    if (it.playerStats.success) {
-                        val ownedAchievements = it.playerStats.achievements
+                .map {response ->
+                    if (response.playerStats.success) {
+                        val ownedAchievements = response.playerStats.achievements
                                 .filter { it.achieved != 0 }
 
                         ownedAchievements.map { ownedAchievement ->

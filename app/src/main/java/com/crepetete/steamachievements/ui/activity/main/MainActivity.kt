@@ -25,20 +25,11 @@ import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavbarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
-        HasSupportFragmentInjector, BottomNavigationView.OnNavigationItemSelectedListener {
-
-    @Inject
-    lateinit var presenter: MainPresenter
-
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-
+        BottomNavigationView.OnNavigationItemSelectedListener {
     companion object {
         private const val INTENT_USER_ID = "user_id"
 
@@ -275,6 +266,4 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
     override fun openLoginActivity() {
         startActivity(LoginActivity.getInstance(this))
     }
-
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
 }

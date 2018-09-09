@@ -32,7 +32,7 @@ def support_version = '27.1.1'
 def lifecycle_version = "1.1.1"
 def retrofit_version = '2.3.0'
 def okhttp_version = '3.10.0'
-def dagger_version = '2.11-rc2'
+def dagger_version = '2.13'
 def room_version = '1.1.1'
 def glide_version = '4.7.1'
 
@@ -60,11 +60,11 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
-    // Dagger 2
+    // Dagger 2e
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    compileOnly "org.glassfish:javax.annotation:3.1.1"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     //Rx
     implementation "io.reactivex.rxjava2:rxjava:2.1.9"

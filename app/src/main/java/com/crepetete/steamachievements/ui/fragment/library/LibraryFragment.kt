@@ -1,5 +1,7 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
@@ -17,10 +19,17 @@ import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
 import timber.log.Timber
+import javax.inject.Inject
 
 
-class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, NavbarInteractionListener {
+class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
+        NavbarInteractionListener {
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
     private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
+
+    private lateinit var viewModel: LibraryViewModel
     private lateinit var scrollToTopButton: FloatingActionButton
 
     companion object {
@@ -64,6 +73,25 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
                 }
             }
         })
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(LibraryViewModel::class.java)
+
+        var userId: String
+        arguments?.let {
+            userId = it.getString(KEY_PLAYER_ID)
+            if (userId.isBlank()) {
+                context.startActivity(LoginActivity.getInstance(context))
+            }
+//            viewModel.setAppId(userId)
+        }
+
+//        viewModel.games.observe(this, Observer { gamesResource ->
+//            val games = gamesResource?.data
+//            if (games != null) {
+//                gamesAdapter.updateGames(games)
+//            }
+//        })
 
         return view
     }
@@ -126,20 +154,5 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView, Na
      */
     override fun onSortingMethodChanged(sortingMethod: Int) {
         gamesAdapter.sort(sortingMethod)
-    }
-
-    /**
-     * Instantiates the presenter the Activity is based on.
-     */
-    override fun instantiatePresenter(): LibraryPresenter {
-        var userId: String
-        arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID)
-            if (userId.isBlank()) {
-                context.startActivity(LoginActivity.getInstance(context))
-            }
-        }
-
-        return LibraryPresenter(this)
     }
 }

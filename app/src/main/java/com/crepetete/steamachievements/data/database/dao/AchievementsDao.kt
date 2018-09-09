@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.data.database.dao
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.AchievementKeys
@@ -21,6 +22,9 @@ interface AchievementsDao {
 
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     fun getAchievementsForGame(appId: String): Single<List<Achievement>>
+
+    @Query("SELECT * FROM achievements WHERE appId=:appId")
+    fun getAchievementsForGameAsLiveData(appId: String): LiveData<List<Achievement>>
 
     @Query("SELECT name FROM achievements WHERE name = :name  AND appId = :appId LIMIT 1")
     fun getAchievementKeys(name: String, appId: String): String?
