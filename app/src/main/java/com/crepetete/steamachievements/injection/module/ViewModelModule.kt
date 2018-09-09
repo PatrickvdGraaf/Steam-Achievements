@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import com.crepetete.steamachievements.injection.helper.ViewModelFactory
 import com.crepetete.steamachievements.injection.helper.annotation.ViewModelKey
 import com.crepetete.steamachievements.ui.activity.game.GameViewModel
+import com.crepetete.steamachievements.ui.fragment.library.LibraryViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -13,6 +14,11 @@ import dagger.multibindings.IntoMap
 abstract class ViewModelModule {
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LibraryViewModel::class)
+    internal abstract fun postLibraryViewModel(viewModel: LibraryViewModel): ViewModel
 
     @Binds
     @IntoMap

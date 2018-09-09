@@ -172,7 +172,7 @@ class LibraryPresenter(libraryView: LibraryView,
     }
 
     override fun updateGame(game: Game) {
-        gamesRepository.updateGame(game)
+//        gamesRepository.updateGame(game)
     }
 
     override fun addDisposable(task: Disposable) {

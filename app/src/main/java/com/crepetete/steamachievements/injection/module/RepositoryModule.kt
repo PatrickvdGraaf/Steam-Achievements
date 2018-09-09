@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.injection.module
 
 import android.content.SharedPreferences
+import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.database.dao.GamesDao
@@ -35,7 +36,11 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGameRepository(gamesDao: GamesDao): GameRepository = GameRepository(gamesDao)
+    fun provideGameRepository(executors: AppExecutors,
+                              gamesDao: GamesDao,
+                              api: SteamApiService): GameRepository = GameRepository(executors,
+            gamesDao,
+            api)
 
     @Provides
     @Singleton

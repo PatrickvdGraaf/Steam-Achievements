@@ -81,7 +81,9 @@ class AchievementsGraphViewUtil {
                         it.first
                     }!!.first.time.toDouble())
 
-                    graphView.viewport.setMaxX(Calendar.getInstance().time.time.toDouble())
+                    graphView.viewport.setMaxX(pairs.maxBy {
+                        it.first
+                    }!!.first.time.toDouble())
 
                     // Set manual Y bounds
                     graphView.viewport.isYAxisBoundsManual = true

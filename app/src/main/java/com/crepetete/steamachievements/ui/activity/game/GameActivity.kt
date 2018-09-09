@@ -32,9 +32,7 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
-
 import com.crepetete.steamachievements.ui.activity.game.graph.AchievementsGraphViewUtil
-import com.crepetete.steamachievements.ui.activity.game.graph.AchievementsGraphHelper
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import com.jjoe64.graphview.GraphView
 import dagger.android.support.DaggerAppCompatActivity
@@ -170,7 +168,6 @@ class GameActivity : DaggerAppCompatActivity() {
         collapsingToolbarLayout.setContentScrimColor(color)
         collapsingToolbarLayout.setStatusBarScrimColor(color)
     }
-
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context,
             R.color.statusbar_translucent)) {

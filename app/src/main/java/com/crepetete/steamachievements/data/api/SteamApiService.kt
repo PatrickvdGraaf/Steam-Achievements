@@ -24,6 +24,13 @@ interface SteamApiService {
                         @Query("include_played_free_games") includeFreeGames: Int = 1)
             : Single<BaseGameResponse>
 
+    @GET("IPlayerService/GetOwnedGames/v0001/")
+    fun getGamesForUserAsLiveData(@Query("steamid") id: String,
+                                  @Query("key") key: String = API_KEY,
+                                  @Query("include_appinfo") includeAppInfo: Int = 1,
+                                  @Query("include_played_free_games") includeFreeGames: Int = 1)
+            : LiveData<ApiResponse<BaseGameResponse>>
+
     @GET("ISteamUserStats/GetSchemaForGame/v2/")
     fun getSchemaForGame(@Query("appid") appId: String,
                          @Query("key") key: String = API_KEY): Single<SchemaResponse>
