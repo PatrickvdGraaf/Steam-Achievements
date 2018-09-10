@@ -41,7 +41,7 @@ class GamesAdapter(private val baseView: BaseView,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
         val inflater = LayoutInflater.from(baseView.getContext())
-        val view = inflater.inflate(R.layout.list_game, parent, false)
+        val view = inflater.inflate(R.layout.game_item, parent, false)
         return GameViewHolder(baseView, view, listener)
     }
 

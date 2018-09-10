@@ -10,4 +10,21 @@
     <dimen name="default_margin_halved">8dp</dimen>
     <dimen name="default_margin_quarter">4dp</dimen>
     <dimen name="text_button">14sp</dimen>
+    <dimen name="text_label_small">12sp</dimen>
+
+    <!-- TEXT -->
+    <!-- Default text sizes, as per material design guidelines -->
+    <!-- https://material.io/design/typography/the-type-system.html#type-scale -->
+    <dimen name="header_one">96sp</dimen>
+    <dimen name="header_two">60sp</dimen>
+    <dimen name="header_three">48sp</dimen>
+    <dimen name="header_four">34sp</dimen>
+    <dimen name="header_five">24sp</dimen>
+    <dimen name="header_six">20sp</dimen>
+    <dimen name="subtitle_one">16sp</dimen>
+    <dimen name="subtitle_two">14sp</dimen>
+    <dimen name="body_one">16sp</dimen>
+    <dimen name="body_two">14sp</dimen>
+    <dimen name="button">14sp</dimen>
+
 </resources>

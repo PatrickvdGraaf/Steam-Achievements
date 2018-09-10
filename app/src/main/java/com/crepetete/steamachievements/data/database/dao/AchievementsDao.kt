@@ -17,6 +17,9 @@ interface AchievementsDao {
     @Query("SELECT * FROM achievements")
     fun getAchievements(): Single<List<Achievement>>
 
+    @Query("SELECT * FROM achievements")
+    fun getAchievementsAsLiveData(): LiveData<List<Achievement>>
+
     @Query("SELECT * FROM achievements WHERE appId=:appId AND name=:name")
     fun getAchievements(appId: String, name: String?): Single<List<Achievement>>
 

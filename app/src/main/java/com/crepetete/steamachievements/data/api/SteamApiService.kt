@@ -45,6 +45,12 @@ interface SteamApiService {
                                  @Query("key") key: String = API_KEY)
             : Single<AchievedAchievementResponse>
 
+    @GET("ISteamUserStats/GetPlayerAchievements/v0001/")
+    fun getAchievementsForPlayerAsLiveData(@Query("appid") appId: String,
+                                           @Query("steamid") id: String,
+                                           @Query("key") key: String = API_KEY)
+            : LiveData<ApiResponse<AchievedAchievementResponse>>
+
     @GET("ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
     fun getGlobalAchievementStats(@Query("gameid") appId: String)
             : Single<GlobalAchievResponse>

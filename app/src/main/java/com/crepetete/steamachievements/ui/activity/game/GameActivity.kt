@@ -95,8 +95,11 @@ class GameActivity : DaggerAppCompatActivity() {
             setGameInfo(game)
         })
 
-        viewModel.achievements.observe(this, Observer {
-            setAchievements(it?.data ?: listOf())
+        viewModel.updatedAchievements.observe(this, Observer { resource ->
+            // TODO should not require the filter
+            setAchievements(resource?.data?.filter {
+                it.appId == appId
+            } ?: listOf())
         })
 
         sortAchievementsButton.setOnClickListener {

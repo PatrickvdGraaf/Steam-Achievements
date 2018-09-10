@@ -3,22 +3,30 @@ package com.crepetete.steamachievements.ui.fragment.library
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.databinding.DataBindingComponent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.RefreshableFragment
+import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
+import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
+import com.crepetete.steamachievements.data.repository.game.GameRepository
+import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.common.NewGamesAdapter
+import com.crepetete.steamachievements.utils.autoCleared
+import com.crepetete.steamachievements.utils.sortPlaytime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -28,10 +36,22 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val gamesAdapter by lazy { GamesAdapter(this, presenter) }
+    @Inject
+    lateinit var appExecutors: AppExecutors
+
+    @Inject
+    lateinit var gamesRepository: GameRepository
+
+    @Inject
+    lateinit var achievementsRepository: AchievementsRepository
+
+    var adapter by autoCleared<NewGamesAdapter>()
+
+    var dataBindingComponent: DataBindingComponent = FragmentDataBindingComponent(this)
+
+    var binding by autoCleared<FragmentLibraryBinding>()
 
     private lateinit var viewModel: LibraryViewModel
-    private lateinit var scrollToTopButton: FloatingActionButton
 
     companion object {
         const val TAG = "LIBRARY_FRAGMENT"
@@ -49,34 +69,50 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_library, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_library, container,
+                false, dataBindingComponent)
+        return binding.root
+    }
 
-        // Initialise ListView and Adapter.
-        val listView = view.findViewById<RecyclerView>(R.id.list_games)
-        listView.adapter = gamesAdapter
-        listView.layoutManager = LinearLayoutManager(context)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(LibraryViewModel::class.java)
 
+        initScrollFab()
+        initRecyclerView()
 
-        // Set up FAB to scroll up.
-        scrollToTopButton = view.findViewById(R.id.fab)
-        scrollToTopButton.setOnClickListener {
-            listView.smoothScrollToPosition(0)
+        val gamesAdapter = NewGamesAdapter(
+                dataBindingComponent = dataBindingComponent,
+                appExecutors = appExecutors,
+                gameRepository = gamesRepository,
+                achievementsRepository = achievementsRepository,
+                gameClickCallback = { game, imageView ->
+                    activity?.startGameActivity(game.appId, imageView)
+                }
+        )
+        binding.listGames.adapter = gamesAdapter
+        adapter = gamesAdapter
+    }
+
+    private fun initScrollFab() {
+        binding.fab.setOnClickListener {
+            binding.listGames.smoothScrollToPosition(0)
         }
+    }
 
-        // Hides/ shows the FAB if the user scrolls.
-        listView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    private fun initRecyclerView() {
+        binding.listGames.layoutManager = LinearLayoutManager(context)
+        binding.listGames.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= 0) {
-                    scrollToTopButton.hide()
+                    binding.fab.hide()
                 } else {
-                    scrollToTopButton.show()
+                    binding.fab.show()
                 }
             }
         })
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(LibraryViewModel::class.java)
 
         var userId: String
         arguments?.let {
@@ -90,18 +126,25 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
         viewModel.games.observe(this, Observer { gamesResource ->
             val games = gamesResource?.data
             if (games != null) {
-                gamesAdapter.updateGames(games)
+                games.forEach {
+                    val game = it.game
+                    val achievements = it.achievements
+
+                    if (game != null) {
+                        achievementsRepository.getAchievedStatusForAchievementsForGame(game.appId,
+                                achievements)
+                    }
+                }
+                adapter.submitList(games.sortPlaytime())
             }
         })
-
-        return view
     }
 
     /**
      * Retrieved a new game from the presenter that needs to be added to the ListView.
      */
     override fun addGame(game: Game) {
-        gamesAdapter.addGame(game)
+//        gamesAdapter.addGame(game)
     }
 
     /**
@@ -112,7 +155,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * @param achievements list of achievements for said game.
      */
     override fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
-        gamesAdapter.updateAchievementsForGame(appId, achievements)
+//        gamesAdapter.updateAchievementsForGame(appId, achievements)
     }
 
     /**
@@ -139,14 +182,15 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      */
     override fun updateGames(games: List<Game>) {
         Timber.d("Updating games.")
-        gamesAdapter.updateGames(games)
+//        gamesAdapter.updateGames(games)
     }
 
     /**
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        gamesAdapter.updateSearchQuery(query)
+        // TODO fix Search
+//        gamesAdapter.updateSearchQuery(query)
     }
 
     /**
@@ -154,6 +198,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * new sorting method.
      */
     override fun onSortingMethodChanged(sortingMethod: Int) {
-        gamesAdapter.sort(sortingMethod)
+        adapter.submitList(viewModel.games.value?.data, sortingMethod)
     }
 }

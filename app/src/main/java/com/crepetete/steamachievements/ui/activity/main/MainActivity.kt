@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.ProgressBar
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
@@ -25,7 +24,6 @@ import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavbarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
-import javax.inject.Inject
 
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
@@ -248,14 +246,14 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
      * Displays the loading indicator of the view
      */
     override fun showLoading() {
-        loadingIndicator.visibility = View.VISIBLE
+//        loadingIndicator.visibility = View.VISIBLE
     }
 
     /**
      * Hides the loading indicator of the view
      */
     override fun hideLoading() {
-        loadingIndicator.visibility = View.GONE
+//        loadingIndicator.visibility = View.GONE
     }
 
     override fun onDestroy() {

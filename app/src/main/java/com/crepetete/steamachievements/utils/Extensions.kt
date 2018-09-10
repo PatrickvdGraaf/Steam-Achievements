@@ -16,15 +16,9 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
-import io.reactivex.annotations.CheckReturnValue
-import io.reactivex.annotations.SchedulerSupport
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.internal.functions.ObjectHelper
-import io.reactivex.internal.observers.ConsumerSingleObserver
-import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -52,6 +46,36 @@ fun List<Game>.sortByPlaytime(): List<Game> {
         when {
             o1.playTime == o2.playTime -> 0
             o1.playTime > o2.playTime -> -1
+            else -> 1
+        }
+    })
+}
+
+fun List<GameWithAchievements>.sortCompletion(): List<GameWithAchievements> {
+    return sortedWith(Comparator { o1, o2 ->
+        val o1Percentage = o1.game?.getPercentageCompleted() ?: 0F
+        val o2Percentage = o2.game?.getPercentageCompleted() ?: 0F
+        when {
+            o1Percentage == o2Percentage -> 0
+            o1Percentage > o2Percentage -> -1
+            else -> 1
+        }
+    })
+}
+
+fun List<GameWithAchievements>.sortName(): List<GameWithAchievements> {
+    return sortedWith(Comparator { o1, o2 ->
+        val name1 = o1.game?.name ?: ""
+        val name2 = o2.game?.name ?: ""
+        name1.compareTo(name2)
+    })
+}
+
+fun List<GameWithAchievements>.sortPlaytime(): List<GameWithAchievements> {
+    return sortedWith(Comparator { o1, o2 ->
+        when {
+            o1.game?.playTime == o2.game?.playTime -> 0
+            o1.game?.playTime ?: 0L > o2.game?.playTime ?: 0L -> -1
             else -> 1
         }
     })

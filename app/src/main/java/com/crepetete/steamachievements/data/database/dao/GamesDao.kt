@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.data.database.dao
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
+import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.model.Game
 import io.reactivex.Single
 
@@ -21,6 +22,9 @@ interface GamesDao {
     fun getGameAsLiveData(appId: String): LiveData<Game>
 
     @Update(onConflict = REPLACE)
+    fun update(game: Game)
+
+    @Update(onConflict = REPLACE)
     fun update(games: List<Game>)
 
     @Delete
@@ -29,8 +33,9 @@ interface GamesDao {
     @Query("SELECT * FROM games")
     fun getGamesForUser(): Single<List<Game>>
 
+    @Transaction
     @Query("SELECT * FROM games")
-    fun getGamesAsLiveData(): LiveData<List<Game>>
+    fun getGamesAsLiveData(): LiveData<List<GameWithAchievements>>
 
     @Query("SELECT appId FROM games")
     fun getGameIds(): Single<List<String>>
