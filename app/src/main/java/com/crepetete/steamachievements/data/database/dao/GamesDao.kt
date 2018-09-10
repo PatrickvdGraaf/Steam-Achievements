@@ -2,17 +2,16 @@ package com.crepetete.steamachievements.data.database.dao
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
-import android.arch.persistence.room.OnConflictStrategy.IGNORE
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import com.crepetete.steamachievements.model.Game
 import io.reactivex.Single
 
 @Dao
 interface GamesDao {
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = REPLACE)
     fun insert(games: Game)
 
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = REPLACE)
     fun insert(games: List<Game>)
 
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")

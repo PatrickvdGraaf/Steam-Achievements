@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -83,15 +84,15 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
             if (userId.isBlank()) {
                 context.startActivity(LoginActivity.getInstance(context))
             }
-//            viewModel.setAppId(userId)
+            viewModel.setAppId(userId)
         }
 
-//        viewModel.games.observe(this, Observer { gamesResource ->
-//            val games = gamesResource?.data
-//            if (games != null) {
-//                gamesAdapter.updateGames(games)
-//            }
-//        })
+        viewModel.games.observe(this, Observer { gamesResource ->
+            val games = gamesResource?.data
+            if (games != null) {
+                gamesAdapter.updateGames(games)
+            }
+        })
 
         return view
     }

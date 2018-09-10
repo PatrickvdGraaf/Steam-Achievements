@@ -2,17 +2,14 @@ package com.crepetete.steamachievements.data.repository.game
 
 import android.arch.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.api.response.ApiResponse
-import com.crepetete.steamachievements.data.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.data.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.utils.RateLimiter
 import com.crepetete.steamachievements.utils.resource.NetworkBoundResource
 import com.crepetete.steamachievements.utils.resource.Resource
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,29 +34,29 @@ class GameRepository @Inject constructor(
         return object : NetworkBoundResource<List<Game>, BaseGameResponse>(appExecutors) {
             override fun saveCallResult(item: BaseGameResponse) {
                 val games = item.response.games
+                for (game in games) {
+                    game.userId = userId
+                    if (!game.achievementsWereAdded()) {
+                        game.setAchievements(listOf())
+                    }
+                }
+
                 dao.insert(games)
             }
 
-            override fun shouldFetch(data: List<Game>?): Boolean {
-                Timber.i(data?.toString() ?: "No data")
-                return data == null || data.isEmpty()
-                        || gameListRateLimit.shouldFetch(userId)
-            }
+            override fun shouldFetch(data: List<Game>?) = data == null
+                    || data.isEmpty()
+                    || gameListRateLimit.shouldFetch(userId)
 
-            override fun loadFromDb(): LiveData<List<Game>> = dao.getGamesAsLiveData()
+
+            override fun loadFromDb(): LiveData<List<Game>> {
+                return dao.getGamesAsLiveData()
+            }
 
             override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUserAsLiveData(userId)
 
             override fun onFetchFailed() {
                 gameListRateLimit.reset(userId)
-            }
-
-            override fun processResponse(response: ApiSuccessResponse<BaseGameResponse>)
-                    : BaseGameResponse {
-                if (BuildConfig.DEBUG) {
-                    Timber.i(response.body.toString())
-                }
-                return super.processResponse(response)
             }
         }.asLiveData()
     }

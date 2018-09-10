@@ -36,11 +36,8 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGameRepository(executors: AppExecutors,
-                              gamesDao: GamesDao,
-                              api: SteamApiService): GameRepository = GameRepository(executors,
-            gamesDao,
-            api)
+    fun provideGameRepository(executors: AppExecutors, gamesDao: GamesDao, api: SteamApiService)
+            : GameRepository = GameRepository(executors, gamesDao, api)
 
     @Provides
     @Singleton

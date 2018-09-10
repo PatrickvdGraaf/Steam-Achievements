@@ -23,7 +23,7 @@ class LibraryPresenter(libraryView: LibraryView,
      * automatically update the games via an API call when all or zero games we're retrieved.
      */
     override fun onViewCreated() {
-        getGamesFromDb()
+//        getGamesFromDb()
     }
 
     /**

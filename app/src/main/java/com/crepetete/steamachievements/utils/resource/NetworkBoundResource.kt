@@ -4,11 +4,13 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
+import com.crepetete.steamachievements.AppExecutors
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.response.ApiEmptyResponse
 import com.crepetete.steamachievements.data.api.response.ApiErrorResponse
 import com.crepetete.steamachievements.data.api.response.ApiResponse
 import com.crepetete.steamachievements.data.api.response.ApiSuccessResponse
-import com.crepetete.steamachievements.AppExecutors
+import timber.log.Timber
 
 /**
  * A generic class that can provide a resource backed by both the sqlite database and the network.
@@ -93,7 +95,12 @@ abstract class NetworkBoundResource<ResultType, RequestType>
     fun asLiveData() = result as LiveData<Resource<ResultType>>
 
     @WorkerThread
-    protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
+    protected open fun processResponse(response: ApiSuccessResponse<RequestType>): RequestType {
+        if (BuildConfig.DEBUG) {
+            Timber.i(response.body.toString())
+        }
+        return response.body
+    }
 
     @WorkerThread
     protected abstract fun saveCallResult(item: RequestType)

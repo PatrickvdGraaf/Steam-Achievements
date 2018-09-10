@@ -22,8 +22,7 @@ class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
     val games: LiveData<Resource<List<Game>>> = Transformations
             .switchMap(_userId) { id ->
                 id.ifExists {
-                    val d = gameRepo.getGames(it)
-                    d
+                    gameRepo.getGames(it)
                 }
             }
 

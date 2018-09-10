@@ -2,17 +2,13 @@ package com.crepetete.steamachievements.data.repository.achievement
 
 import android.arch.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.SteamApiService
-import com.crepetete.steamachievements.data.api.response.ApiResponse
-import com.crepetete.steamachievements.data.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.data.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.utils.RateLimiter
 import com.crepetete.steamachievements.utils.resource.NetworkBoundResource
 import com.crepetete.steamachievements.utils.resource.Resource
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,30 +29,24 @@ class AchievementsRepository @Inject constructor(
             override fun saveCallResult(item: SchemaResponse) {
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {
-                    dao.insert(achievements)
+                    try {
+                        dao.insert(achievements)
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                    }
                 }
             }
 
-            override fun shouldFetch(data: List<Achievement>?): Boolean {
-                Timber.i(data?.toString() ?: "No data")
-                return data == null || data.isEmpty()
-                        || achievementsListRateLimit.shouldFetch(appId)
-            }
+            override fun shouldFetch(data: List<Achievement>?) = data == null
+                    || data.isEmpty()
+                    || achievementsListRateLimit.shouldFetch(appId)
 
-            override fun loadFromDb(): LiveData<List<Achievement>> = dao.getAchievementsForGameAsLiveData(appId)
+            override fun loadFromDb() = dao.getAchievementsForGameAsLiveData(appId)
 
-            override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = api.getSchemaForGameAsLiveData(appId)
+            override fun createCall() = api.getSchemaForGameAsLiveData(appId)
 
             override fun onFetchFailed() {
                 achievementsListRateLimit.reset(appId)
-            }
-
-            override fun processResponse(response: ApiSuccessResponse<SchemaResponse>)
-                    : SchemaResponse {
-                if (BuildConfig.DEBUG) {
-                    Timber.i(response.body.toString())
-                }
-                return super.processResponse(response)
             }
         }.asLiveData()
     }
