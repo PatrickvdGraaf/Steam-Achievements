@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.activity.helper
+package com.crepetete.steamachievements.ui.common.helper
 
 interface LoadingIndicator {
     fun showLoading()

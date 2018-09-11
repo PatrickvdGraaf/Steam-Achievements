@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.activity.game.graph
+package com.crepetete.steamachievements.ui.common.graph
 
 import android.graphics.DashPathEffect
 import android.graphics.Paint
@@ -6,10 +6,11 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
+import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.utils.sortByLastAchieved
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
-import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import java.util.*
 
@@ -26,7 +27,8 @@ class AchievementsGraphViewUtil {
         /**
          * Shows a Graph where a line indicates the total completion percentage for a game over time.
          */
-        fun setAchievementsOverTime(graphView: GraphView, achievements: List<Achievement>) {
+        fun setAchievementsOverTime(graphView: GraphView, achievements: List<Achievement>,
+                                    onTapListener: OnGraphDateTappedListener? = null) {
             val context = graphView.context
             if (context != null) {
                 val pairs = achievements.sortByLastAchieved()
@@ -39,6 +41,7 @@ class AchievementsGraphViewUtil {
                                     .filter(Achievement::achieved)
                                     .filter {
                                         it.unlockTime!!.before(achievement.unlockTime)
+                                                || it.unlockTime!! == achievement.unlockTime
                                     }
 
                             val completionPercentage = (achievementsBeforeAchievement.size.toDouble()
@@ -50,7 +53,9 @@ class AchievementsGraphViewUtil {
 
                 // Set date label formatter
                 if (pairs.isNotEmpty()) {
-                    val dataPoints = pairs.sortedBy { it.first }.map { DataPoint(it.first, it.second) }
+                    val dataPoints = pairs.sortedBy { it.first }.map {
+                        DateDataPoint(it.first, it.second)
+                    }
 
                     // You can directly pass Date objects to DataPoint-Constructor
                     // This will convert the Date to double via Date#getTime()
@@ -89,6 +94,14 @@ class AchievementsGraphViewUtil {
                     graphView.viewport.isYAxisBoundsManual = true
                     graphView.viewport.setMinY(0.0)
                     graphView.viewport.setMaxY(100.0)
+
+                    if (onTapListener != null) {
+                        series.setOnDataPointTapListener { _, datePoint ->
+                            if (datePoint is DateDataPoint) {
+                                onTapListener.onDateTapped(datePoint.date)
+                            }
+                        }
+                    }
 
                     graphView.addSeries(series)
 

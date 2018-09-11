@@ -32,10 +32,13 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
-import com.crepetete.steamachievements.ui.activity.game.graph.AchievementsGraphViewUtil
+import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
+import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
+import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import com.jjoe64.graphview.GraphView
 import dagger.android.support.DaggerAppCompatActivity
+import java.util.*
 import javax.inject.Inject
 
 
@@ -48,7 +51,7 @@ fun Activity.startGameActivity(appId: String, imageView: ImageView) {
     }, options.toBundle())
 }
 
-class GameActivity : DaggerAppCompatActivity() {
+class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -103,8 +106,7 @@ class GameActivity : DaggerAppCompatActivity() {
         })
 
         sortAchievementsButton.setOnClickListener {
-            val desc = achievementsAdapter.updateSortingMethod()
-            updateSortMethodText(desc)
+            setSortingMethod()
         }
     }
 
@@ -162,7 +164,41 @@ class GameActivity : DaggerAppCompatActivity() {
     private fun setAchievements(achievements: List<Achievement>) {
         achievementsAdapter.setAchievements(achievements)
 
-        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, achievements)
+        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, achievements,
+                this)
+    }
+
+    /**
+     * GraphView was clicked
+     */
+    override fun onDateTapped(date: Date) {
+        val achievements = viewModel.achievements.value?.data?.filter {
+            it.achieved
+        }
+
+        if (achievements != null) {
+            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
+
+            val calTapped = Calendar.getInstance()
+            calTapped.time = date
+            achievements.forEachIndexed { index, achievement ->
+                val calAchievement = Calendar.getInstance()
+                calAchievement.time = achievement.unlockTime
+
+                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
+                        && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
+                        && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
+                                Calendar.DAY_OF_MONTH)) {
+                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
+                            - index)
+                }
+            }
+        }
+    }
+
+    private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {
+        val desc = achievementsAdapter.updateSortingMethod(sortingMethod)
+        updateSortMethodText(desc)
     }
 
     private fun setCollapsingToolbarColors(@ColorInt color: Int) {

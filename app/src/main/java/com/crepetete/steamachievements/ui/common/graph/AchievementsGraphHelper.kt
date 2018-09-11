@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.activity.game.graph
+package com.crepetete.steamachievements.ui.common.graph
 
 import android.graphics.DashPathEffect
 import android.graphics.Paint

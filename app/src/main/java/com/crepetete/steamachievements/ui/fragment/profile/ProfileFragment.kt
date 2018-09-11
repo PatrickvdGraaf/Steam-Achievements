@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
 import com.crepetete.steamachievements.model.Player
-import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 
 class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
     private lateinit var imageViewProfile: ImageView

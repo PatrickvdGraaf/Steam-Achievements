@@ -22,7 +22,7 @@ import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
-import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.NewGamesAdapter
 import com.crepetete.steamachievements.utils.autoCleared

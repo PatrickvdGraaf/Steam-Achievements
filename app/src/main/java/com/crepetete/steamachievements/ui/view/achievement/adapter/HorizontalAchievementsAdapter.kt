@@ -37,20 +37,28 @@ class HorizontalAchievementsAdapter(
     }
 
     fun updateSortingMethod(specificMethod: AchievSortingMethod? = null): String {
-        sortingMethod = specificMethod ?: when (sortingMethod) {
-            AchievSortingMethod.ACHIEVED -> AchievSortingMethod.NOT_ACHIEVED
-            AchievSortingMethod.NOT_ACHIEVED -> AchievSortingMethod.RARITY
-            AchievSortingMethod.RARITY -> AchievSortingMethod.ACHIEVED
+        if (sortingMethod != specificMethod) {
+            sortingMethod = specificMethod ?: when (sortingMethod) {
+                AchievSortingMethod.ACHIEVED -> AchievSortingMethod.NOT_ACHIEVED
+                AchievSortingMethod.NOT_ACHIEVED -> AchievSortingMethod.RARITY
+                AchievSortingMethod.RARITY -> AchievSortingMethod.ACHIEVED
+            }
+            sort()
         }
-        sort()
         return sortingMethod.description
     }
 
     private fun sort() {
         when (sortingMethod) {
-            AchievSortingMethod.ACHIEVED -> { setAchievements(achievements.sortByLastAchieved()) }
-            AchievSortingMethod.NOT_ACHIEVED -> { setAchievements(achievements.sortByNotAchieved()) }
-            AchievSortingMethod.RARITY -> {setAchievements(achievements.sortByRarity())}
+            AchievSortingMethod.ACHIEVED -> {
+                setAchievements(achievements.sortByLastAchieved())
+            }
+            AchievSortingMethod.NOT_ACHIEVED -> {
+                setAchievements(achievements.sortByNotAchieved())
+            }
+            AchievSortingMethod.RARITY -> {
+                setAchievements(achievements.sortByRarity())
+            }
         }
     }
 }

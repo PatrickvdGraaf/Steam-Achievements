@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
 import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import java.text.DecimalFormat

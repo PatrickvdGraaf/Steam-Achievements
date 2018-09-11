@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.view.View
 import android.widget.Toast
-import com.crepetete.steamachievements.ui.activity.helper.LoadingIndicator
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
