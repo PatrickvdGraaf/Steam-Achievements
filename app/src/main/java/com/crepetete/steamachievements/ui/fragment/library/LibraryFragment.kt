@@ -22,9 +22,9 @@ import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.NewGamesAdapter
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.utils.autoCleared
 import com.crepetete.steamachievements.utils.sortPlaytime
 import timber.log.Timber
@@ -124,18 +124,12 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
         }
 
         viewModel.games.observe(this, Observer { gamesResource ->
-            val games = gamesResource?.data
-            if (games != null) {
-                games.forEach {
-                    val game = it.game
-                    val achievements = it.achievements
-
-                    if (game != null) {
-                        achievementsRepository.getAchievedStatusForAchievementsForGame(game.appId,
-                                achievements)
-                    }
+            val gamesWithAchievements = gamesResource?.data
+            if (gamesWithAchievements != null) {
+                gamesWithAchievements.forEach {
+                    it.game?.setAchievements(it.achievements)
                 }
-                adapter.submitList(games.sortPlaytime())
+                adapter.submitList(gamesWithAchievements.sortPlaytime())
             }
         })
     }

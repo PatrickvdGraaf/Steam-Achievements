@@ -54,4 +54,8 @@ interface SteamApiService {
     @GET("ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
     fun getGlobalAchievementStats(@Query("gameid") appId: String)
             : Single<GlobalAchievResponse>
+
+    @GET("ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
+    fun getGlobalAchievementStatsAsLiveData(@Query("gameid") appId: String)
+            : LiveData<ApiResponse<GlobalAchievResponse>>
 }

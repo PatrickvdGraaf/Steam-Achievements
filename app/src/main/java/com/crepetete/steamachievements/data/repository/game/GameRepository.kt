@@ -32,7 +32,8 @@ class GameRepository @Inject constructor(
     fun getGameFromDb(appId: String): LiveData<Game> = gamesDao.getGameAsLiveData(appId)
 
     fun getGames(userId: String): LiveData<Resource<List<GameWithAchievements>>> {
-        return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
+        return object : NetworkBoundResource<List<GameWithAchievements>,
+                BaseGameResponse>(appExecutors) {
             override fun saveCallResult(item: BaseGameResponse) {
                 val games = item.response.games
                 for (game in games) {
@@ -44,7 +45,7 @@ class GameRepository @Inject constructor(
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
                     || data.isEmpty()
-                    || gameListRateLimit.shouldFetch(userId)
+                    || gameListRateLimit.shouldFetch("getGames$userId")
 
 
             override fun loadFromDb(): LiveData<List<GameWithAchievements>> {

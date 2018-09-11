@@ -84,8 +84,7 @@ class AchievementsRepository @Inject constructor(
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?) = achievementsListRateLimit
-                    .shouldFetch("AchievementsForGameAchieved:$appId")
+            override fun shouldFetch(data: List<Achievement>?) = true
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
                 return dao.getAchievementsAsLiveData()

@@ -83,11 +83,7 @@ class NewGamesAdapter(
                 binding.recentlyPlayedTextView.visibility = View.INVISIBLE
             }
 
-            // TODO load achievements
-//            val achievements = achievementsRepository.loadAchievementsForGame(game.appId)
-//            achievements.observe(this=, Observer {
-//
-//            })
+//            achievementsRepository.getAchievedStatusForAchievementsForGame(game.appId, item.achievements)
 
             if (game.hasAchievements()) {
                 binding.achievementsTextView.visibility = View.VISIBLE

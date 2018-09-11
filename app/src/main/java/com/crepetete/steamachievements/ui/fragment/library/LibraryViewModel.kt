@@ -12,7 +12,6 @@ import com.crepetete.steamachievements.utils.resource.Resource
 import javax.inject.Inject
 
 
-
 class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
                                            private var achievementsRepository: AchievementsRepository) : ViewModel() {
     private val _userId = MutableLiveData<UserId>()
@@ -25,35 +24,6 @@ class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
                     gameRepo.getGames(it)
                 }
             }
-
-////    val gamesWithAchievementsHalfData = Transformations
-////            .switchMap(gamesWithAchievementsNoData) { gWithAchievement ->
-////                gWithAchievement.data?.filter {
-////                    it.game != null
-////                }?.forEach {
-////                    achievementsRepository.loadAchievementsForGame(it.game!!.appId)
-////                }
-////            })
-//
-//    val games: LiveData<Resource<List<GameWithAchievements>>> = Transformations
-//            .switchMap(_userId) { id ->
-//                id.ifExists {
-//                    gameRepo.getGames(it)
-//                }
-//            }
-//
-//    init {
-//        // Create the observer which updates the UI.
-//        val nameObserver = object : Observer<Resource<List<GameWithAchievements>>> {
-//            override fun onChanged(t: Resource<List<GameWithAchievements>>?) {
-//                achievementsRepository.loadAchievementsForGame(t.data.)
-//            }
-//
-//        }
-//
-//        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-//        mModel.getCurrentName().observe(this, nameObserver)
-//    }
 
     fun setAppId(appId: String) {
         val update = UserId(appId)

@@ -34,14 +34,16 @@ class GameViewModel @Inject constructor(private var gameRepo: GameRepository,
                 }
             }
 
-    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations.switchMap(achievements) {
-        val id = _appId.value?.id
-        val achievements = it.data
-        if (id != null && achievements != null) {
-            return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id, achievements)
-        }
-        return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
-    }
+    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+            .switchMap(achievements) {
+                val id = _appId.value?.id
+                val achievements = it.data
+                if (id != null && achievements != null) {
+                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+                            achievements)
+                }
+                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+            }
 
     fun setAppId(appId: String) {
         val update = AppId(appId)
