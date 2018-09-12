@@ -12,9 +12,11 @@ import android.widget.TextView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseFragment
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import com.jjoe64.graphview.GraphView
 import java.text.DecimalFormat
 
 class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsView {
@@ -45,6 +47,12 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     private var achievementCount = 0
     private var completionPercentage = 0.0
 
+    private var achievements = listOf<Achievement>()
+    private var allAchievements = listOf<Achievement>()
+
+    // Achievements over Time Graph
+    private lateinit var achievementsOverTimeGraph: GraphView
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -55,6 +63,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         textViewCompletion = view.findViewById(R.id.textview_completion)
         circularProgressBar = view.findViewById(R.id.custom_progressBar)
         bestDayTextView = view.findViewById(R.id.best_day_textView)
+        achievementsOverTimeGraph = view.findViewById(R.id.graph)
 
         circularProgressBar.addListener(ValueAnimator.AnimatorUpdateListener {
             updatePercentageText(it.animatedValue as Float)
@@ -65,12 +74,19 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
                 LinearLayoutManager.HORIZONTAL, false)
 
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (achievementCount > 0) {
             setTotalAchievementsInfo(achievementCount)
             setCompletionPercentage(completionPercentage)
         }
 
-        return view
+        if (achievements.isNotEmpty()) {
+            showLatestAchievements(achievements, allAchievements)
+        }
     }
 
     /**
@@ -97,10 +113,15 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     }
 
     /**
-     * Shows the users latest achievements.
+     * Shows the users latest achievements in the RecyclerView and the graph.
      */
-    override fun showLatestAchievements(achievements: List<Achievement>) {
+    override fun showLatestAchievements(achievements: List<Achievement>,
+                                        allAchievements: List<Achievement>) {
+        this.achievements = achievements
+        this.allAchievements = allAchievements
         achievementsAdapter.setAchievements(achievements)
+
+        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, allAchievements)
     }
 
     /**

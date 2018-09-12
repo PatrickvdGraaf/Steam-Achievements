@@ -33,11 +33,13 @@ class AchievementPresenter(achievementsView: AchievementsView,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    view.setTotalAchievementsInfo(it.filter { achievement ->
+                    view.setTotalAchievementsInfo(it.size)
+
+                    val achievedAchievements = it.filter { achievement ->
                         achievement.achieved
-                    }.size)
+                    }
                     calculateCompletionPercentage(it)
-                    view.showLatestAchievements(getLatestAchievements(it, it.size))
+                    view.showLatestAchievements(getLatestAchievements(it, it.size), it)
                 }, {
                     Timber.e(it)
                 }))

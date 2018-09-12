@@ -1,111 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.fragment.achievements.AchievementsFragment">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/label_total_achievements"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:labelFor="@id/textview_total_achievements"
-        android:paddingBottom="8dp"
-        android:textSize="@dimen/text_label"
-        android:textColor="@color/colorTextLabel"
-        android:paddingTop="16dp"
-        android:text="Total Achievements"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textview_total_achievements"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:textColor="#fff"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label_total_achievements" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/custom_progressBar"
-        app:layout_constraintEnd_toEndOf="@+id/custom_progressBar"
-        app:layout_constraintStart_toStartOf="@+id/custom_progressBar"
-        app:layout_constraintTop_toTopOf="@id/custom_progressBar">
-
-        <TextView
-            android:id="@+id/label_completion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/textview_completion"
-            android:text="Completion"
-            android:textSize="@dimen/text_label"
-            android:textColor="@color/colorTextLabel" />
-
-        <TextView
-            android:id="@+id/textview_completion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#fff"
-            android:textSize="24sp" />
-
-    </LinearLayout>
-
-
-    <com.crepetete.steamachievements.ui.view.CircularProgressBar
-        android:id="@+id/custom_progressBar"
-        android:layout_width="@dimen/progressBar_dimen"
-        android:layout_height="@dimen/progressBar_dimen"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textview_total_achievements"
-        app:progressBarThickness="4dp" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/latest_achievements_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_marginTop="32dp"
-        android:layout_height="wrap_content"
-        app:contentPadding="10dp"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/custom_progressBar"
-        card_view:cardUseCompatPadding="true" />
-
-    <LinearLayout
-        android:id="@+id/container_recent_playtime"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical">
+        tools:context=".ui.fragment.achievements.AchievementsFragment">
 
+        <!-- ACHIEVEMENTS COMPLETION PROGRESSBAR -->
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/label_total_achievements"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:labelFor="@+id/best_day_textView"
-            android:text="Best day:"
+            android:layout_marginTop="16dp"
+            android:labelFor="@id/textview_total_achievements"
+            android:paddingBottom="8dp"
+            android:paddingTop="16dp"
+            android:text="Total Achievements"
             android:textColor="@color/colorTextLabel"
-            android:textSize="@dimen/text_label" />
+            android:textSize="@dimen/text_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/best_day_textView"
+            android:id="@+id/textview_total_achievements"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:textColor="#fff"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_total_achievements" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/custom_progressBar"
+            app:layout_constraintEnd_toEndOf="@+id/custom_progressBar"
+            app:layout_constraintStart_toStartOf="@+id/custom_progressBar"
+            app:layout_constraintTop_toTopOf="@id/custom_progressBar">
+
+            <TextView
+                android:id="@+id/label_completion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/textview_completion"
+                android:text="Completion"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="@dimen/text_label" />
+
+            <TextView
+                android:id="@+id/textview_completion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <com.crepetete.steamachievements.ui.view.CircularProgressBar
+            android:id="@+id/custom_progressBar"
+            android:layout_width="@dimen/progressBar_dimen"
+            android:layout_height="@dimen/progressBar_dimen"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview_total_achievements"
+            app:progressBarThickness="4dp" />
+
+        <!-- ACHIEVEMENTS LIST -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/latest_achievements_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent" />
-    </LinearLayout>
+            android:layout_marginTop="32dp"
+            app:contentPadding="10dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/custom_progressBar"
+            card_view:cardUseCompatPadding="true" />
 
-</android.support.constraint.ConstraintLayout>
+        <!-- RECENT PLAYTIME -->
+        <LinearLayout
+            android:id="@+id/container_recent_playtime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:labelFor="@+id/best_day_textView"
+                android:text="Best day:"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="@dimen/text_label" />
+
+            <TextView
+                android:id="@+id/best_day_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent" />
+        </LinearLayout>
+
+        <!-- ACHIEVEMENTS OVER TIME GRAPH-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/default_margin"
+            android:paddingEnd="@dimen/default_margin"
+            android:paddingStart="@dimen/default_margin"
+            app:layout_constraintTop_toBottomOf="@+id/container_recent_playtime">
+
+            <TextView
+                android:id="@+id/graph_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_margin_quarter"
+                android:layout_marginTop="@dimen/default_margin"
+                android:labelFor="@+id/graph_textView"
+                android:text="@string/header_achievements_over_time"
+                android:textColor="@color/colorTextLabel"
+                android:textSize="@dimen/text_label" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="@dimen/default_margin" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

@@ -6,6 +6,6 @@ import com.crepetete.steamachievements.model.Achievement
 interface AchievementsView : BaseView {
     fun setTotalAchievementsInfo(achievementCount: Int)
     fun setCompletionPercentage(percentage: Double)
-    fun showLatestAchievements(achievements: List<Achievement>)
+    fun showLatestAchievements(achievements: List<Achievement>, allAchievements: List<Achievement>)
     fun showBestDay(day: Pair<String, Int>)
 }
