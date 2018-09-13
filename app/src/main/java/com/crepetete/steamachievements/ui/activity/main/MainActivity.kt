@@ -17,8 +17,8 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavbarInteractionListener
@@ -207,9 +207,11 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
 
         updateTitle()
 
-        transaction.replace(containerId, fragment, currentTag)
-                .addToBackStack(null)
-                .commit()
+        if (fragment != null) {
+            transaction.replace(containerId, fragment, currentTag)
+                    .addToBackStack(null)
+                    .commit()
+        }
         return true
     }
 

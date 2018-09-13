@@ -144,7 +144,7 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
                                                  transition: Transition<in Drawable>?) {
                         if (resource is BitmapDrawable) {
                             Palette.from(resource.bitmap).generate {
-                                val darkSwatch = it.darkMutedSwatch
+                                val darkSwatch = it?.darkMutedSwatch
                                 if (darkSwatch?.rgb != null) {
                                     setCollapsingToolbarColors(darkSwatch.rgb)
                                 }

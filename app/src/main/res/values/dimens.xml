@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="progressBar_dimen">150dp</dimen>
-    <dimen name="text_label">12sp</dimen>
-    <dimen name="text_header">18sp</dimen>
+    <!-- DEFAULT MARGINS -->
+    <dimen name="activity_horizontal_margin">@dimen/default_margin</dimen>
+    <dimen name="activity_vertical_margin">@dimen/default_margin</dimen>
+
     <dimen name="default_margin">16dp</dimen>
     <dimen name="default_margin_halved">8dp</dimen>
     <dimen name="default_margin_quarter">4dp</dimen>
-    <dimen name="text_button">14sp</dimen>
-    <dimen name="text_label_small">12sp</dimen>
 
     <!-- TEXT -->
     <!-- Default text sizes, as per material design guidelines -->
     <!-- https://material.io/design/typography/the-type-system.html#type-scale -->
-    <dimen name="header_one">96sp</dimen>
-    <dimen name="header_two">60sp</dimen>
-    <dimen name="header_three">48sp</dimen>
-    <dimen name="header_four">34sp</dimen>
-    <dimen name="header_five">24sp</dimen>
-    <dimen name="header_six">20sp</dimen>
-    <dimen name="subtitle_one">16sp</dimen>
-    <dimen name="subtitle_two">14sp</dimen>
-    <dimen name="body_one">16sp</dimen>
-    <dimen name="body_two">14sp</dimen>
-    <dimen name="button">14sp</dimen>
+    <dimen name="text_header_one">96sp</dimen>
+    <dimen name="text_header_two">60sp</dimen>
+    <dimen name="text_header_three">48sp</dimen>
+    <dimen name="text_header_four">34sp</dimen>
+    <dimen name="text_header_five">24sp</dimen>
+    <dimen name="text_header_six">20sp</dimen>
+    <dimen name="text_subtitle_one">16sp</dimen>
+    <dimen name="text_subtitle_two">14sp</dimen>
+    <dimen name="text_body_one">16sp</dimen>
+    <dimen name="text_body_two">14sp</dimen>
+    <dimen name="text_button">@dimen/text_body_two</dimen>
+    <dimen name="text_label_small">12sp</dimen>
+
+    <dimen name="text_header">@dimen/text_header_six</dimen>
+    <dimen name="text_label">@dimen/text_body_two</dimen>
+
+
+    <dimen name="progressBar_dimen">150dp</dimen>
     <dimen name="list_achievement_image_size">100dp</dimen>
 
 </resources>

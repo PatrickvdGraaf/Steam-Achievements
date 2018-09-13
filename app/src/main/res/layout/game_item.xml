@@ -93,7 +93,7 @@
                 android:paddingStart="@dimen/default_margin"
                 android:paddingTop="@dimen/default_margin_halved"
                 android:textColor="@color/colorAccent"
-                android:textSize="@dimen/header_five"
+                android:textSize="@dimen/text_header_five"
                 app:layout_constraintBottom_toTopOf="@+id/progressContainer"
                 app:layout_constraintTop_toBottomOf="@+id/game_banner" />
 

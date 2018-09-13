@@ -35,9 +35,6 @@ class AchievementPresenter(achievementsView: AchievementsView,
                 .subscribe({
                     view.setTotalAchievementsInfo(it.size)
 
-                    val achievedAchievements = it.filter { achievement ->
-                        achievement.achieved
-                    }
                     calculateCompletionPercentage(it)
                     view.showLatestAchievements(getLatestAchievements(it, it.size), it)
                 }, {

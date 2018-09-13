@@ -14,10 +14,12 @@ class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(vi
     private lateinit var achievement: Achievement
 
     private val imageViewIcon = view.findViewById<ImageButton>(R.id.icon)
+    private val textViewTitle = view.findViewById<TextView>(R.id.textView_title)
     private val textViewUnlock = view.findViewById<TextView>(R.id.textView_unlock)
 
     fun bind(achievement: Achievement) {
         this.achievement = achievement
+        textViewTitle.text = achievement.displayName
         textViewUnlock.text = achievement.getDateString()
 
         val context = view.context

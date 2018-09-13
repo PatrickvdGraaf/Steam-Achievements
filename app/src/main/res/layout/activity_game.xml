@@ -12,8 +12,8 @@
         <import type="com.crepetete.steamachievements.utils.resource.Resource" />
 
         <!--<variable-->
-            <!--name="game"-->
-            <!--type="Game" />-->
+        <!--name="game"-->
+        <!--type="Game" />-->
 
         <variable
             name="gameResource"
@@ -84,11 +84,10 @@
 
                 <TextView
                     android:id="@+id/playtime_header_textview"
+                    style="@style/AppTheme.Text.Header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/header_playtime"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/text_header" />
+                    android:text="@string/header_playtime" />
 
                 <LinearLayout
                     android:id="@+id/container_recent_playtime"
@@ -99,19 +98,17 @@
                     app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview">
 
                     <TextView
+                        style="@style/AppTheme.Text.Label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/default_margin_quarter"
                         android:labelFor="@+id/recently_played_textView"
-                        android:text="@string/header_recent_playtime"
-                        android:textColor="@color/colorTextLabel"
-                        android:textSize="@dimen/text_label" />
+                        android:text="@string/header_recent_playtime" />
 
                     <TextView
                         android:id="@+id/recently_played_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorAccent"/>
+                        style="@style/AppTheme.Text.Value"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -149,11 +146,10 @@
                     app:layout_constraintTop_toBottomOf="@+id/container_total_playtime">
 
                     <TextView
+                        style="@style/AppTheme.Text.Header"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/header_achievements"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="@dimen/text_header" />
+                        android:text="@string/header_achievements" />
 
                     <TextView
                         android:id="@+id/sorting_textview"
@@ -205,7 +201,7 @@
                 <com.jjoe64.graphview.GraphView
                     android:id="@+id/graph"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="260dp"
                     android:layout_marginTop="@dimen/default_margin"
                     app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
             </android.support.constraint.ConstraintLayout>

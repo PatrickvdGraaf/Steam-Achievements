@@ -9,19 +9,16 @@
         android:id="@+id/icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:cardElevation="4dp"
-        card_view:cardUseCompatPadding="true"
         app:cardBackgroundColor="@color/colorPrimaryLight"
-        app:cardCornerRadius="2dp">
+        app:cardCornerRadius="2dp"
+        card_view:cardElevation="4dp"
+        card_view:cardUseCompatPadding="true">
 
         <ImageButton
             android:id="@+id/icon"
             android:layout_width="@dimen/list_achievement_image_size"
             android:layout_height="@dimen/list_achievement_image_size"
-            android:background="#00000000"
-            android:foreground="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
+            style="@style/AppTheme.Achievements.ListItem.Icon"
             android:src="@drawable/ic_help_outline_24dp"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -30,16 +27,21 @@
     </android.support.v7.widget.CardView>
 
     <TextView
-        android:id="@+id/textView_unlock"
-        android:layout_width="match_parent"
+        android:id="@+id/textView_title"
+        style="@style/AppTheme.Achievements.ListItem.Text.Title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:lines="2"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
-        android:textColor="@color/colorTextLabel"
-        android:textSize="12sp"
+        android:paddingBottom="@dimen/default_margin_quarter"
         app:layout_constraintEnd_toEndOf="@id/icon_container"
         app:layout_constraintStart_toStartOf="@id/icon_container"
         app:layout_constraintTop_toBottomOf="@+id/icon_container" />
+
+    <TextView
+        android:id="@+id/textView_unlock"
+        style="@style/AppTheme.Achievements.ListItem.Text.Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/icon_container"
+        app:layout_constraintStart_toStartOf="@id/icon_container"
+        app:layout_constraintTop_toBottomOf="@+id/textView_title" />
 </android.support.constraint.ConstraintLayout>

@@ -8,4 +8,48 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- CONTAINER -->
+
+    <!-- TEXT -->
+    <style name="AppTheme.Text.Header" parent="AppTheme">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_header</item>
+    </style>
+
+    <style name="AppTheme.Text.Label" parent="AppTheme">
+        <item name="android:textColor">@color/colorTextLabel</item>
+        <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:layout_marginBottom">@dimen/default_margin_quarter</item>
+    </style>
+
+    <style name="AppTheme.Text.Value" parent="AppTheme">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <!-- ACHIEVEMENTS-->
+    <style name="AppTheme.Achievements.ListItem.Icon" parent="AppTheme">
+        <item name="android:background">#00000000</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="AppTheme.Achievements.ListItem.Text" parent="AppTheme">
+        <item name="android:paddingEnd">@dimen/default_margin_quarter</item>
+        <item name="android:paddingStart">@dimen/default_margin_quarter</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Achievements.ListItem.Text.Title" parent="AppTheme.Achievements.ListItem.Text">
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_body_two</item>
+    </style>
+
+    <style name="AppTheme.Achievements.ListItem.Text.Date" parent="AppTheme.Achievements.ListItem.Text">
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/colorTextLabel</item>
+        <item name="android:textSize">@dimen/text_label_small</item>
+    </style>
 </resources>

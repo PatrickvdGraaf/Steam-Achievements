@@ -104,7 +104,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     private fun initRecyclerView() {
         binding.listGames.layoutManager = LinearLayoutManager(context)
         binding.listGames.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= 0) {
                     binding.fab.hide()
@@ -116,7 +116,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
 
         var userId: String
         arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID)
+            userId = it.getString(KEY_PLAYER_ID) ?: ""
             if (userId.isBlank()) {
                 context.startActivity(LoginActivity.getInstance(context))
             }
