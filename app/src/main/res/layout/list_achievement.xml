@@ -10,20 +10,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/colorPrimaryLight"
-        app:cardCornerRadius="2dp"
-        card_view:cardElevation="4dp"
+        app:cardCornerRadius="@dimen/default_margin_quarter"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        card_view:cardElevation="@dimen/default_margin_quarter"
         card_view:cardUseCompatPadding="true">
 
         <ImageButton
             android:id="@+id/icon"
+            style="@style/AppTheme.Achievements.ListItem.Icon"
             android:layout_width="@dimen/list_achievement_image_size"
             android:layout_height="@dimen/list_achievement_image_size"
-            style="@style/AppTheme.Achievements.ListItem.Icon"
-            android:src="@drawable/ic_help_outline_24dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:contentDescription="@string/contentDescAchievIcon"
+            android:src="@drawable/ic_help_outline_24dp" />
     </android.support.v7.widget.CardView>
 
     <TextView
@@ -32,16 +33,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/default_margin_quarter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/icon_container"
         app:layout_constraintStart_toStartOf="@id/icon_container"
         app:layout_constraintTop_toBottomOf="@+id/icon_container" />
-
-    <TextView
-        android:id="@+id/textView_unlock"
-        style="@style/AppTheme.Achievements.ListItem.Text.Date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/icon_container"
-        app:layout_constraintStart_toStartOf="@id/icon_container"
-        app:layout_constraintTop_toBottomOf="@+id/textView_title" />
 </android.support.constraint.ConstraintLayout>

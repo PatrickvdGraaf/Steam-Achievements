@@ -94,7 +94,8 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
 
     private fun animateBackground(bitmap: Bitmap) {
         Palette.from(bitmap).generate {
-            val swatch = it?.darkMutedSwatch
+            val swatch = it?.darkVibrantSwatch
+
 
             if (swatch?.rgb != null) {
                 container.setBackgroundColorAnimated(

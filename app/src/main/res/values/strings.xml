@@ -7,7 +7,7 @@
     <string name="label_total_playtime">Total playtime:</string>
     <string name="abbr_minutes">m</string>
     <string name="abbr_hours">h</string>
-    <string name="action_sort">Sort</string>
+    <string name="action_sort">SORT</string>
     <string name="action_search">Search</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_library">Library</string>
@@ -25,4 +25,7 @@
     <string name="header_achievements">Achievements</string>
     <string name="sorting_method_achieved">Sorted by: Achieved</string>
     <string name="header_achievements_over_time">Achievements over time</string>
+    <string name="label_total_achievements">Total Achievements</string>
+    <string name="label_achievement_completion">Completion</string>
+    <string name="contentDescAchievIcon">Achievement icon.</string>
 </resources>

@@ -33,7 +33,7 @@
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="184dp"
+            android:layout_height="@dimen/headerImageHeight"
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -80,13 +80,16 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/default_margin">
+                android:paddingBottom="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin">
 
                 <TextView
                     android:id="@+id/playtime_header_textview"
                     style="@style/AppTheme.Text.Header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     android:text="@string/header_playtime" />
 
                 <LinearLayout
@@ -95,6 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     android:orientation="vertical"
+                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview">
 
                     <TextView
@@ -106,9 +111,9 @@
 
                     <TextView
                         android:id="@+id/recently_played_textView"
+                        style="@style/AppTheme.Text.Value"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/AppTheme.Text.Value"/>
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -117,28 +122,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     android:orientation="vertical"
+                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     app:layout_constraintTop_toBottomOf="@+id/container_recent_playtime">
 
                     <TextView
+                        style="@style/AppTheme.Text.Label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/default_margin_quarter"
                         android:labelFor="@+id/total_played_textView"
-                        android:text="@string/header_total_playtime"
-                        android:textColor="@color/colorTextLabel"
-                        android:textSize="@dimen/text_label" />
+                        android:text="@string/header_total_playtime" />
 
                     <TextView
                         android:id="@+id/total_played_textView"
+                        style="@style/AppTheme.Text.Value"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorAccent" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/container_achievements_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin"
                     android:layout_marginTop="@dimen/default_margin"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toStartOf="@id/button_sort_achievements"
@@ -153,33 +159,27 @@
 
                     <TextView
                         android:id="@+id/sorting_textview"
+                        style="@style/AppTheme.Text.Label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/sorting_method_achieved"
-                        android:textColor="@color/colorTextLabel"
-                        android:textSize="@dimen/text_label" />
+                        android:text="@string/sorting_method_achieved" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/button_sort_achievements"
+                    style="@style/AppTheme.Button.Clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/transparant"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
                     android:text="@string/action_sort"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/text_button"
                     app:layout_constraintBottom_toBottomOf="@+id/container_achievements_header"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/container_achievements_header" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/latest_achievements_recyclerview"
+                    style="@style/AppTheme.Achievements.RecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:contentPadding="10dp"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -188,14 +188,14 @@
 
                 <TextView
                     android:id="@+id/graph_textView"
+                    style="@style/AppTheme.Text.Label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/default_margin_quarter"
                     android:layout_marginTop="@dimen/default_margin"
                     android:labelFor="@+id/graph_textView"
+                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     android:text="@string/header_achievements_over_time"
-                    android:textColor="@color/colorTextLabel"
-                    android:textSize="@dimen/text_label"
                     app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview" />
 
                 <com.jjoe64.graphview.GraphView
@@ -203,6 +203,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="260dp"
                     android:layout_marginTop="@dimen/default_margin"
+                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
             </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>

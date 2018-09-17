@@ -8,6 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- BUTTON -->
+    <style name="AppTheme.Button.Clear" parent="AppTheme">
+        <item name="android:background">@color/transparant</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_button</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- CONTAINER -->
 
     <!-- TEXT -->
@@ -26,12 +37,18 @@
         <item name="android:textColor">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Text.Value.Big" parent="AppTheme.Text.Value">
+        <item name="android:textSize">@dimen/text_header_five</item>
+    </style>
+
     <!-- ACHIEVEMENTS-->
     <style name="AppTheme.Achievements.ListItem.Icon" parent="AppTheme">
         <item name="android:background">#00000000</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:width">@dimen/list_achievement_image_size</item>
+        <item name="android:height">@dimen/list_achievement_image_size</item>
     </style>
 
     <style name="AppTheme.Achievements.ListItem.Text" parent="AppTheme">
@@ -51,5 +68,11 @@
         <item name="android:maxLines">2</item>
         <item name="android:textColor">@color/colorTextLabel</item>
         <item name="android:textSize">@dimen/text_label_small</item>
+    </style>
+
+    <style name="AppTheme.Achievements.RecyclerView" parent="AppTheme.Achievements.ListItem.Text">
+        <item name="android:clipToPadding">false</item>
+        <item name="paddingStart">@dimen/default_margin</item>
+        <item name="paddingEnd">@dimen/default_margin</item>
     </style>
 </resources>

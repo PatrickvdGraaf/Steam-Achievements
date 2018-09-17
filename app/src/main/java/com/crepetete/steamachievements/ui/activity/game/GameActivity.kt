@@ -38,6 +38,7 @@ import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSorting
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import com.jjoe64.graphview.GraphView
 import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
@@ -105,6 +106,13 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
             } ?: listOf())
         })
 
+        viewModel.accentColor.observe(this, Observer {
+            if (it != null) {
+                playtime_header_textview.setTextColor(it)
+                totalPlayedTextView.setTextColor(it)
+            }
+        })
+
         sortAchievementsButton.setOnClickListener {
             setSortingMethod()
         }
@@ -144,9 +152,19 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
                                                  transition: Transition<in Drawable>?) {
                         if (resource is BitmapDrawable) {
                             Palette.from(resource.bitmap).generate {
-                                val darkSwatch = it?.darkMutedSwatch
-                                if (darkSwatch?.rgb != null) {
-                                    setCollapsingToolbarColors(darkSwatch.rgb)
+                                val dominantSwatch = it?.dominantSwatch
+                                val lightMutedSwatch = it?.lightMutedSwatch
+                                val lightVibrantSwatch = it?.lightVibrantSwatch
+                                val darkVibrantSwatch = it?.darkVibrantSwatch
+                                val darkMutedSwatch = it?.darkMutedSwatch
+                                if (darkVibrantSwatch?.rgb != null) {
+                                    setCollapsingToolbarColors(darkVibrantSwatch.rgb)
+                                }
+
+                                if (darkMutedSwatch?.rgb != null) {
+                                    scrollView.setBackgroundColor(darkMutedSwatch.rgb)
+//                                    viewModel.accentColor.postValue(darkMutedSwatch.titleTextColor)
+
                                 }
 
                                 banner.setImageDrawable(resource)
