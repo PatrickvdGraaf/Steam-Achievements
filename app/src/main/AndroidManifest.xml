@@ -32,6 +32,8 @@
         <activity
             android:name="com.crepetete.steamachievements.ui.activity.game.GameActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".ui.fragment.achievement.AchievementActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"/>
     </application>
 
 </manifest>

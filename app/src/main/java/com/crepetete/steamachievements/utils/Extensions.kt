@@ -3,13 +3,14 @@ package com.crepetete.steamachievements.utils
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Build
+import android.support.annotation.IdRes
 import android.support.annotation.Size
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -161,13 +162,7 @@ fun Int.toPercentage(from: Int): Long {
     return this * 100L / from
 }
 
-fun Context.isConnectedToInternet(): Boolean {
-    val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-    return activeNetwork?.isConnectedOrConnecting == true
-}
-
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 300) {
+fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
     if (colorTo == null) {
         return
     }
@@ -213,3 +208,20 @@ fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: 
 fun Date.getDaysFromNow(): Long {
     return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
 }
+
+fun <T : View> Activity.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+fun <T : View> Dialog.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)

@@ -32,17 +32,21 @@ data class Achievement(
 ) {
     fun getDateString(): String {
         return if (unlockTime != null) {
-            DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
+            DateFormat.format("HH:mm\ndd-MM-yyyy", unlockTime).toString()
         } else {
             "Locked"
         }
     }
 
-    fun getDateStringNoTime(): String? {
+    fun getDateStringNoBreak(): String {
+        return getDateString().replace("\n", " - ")
+    }
+
+    fun getDateStringNoTime(): String {
         return if (unlockTime != null) {
             DateFormat.format("dd-MM-yyyy", unlockTime).toString()
         } else {
-            null
+            "Locked"
         }
     }
 }

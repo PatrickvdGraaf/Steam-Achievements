@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.view.achievement.adapter
 
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
@@ -8,6 +7,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.ui.fragment.achievement.AchievementDialog
 
 
 class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
@@ -23,10 +23,8 @@ class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(vi
         val context = view.context
         if (context != null) {
             imageViewIcon.setOnClickListener {
-                AlertDialog.Builder(context)
-                        .setTitle(achievement.displayName)
-                        .setMessage(getDescription(achievement))
-                        .show()
+                val alert = AchievementDialog(context, achievement)
+                alert.show()
             }
 
             Glide.with(context)

@@ -24,7 +24,7 @@
     <dimen name="text_button">@dimen/text_body_two</dimen>
     <dimen name="text_label_small">12sp</dimen>
 
-    <dimen name="text_header">@dimen/text_header_six</dimen>
+    <dimen name="text_header">@dimen/text_header_five</dimen>
     <dimen name="text_label">@dimen/text_body_two</dimen>
 
 

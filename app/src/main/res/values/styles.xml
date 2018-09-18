@@ -10,7 +10,7 @@
 
     <!-- BUTTON -->
     <style name="AppTheme.Button.Clear" parent="AppTheme">
-        <item name="android:background">@color/transparant</item>
+        <item name="android:background">@color/transparent</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
@@ -38,7 +38,7 @@
     </style>
 
     <style name="AppTheme.Text.Value.Big" parent="AppTheme.Text.Value">
-        <item name="android:textSize">@dimen/text_header_five</item>
+        <item name="android:textSize">@dimen/text_header_six</item>
     </style>
 
     <!-- ACHIEVEMENTS-->
