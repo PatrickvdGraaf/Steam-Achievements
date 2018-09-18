@@ -8,6 +8,7 @@
     <color name="colorTextLabel">#a3a3a3</color>
 
     <color name="transparent">#00000000</color>
+    <color name="transparent_overlay">#78000000</color>
 
     <color name="colorGameViewHolderBackground">@color/colorPrimaryDark</color>
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>

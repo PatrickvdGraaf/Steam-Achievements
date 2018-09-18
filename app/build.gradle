@@ -63,6 +63,7 @@ dependencies {
     // Dagger 2e
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
+    implementation 'com.android.support:support-v4:28.0.0-rc02'
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 

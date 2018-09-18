@@ -18,15 +18,15 @@ class HorizontalAchievementsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.list_achievement, parent, false)
-        return AchievementViewHolder(view)
+        return AchievementViewHolder(view, ArrayList(achievements.map {
+            it.name
+        }))
     }
 
-    override fun getItemCount(): Int {
-        return achievements.size
-    }
+    override fun getItemCount() = achievements.size
 
     override fun onBindViewHolder(holder: AchievementViewHolder, position: Int) {
-        holder.bind(achievements[position])
+        holder.bind(achievements[position], position)
     }
 
     fun setAchievements(achievements: List<Achievement>) {

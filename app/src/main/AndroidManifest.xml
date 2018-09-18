@@ -32,8 +32,11 @@
         <activity
             android:name="com.crepetete.steamachievements.ui.activity.game.GameActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".ui.fragment.achievement.AchievementActivity"
-            android:theme="@style/Theme.AppCompat.Dialog"/>
+        <activity
+            android:name=".ui.fragment.achievement.AchievementActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <!-- PAGER -->
+        <activity android:name=".ui.activity.pager.TransparentPagerActivity"
+            android:theme="@style/AppTheme.Transparent" />
     </application>
-
 </manifest>

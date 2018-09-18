@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 @Dao
 interface AchievementsDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(list: List<Achievement>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -22,6 +22,9 @@ interface AchievementsDao {
 
     @Query("SELECT * FROM achievements WHERE appId=:appId AND name=:name")
     fun getAchievements(appId: String, name: String?): Single<List<Achievement>>
+
+    @Query("SELECT * FROM achievements WHERE name=:name")
+    fun getAchievement(name: String): LiveData<List<Achievement>>
 
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     fun getAchievementsForGame(appId: String): Single<List<Achievement>>

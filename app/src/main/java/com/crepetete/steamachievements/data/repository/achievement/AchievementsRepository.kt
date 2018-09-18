@@ -100,4 +100,8 @@ class AchievementsRepository @Inject constructor(
 
         }.asLiveData()
     }
+
+    fun getAchievement(name: String): LiveData<List<Achievement>> {
+        return dao.getAchievement(name)
+    }
 }
