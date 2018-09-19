@@ -5,6 +5,7 @@ import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.api.response.ApiResponse
 import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
+import com.crepetete.steamachievements.data.api.response.achievement.GlobalAchievResponse
 import com.crepetete.steamachievements.data.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.repository.user.UserRepository
@@ -98,6 +99,34 @@ class AchievementsRepository @Inject constructor(
                 achievementsListRateLimit.reset(appId)
             }
 
+        }.asLiveData()
+    }
+
+    fun getGlobalAchievementStats(appId: String, achievements: List<Achievement>)
+            : LiveData<Resource<List<Achievement>>> {
+        return object : NetworkBoundResource<List<Achievement>, GlobalAchievResponse>(appExecutors) {
+            override fun saveCallResult(item: GlobalAchievResponse) {
+                item.achievementpercentages.achievements.forEach {response ->
+                    achievements.filter {
+                        it.name == response.name
+                    }.forEach {
+                        it.percentage = response.percent
+                    }
+                }
+                return dao.update(achievements)
+            }
+
+            override fun shouldFetch(data: List<Achievement>?): Boolean {
+                return true
+            }
+
+            override fun loadFromDb(): LiveData<List<Achievement>> {
+                return dao.getAchievementsForGameAsLiveData(appId)
+            }
+
+            override fun createCall(): LiveData<ApiResponse<GlobalAchievResponse>> {
+                return api.getGlobalAchievementStatsAsLiveData(appId)
+            }
         }.asLiveData()
     }
 

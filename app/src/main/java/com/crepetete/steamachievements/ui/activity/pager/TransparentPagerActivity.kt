@@ -66,8 +66,5 @@ class TransparentPagerActivity : DaggerAppCompatActivity() {
 
         // Set ViewPager settings.
         pager.setPageTransformer(true, ZoomOutPageTransformer())
-//        pager.setOnClickListener {
-//            onBackPressed()
-//        }
     }
 }

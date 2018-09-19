@@ -39,22 +39,32 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
                 }
             }
 
-    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-            .switchMap(achievements) {
-                val id = _appId.value?.id
-                val achievements = it.data
-                if (id != null && achievements != null) {
-                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-                            achievements)
-                }
-                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
-            }
+//    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+//            .switchMap(achievements) {
+//                val id = _appId.value?.id
+//                val achievements = it.data
+//                if (id != null && achievements != null) {
+//                    achievementsRepo.getGlobalAchievementStats(id, achievements)
+//                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+//                            achievements)
+//                }
+//                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+//            }
 
 
     val accentColor: MutableLiveData<Int> = MutableLiveData()
 
     init {
         accentColor.postValue(ContextCompat.getColor(application, R.color.colorAccent))
+    }
+
+    fun updateAchievementData(achievements: List<Achievement>) {
+        val id = _appId.value?.id
+        if (id != null) {
+            achievementsRepo.getGlobalAchievementStats(id, achievements)
+            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+                    achievements)
+        }
     }
 
     fun setAppId(appId: String) {
