@@ -3,7 +3,6 @@ package com.crepetete.steamachievements.ui.fragment.library
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.databinding.DataBindingComponent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -23,7 +22,8 @@ import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.common.NewGamesAdapter
+import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
+import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.utils.autoCleared
 import com.crepetete.steamachievements.utils.sortPlaytime
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 
 class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
-        NavbarInteractionListener {
+        NavBarInteractionListener {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -45,9 +45,9 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     @Inject
     lateinit var achievementsRepository: AchievementsRepository
 
-    var adapter by autoCleared<NewGamesAdapter>()
+    var adapter by autoCleared<GamesAdapter>()
 
-    var dataBindingComponent: DataBindingComponent = FragmentDataBindingComponent(this)
+    private var dataBindingComponent = FragmentDataBindingComponent(this)
 
     var binding by autoCleared<FragmentLibraryBinding>()
 
@@ -82,11 +82,10 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
         initScrollFab()
         initRecyclerView()
 
-        val gamesAdapter = NewGamesAdapter(
+        val gamesAdapter = GamesAdapter(
                 dataBindingComponent = dataBindingComponent,
                 appExecutors = appExecutors,
                 gameRepository = gamesRepository,
-                achievementsRepository = achievementsRepository,
                 gameClickCallback = { game, imageView ->
                     activity?.startGameActivity(game.appId, imageView)
                 }
@@ -191,7 +190,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * Listener method for the sorting button of this fragments Activity, Updates the adapter with a
      * new sorting method.
      */
-    override fun onSortingMethodChanged(sortingMethod: Int) {
+    override fun onSortingMethodChanged(sortingMethod: SortingType) {
         adapter.submitList(viewModel.games.value?.data, sortingMethod)
     }
 }

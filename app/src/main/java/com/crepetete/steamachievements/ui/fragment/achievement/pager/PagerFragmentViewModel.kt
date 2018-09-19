@@ -7,6 +7,9 @@ import com.crepetete.steamachievements.data.repository.achievement.AchievementsR
 import com.crepetete.steamachievements.model.Achievement
 import javax.inject.Inject
 
+/**
+ * ViewModel for an [AchievementPagerFragment]. Holds an Achievement object for the view to present.
+ */
 class PagerFragmentViewModel @Inject constructor(
         private val achievementRepository: AchievementsRepository) : ViewModel() {
 
@@ -16,7 +19,7 @@ class PagerFragmentViewModel @Inject constructor(
     val achievement: LiveData<Achievement>
         get() = _achievement
 
-    fun setAchievementName(name: String) {
-        achievements = achievementRepository.getAchievement(name)
+    fun setAchievementInfo(name: String, appId: String) {
+        achievements = achievementRepository.getAchievement(name, appId)
     }
 }

@@ -55,7 +55,7 @@ class LoginPresenter(private val loginView: LoginView,
 
                     if (!userId.isNullOrBlank()) {
                         // Save the new Id
-                        userRepository.putUserId(userId)
+                        userRepository.putUserId(userId!!)
                         openMainActivity(userId)
                     }
                 }

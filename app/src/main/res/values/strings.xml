@@ -28,4 +28,5 @@
     <string name="label_total_achievements">Total Achievements</string>
     <string name="label_achievement_completion">Completion</string>
     <string name="contentDescAchievIcon">Achievement icon.</string>
+    <string name="msg_achievements_loading">Loading Achievements...</string>
 </resources>

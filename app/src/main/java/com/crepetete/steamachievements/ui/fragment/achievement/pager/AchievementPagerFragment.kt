@@ -8,7 +8,7 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.CardView
@@ -31,7 +31,7 @@ import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 /**
- * A simple [Fragment] subclass.
+ * ViewPager Fragment that shows a Dialog-like view for an [Achievement].
  */
 class AchievementPagerFragment : DaggerFragment() {
     @Inject
@@ -39,12 +39,14 @@ class AchievementPagerFragment : DaggerFragment() {
 
     private lateinit var viewModel: PagerFragmentViewModel
 
-    private lateinit var iconView: ImageView
     private lateinit var cardView: CardView
+    private lateinit var iconContent: CardView
+    private lateinit var scrollView: ScrollView
+    private lateinit var iconView: ImageView
     private lateinit var nameView: TextView
     private lateinit var dateView: TextView
     private lateinit var descView: TextView
-    private lateinit var content: ScrollView
+    private lateinit var content: ConstraintLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -57,10 +59,13 @@ class AchievementPagerFragment : DaggerFragment() {
         dateView = view.findViewById(R.id.achievement_date_textview)
         descView = view.findViewById(R.id.achievement_desc_textview)
         content = view.findViewById(R.id.content)
+        scrollView = view.findViewById(R.id.scrollView)
+        iconContent = view.findViewById(R.id.icon_card_view)
 
         content.setOnClickListener {
-            this.activity?.onBackPressed()
+            activity?.onBackPressed()
         }
+
         return view
     }
 
@@ -70,8 +75,9 @@ class AchievementPagerFragment : DaggerFragment() {
                 .get(PagerFragmentViewModel::class.java)
 
         val achievementName = arguments?.getString(INTENT_KEY_NAME)
-        if (achievementName != null) {
-            viewModel.setAchievementName(achievementName)
+        val achievementAppId = arguments?.getString(INTENT_KEY_APP_ID)
+        if (achievementName != null && achievementAppId != null) {
+            viewModel.setAchievementInfo(achievementName, achievementAppId)
         }
 
         viewModel.achievements.observe(this, Observer {
@@ -125,35 +131,30 @@ class AchievementPagerFragment : DaggerFragment() {
                                         cardView.setBackgroundColorAnimated(
                                                 ContextCompat.getColor(context, R.color.colorPrimary),
                                                 darkMutedSwatch.rgb, 300)
-                                        iconView.setBackgroundColorAnimated(
+                                        iconContent.setBackgroundColorAnimated(
                                                 ContextCompat.getColor(context,
                                                         R.color.colorPrimaryDark),
                                                 darkMutedSwatch.rgb)
-
-//                                    nameView.setTextColor(darkVibrantSwatch.titleTextColor)
                                         dateView.setTextColor(darkMutedSwatch.bodyTextColor)
                                     } else if (darkVibrantSwatch != null) {
                                         cardView.setBackgroundColorAnimated(
                                                 ContextCompat.getColor(context, R.color.colorPrimary),
                                                 darkVibrantSwatch.rgb, 300)
-                                        iconView.setBackgroundColorAnimated(
+                                        iconContent.setBackgroundColorAnimated(
                                                 ContextCompat.getColor(context,
                                                         R.color.colorPrimaryDark),
                                                 darkVibrantSwatch.rgb)
-
-//                                    nameView.setTextColor(darkVibrantSwatch.titleTextColor)
-                                        dateView.setTextColor(darkVibrantSwatch.bodyTextColor)
                                     }
                                 }
                             }
                             return false
                         }
-
                     }).into(iconView)
         }
     }
 
     companion object {
         const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
+        const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"
     }
 }

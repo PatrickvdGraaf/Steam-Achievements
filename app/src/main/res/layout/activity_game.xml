@@ -178,6 +178,8 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/latest_achievements_recyclerview"
                     style="@style/AppTheme.Achievements.RecyclerView"
+                    android:paddingStart="@dimen/default_margin_halved"
+                    android:paddingEnd="@dimen/default_margin_halved"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
@@ -202,6 +204,8 @@
                     android:id="@+id/graph"
                     android:layout_width="match_parent"
                     android:layout_height="260dp"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginStart="@dimen/default_margin"
                     android:layout_marginTop="@dimen/default_margin"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingStart="@dimen/default_margin"

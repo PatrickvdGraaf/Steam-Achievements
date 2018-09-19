@@ -5,6 +5,9 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class PagerFragmentModule {
+    @Module
+    class AchievementPagerModule
+
     @ContributesAndroidInjector(modules = [(AchievementPagerModule::class)])
     abstract fun provideAchievementPagerModule(): AchievementPagerFragment
 }

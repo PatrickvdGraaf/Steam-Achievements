@@ -5,7 +5,8 @@ import com.crepetete.steamachievements.base.BasePresenter
 import com.crepetete.steamachievements.data.repository.achievement.AchievementRepository
 import com.crepetete.steamachievements.data.repository.game.GamesRepository
 import com.crepetete.steamachievements.model.Game
-import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.common.adapter.games.GameAdapterListener
+import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -16,8 +17,7 @@ import timber.log.Timber
 class LibraryPresenter(libraryView: LibraryView,
                        private val gamesRepository: GamesRepository,
                        private val achievementsRepository: AchievementRepository)
-    : BasePresenter<LibraryView>(libraryView),
-        GamesAdapter.Listener {
+    : BasePresenter<LibraryView>(libraryView), GameAdapterListener {
     /**
      * When the view is created, we first retreive all games from the Database. This call will
      * automatically update the games via an API call when all or zero games we're retrieved.

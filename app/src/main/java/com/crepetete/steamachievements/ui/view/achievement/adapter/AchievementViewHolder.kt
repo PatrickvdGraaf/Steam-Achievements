@@ -1,7 +1,5 @@
 package com.crepetete.steamachievements.ui.view.achievement.adapter
 
-import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
@@ -9,12 +7,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerActivity
-import javax.annotation.Nonnull
 
-
-class AchievementViewHolder(private val view: View,
-                            private val names: ArrayList<String?>) : RecyclerView.ViewHolder(view) {
+class AchievementViewHolder(private val view: View, private val funShowPager: (Int) -> Unit)
+    : RecyclerView.ViewHolder(view) {
     private lateinit var achievement: Achievement
 
     private val imageViewIcon = view.findViewById<ImageButton>(R.id.icon)
@@ -30,10 +25,7 @@ class AchievementViewHolder(private val view: View,
         val context = view.context
         if (context != null) {
             imageViewIcon.setOnClickListener {
-                //                val alert = AchievementDialog(context, achievement)
-//                alert.show()
-
-                showAchievementPager(context)
+                showAchievementPager()
             }
 
             Glide.with(context)
@@ -46,12 +38,8 @@ class AchievementViewHolder(private val view: View,
         }
     }
 
-    private fun showAchievementPager(@Nonnull context: Context) {
-        val intent = Intent(context, TransparentPagerActivity::class.java)
-        intent.putExtra(TransparentPagerActivity.INTENT_KEY_INDEX, startingIndex)
-        intent.putExtra(TransparentPagerActivity.INTENT_KEY_NAME, names)
-
-        context.startActivity(intent)
+    private fun showAchievementPager() {
+        funShowPager(startingIndex)
     }
 
     private fun getDescription(achievement: Achievement): String {

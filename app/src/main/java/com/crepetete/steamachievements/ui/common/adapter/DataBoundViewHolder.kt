@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.common
+package com.crepetete.steamachievements.ui.common.adapter
 
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView

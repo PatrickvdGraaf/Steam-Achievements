@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.common
+package com.crepetete.steamachievements.ui.common.adapter.games
 
 import android.arch.lifecycle.LifecycleObserver
 import android.databinding.DataBindingComponent
@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
 import android.support.v7.util.DiffUtil
@@ -20,19 +19,19 @@ import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.database.model.GameWithAchievements
-import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.databinding.GameItemBinding
 import com.crepetete.steamachievements.model.Game
-import com.crepetete.steamachievements.ui.fragment.library.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.common.adapter.DataBoundListAdapter
 import com.crepetete.steamachievements.utils.*
 
-class NewGamesAdapter(
-        private val dataBindingComponent: DataBindingComponent,
-        appExecutors: AppExecutors,
-        private val gameRepository: GameRepository,
-        private val achievementsRepository: AchievementsRepository,
-        private val gameClickCallback: ((Game, ImageView) -> Unit)?)
+/**
+ * Adapter that shows Games in a (vertical) List.
+ */
+class GamesAdapter(appExecutors: AppExecutors,
+                   private val dataBindingComponent: DataBindingComponent,
+                   private val gameRepository: GameRepository,
+                   private val gameClickCallback: ((Game, ImageView) -> Unit)?)
     : DataBoundListAdapter<GameWithAchievements, GameItemBinding>(
         appExecutors,
         object : DiffUtil.ItemCallback<GameWithAchievements>() {
@@ -53,8 +52,7 @@ class NewGamesAdapter(
             }
         }), LifecycleObserver {
 
-    @SortingType
-    private var sortMethod = GamesAdapter.PLAYTIME
+    private var sortMethod = SortingType.PLAYTIME
 
     override fun createBinding(parent: ViewGroup): GameItemBinding {
         val binding = DataBindingUtil.inflate<GameItemBinding>(LayoutInflater.from(parent.context),
@@ -96,9 +94,11 @@ class NewGamesAdapter(
                 binding.achievementsTextView.text = game.getAchievementsText()
                 binding.achievementsTextView.setCompletedFlag(game.isCompleted())
             } else if (!game.achievementsWereAdded()) {
-
                 binding.achievementsTextView.visibility = View.VISIBLE
-                binding.achievementsTextView.text = "Loading Achievements..."
+                val context = binding.content.context
+                if (context != null) {
+                    binding.achievementsTextView.text = context.getString(R.string.msg_achievements_loading)
+                }
             } else {
                 binding.achievementsTextView.visibility = View.GONE
                 binding.progressBar.progress = 0
@@ -116,9 +116,7 @@ class NewGamesAdapter(
                                                      transition: Transition<in Drawable>?) {
                             binding.gameBanner.setImageDrawable(resource)
                             if (game.colorPrimaryDark == 0 && resource is BitmapDrawable) {
-                                val color = animateBackground(binding.content, resource.bitmap)
-                                game.colorPrimaryDark = color
-                                gameRepository.update(game)
+                                animateBackground(game, binding.content, resource.bitmap)
                             } else {
                                 binding.content.setBackgroundColor(game.colorPrimaryDark)
                             }
@@ -127,14 +125,11 @@ class NewGamesAdapter(
         }
     }
 
-    fun submitList(list: List<GameWithAchievements>?, @SortingType sortingType: Int = sortMethod) {
+    fun submitList(list: List<GameWithAchievements>?, sortingType: SortingType = sortMethod) {
         if (list != null) {
-            // TODO fix sorting
-//            sortMethod = sortingType
-//            val sortedGames = sortWithAchievements(list.filter { it.game != null })
-//            super.submitList(sortedGames)
-
-            super.submitList(list)
+            sortMethod = sortingType
+            val sortedGames = sortWithAchievements(list.filter { it.game != null })
+            super.submitList(sortedGames)
         }
     }
 
@@ -143,51 +138,52 @@ class NewGamesAdapter(
             return listOf()
         }
 
-        var sortedGames = listOf<Game>()
-        when (sortMethod) {
-            GamesAdapter.PLAYTIME -> {
-                sortedGames = list.sortByPlaytime()
+        return when (sortMethod) {
+            SortingType.PLAYTIME -> {
+                list.sortByPlaytime()
             }
-            GamesAdapter.NAME -> {
-                sortedGames = list.sortByName()
+            SortingType.NAME -> {
+                list.sortByName()
             }
-            GamesAdapter.COMPLETION -> {
-                sortedGames = list.sortByCompletion()
+            SortingType.COMPLETION -> {
+                list.sortByCompletion()
             }
         }
-        return sortedGames
     }
 
     private fun sortWithAchievements(list: List<GameWithAchievements>): List<GameWithAchievements> {
-        var sortedGames = listOf<GameWithAchievements>()
-        when (sortMethod) {
-            GamesAdapter.PLAYTIME -> {
-                sortedGames = list.sortPlaytime()
+        return when (sortMethod) {
+            SortingType.PLAYTIME -> {
+                list.sortPlaytime()
             }
-            GamesAdapter.NAME -> {
-                sortedGames = list.sortName()
+            SortingType.NAME -> {
+                list.sortName()
             }
-            GamesAdapter.COMPLETION -> {
-                sortedGames = list.sortCompletion()
+            SortingType.COMPLETION -> {
+                list.sortCompletion()
             }
         }
-        return sortedGames
     }
 
-    @ColorInt
-    private fun animateBackground(view: View, bitmap: Bitmap): Int {
-        @ColorInt
-        var rgb: Int? = Palette.from(bitmap).generate().darkMutedSwatch?.rgb
-        if (rgb == null) {
-            rgb = ContextCompat.getColor(view.context, R.color.colorPrimary)
+    private fun animateBackground(game: Game, view: View, bitmap: Bitmap) {
+        Palette.from(bitmap).generate {
+            val vibrantRgb = it?.darkVibrantSwatch?.rgb
+            val mutedRgb = it?.darkMutedSwatch?.rgb
+
+            if (mutedRgb != null) {
+                view.setBackgroundColorAnimated(
+                        ContextCompat.getColor(view.context,
+                                R.color.colorGameViewHolderTitleBackground), mutedRgb)
+                game.colorPrimaryDark = mutedRgb
+                gameRepository.update(game)
+            } else if (vibrantRgb != null) {
+                view.setBackgroundColorAnimated(
+                        ContextCompat.getColor(view.context,
+                                R.color.colorGameViewHolderTitleBackground), vibrantRgb)
+
+                game.colorPrimaryDark = vibrantRgb
+                gameRepository.update(game)
+            }
         }
-
-        val rgbValue = rgb
-        view.setBackgroundColorAnimated(
-                ContextCompat.getColor(view.context,
-                        R.color.colorGameViewHolderTitleBackground),
-                rgbValue)
-
-        return rgbValue
     }
 }
