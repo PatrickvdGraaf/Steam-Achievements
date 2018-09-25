@@ -62,8 +62,8 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
         val id = _appId.value?.id
         if (id != null) {
             achievementsRepo.getGlobalAchievementStats(id, achievements)
-            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-                    achievements)
+//            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+//                    achievements)
         }
     }
 

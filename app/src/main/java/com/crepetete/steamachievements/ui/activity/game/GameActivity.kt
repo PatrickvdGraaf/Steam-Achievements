@@ -36,6 +36,7 @@ import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
 import com.jjoe64.graphview.GraphView
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_game.*
@@ -63,11 +64,10 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
     private val collapsingToolbarLayout by lazy { findViewById<CollapsingToolbarLayout>(R.id.main_collapsing) }
 
     // Recently Played
-    private val recentPlayTimeContainer by lazy { findViewById<View>(R.id.container_recent_playtime) }
-    private val recentlyPlayedTextView by lazy { findViewById<TextView>(R.id.recently_played_textView) }
+    private val recentlyPlayedTextView by lazy { findViewById<ValueWithLabelTextView>(R.id.recently_played_textView) }
 
     // Total Playtime
-    private val totalPlayedTextView by lazy { findViewById<TextView>(R.id.total_played_textView) }
+    private val totalPlayedTextView by lazy { findViewById<ValueWithLabelTextView>(R.id.total_played_textView) }
 
     // Achievements
     private val recyclerViewLatestAchievements by lazy { findViewById<RecyclerView>(R.id.latest_achievements_recyclerview) }
@@ -129,13 +129,9 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
         if (game == null) {
             return
         }
-        if (game.recentPlayTime <= 0) {
-            recentPlayTimeContainer.visibility = View.GONE
-        } else {
-            recentlyPlayedTextView.text = game.getRecentPlaytimeString()
-        }
 
-        totalPlayedTextView.text = game.getTotalPlayTimeString()
+        recentlyPlayedTextView.setText(game.getRecentPlaytimeString())
+        totalPlayedTextView.setText(game.getTotalPlayTimeString())
 
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL,

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container_recent_playtime"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview">
+
+    <TextView
+        android:id="@+id/textview_label"
+        style="@style/AppTheme.Text.Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/textview_label_contentDesc"
+        android:labelFor="@+id/textview_value" />
+
+    <TextView
+        android:id="@+id/textview_value"
+        style="@style/AppTheme.Text.Value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</merge>

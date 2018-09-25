@@ -29,30 +29,39 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
+    /**
+     * Fetch all achievements for a specific game without their global completion rate and achieved
+     * info.
+     */
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
+            /**
+             * Save the new Achievements in the Database. Conflicts will be replaced.
+             */
             override fun saveCallResult(item: SchemaResponse) {
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {
-                    achievements.forEach {
-                        it.appId = appId
+                    // Since our ConflictStrategy is REPLACE, we have to make sure the achieved
+                    // property of an existing Achievement stays the same.
+                    for (achievement in achievements) {
+                        val a = getAchievement(achievement.name, appId).value?.get(0)
+                        if (a != null && a.achieved) {
+                            achievement.achieved = achievement.achieved
+                        }
+                        achievement.appId = appId
                     }
-
-//                    appExecutors.mainThread().execute {
-//                        // Get the Achieved status when new achievements are loaded from the API.
-//                        getAchievedStatusForAchievementsForGame(appId, achievements)
-//                    }
 
                     try {
                         dao.insert(achievements)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                } else {
+                    onFetchFailed()
                 }
             }
 
             override fun shouldFetch(data: List<Achievement>?) = data == null
-                    || data.isEmpty()
                     || achievementsListRateLimit.shouldFetch(appId)
 
 
@@ -66,12 +75,19 @@ class AchievementsRepository @Inject constructor(
         }.asLiveData()
     }
 
+    /**
+     *
+     */
     fun getAchievedStatusForAchievementsForGame(appId: String,
                                                 allAchievements: List<Achievement>): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, AchievedAchievementResponse>(appExecutors) {
+            /**
+             * Save the new Achievements in the Database. Conflicts will be replaced.
+             */
             override fun saveCallResult(item: AchievedAchievementResponse) {
                 val achievements = mutableListOf<Achievement>()
                 item.playerStats.achievements
+                        .asSequence()
                         .filter { it.achieved != 0 }
                         .map { ownedAchievement ->
                             allAchievements.filter {
@@ -79,13 +95,15 @@ class AchievementsRepository @Inject constructor(
                             }.forEach {
                                 it.unlockTime = ownedAchievement.getUnlockDate()
                                 it.achieved = ownedAchievement.achieved != 0
+                                it.description = ownedAchievement.description
                                 achievements.add(it)
                             }
                         }
+                        .toList()
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?) = true
+            override fun shouldFetch(data: List<Achievement>?) = data != null
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
                 return dao.getAchievementsAsLiveData()
@@ -106,7 +124,7 @@ class AchievementsRepository @Inject constructor(
             : LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, GlobalAchievResponse>(appExecutors) {
             override fun saveCallResult(item: GlobalAchievResponse) {
-                item.achievementpercentages.achievements.forEach {response ->
+                item.achievementpercentages.achievements.forEach { response ->
                     achievements.filter {
                         it.name == response.name
                     }.forEach {
@@ -117,7 +135,7 @@ class AchievementsRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<Achievement>?): Boolean {
-                return true
+                return data != null
             }
 
             override fun loadFromDb(): LiveData<List<Achievement>> {

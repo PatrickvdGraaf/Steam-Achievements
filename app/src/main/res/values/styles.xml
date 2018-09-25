@@ -42,6 +42,7 @@
 
     <style name="AppTheme.Text.Value" parent="AppTheme">
         <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_body_one</item>
     </style>
 
     <style name="AppTheme.Text.Value.Big" parent="AppTheme.Text.Value">
