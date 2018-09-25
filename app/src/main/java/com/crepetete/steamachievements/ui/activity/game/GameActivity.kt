@@ -109,10 +109,17 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
             }
         })
 
-        viewModel.accentColor.observe(this, Observer {
-            if (it != null) {
-                playtime_header_textview.setTextColor(it)
-                totalPlayedTextView.setTextColor(it)
+
+        viewModel.vibrantColor.observe(this, Observer {swatch ->
+            if (swatch != null) {
+                setCollapsingToolbarColors(swatch.rgb)
+            }
+        })
+
+        viewModel.mutedColor.observe(this, Observer {swatch ->
+            if (swatch != null) {
+                playtime_header_textview.setTextColor(swatch.bodyTextColor)
+                scrollView.setBackgroundColor(swatch.rgb)
             }
         })
 
@@ -151,21 +158,7 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
                                                  transition: Transition<in Drawable>?) {
                         if (resource is BitmapDrawable) {
                             Palette.from(resource.bitmap).generate {
-                                val dominantSwatch = it?.dominantSwatch
-                                val lightMutedSwatch = it?.lightMutedSwatch
-                                val lightVibrantSwatch = it?.lightVibrantSwatch
-                                val darkVibrantSwatch = it?.darkVibrantSwatch
-                                val darkMutedSwatch = it?.darkMutedSwatch
-                                if (darkVibrantSwatch?.rgb != null) {
-                                    setCollapsingToolbarColors(darkVibrantSwatch.rgb)
-                                }
-
-                                if (darkMutedSwatch?.rgb != null) {
-                                    scrollView.setBackgroundColor(darkMutedSwatch.rgb)
-//                                    viewModel.accentColor.postValue(darkMutedSwatch.titleTextColor)
-
-                                }
-
+                                it?.let { it1 -> viewModel.updatePalette(it1) }
                                 banner.setImageDrawable(resource)
                             }
                         }

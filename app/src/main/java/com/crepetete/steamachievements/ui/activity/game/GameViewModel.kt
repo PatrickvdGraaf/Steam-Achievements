@@ -5,8 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
-import android.support.v4.content.ContextCompat
-import com.crepetete.steamachievements.R
+import android.support.v7.graphics.Palette
 import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.model.Achievement
@@ -52,18 +51,41 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
 //            }
 
 
-    val accentColor: MutableLiveData<Int> = MutableLiveData()
+    val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
     init {
-        accentColor.postValue(ContextCompat.getColor(application, R.color.colorAccent))
+//        mutedColor.postValue(ContextCompat.getColor(application, R.color.colorAccent))
+    }
+
+    fun updatePalette(palette: Palette) {
+        val lightMutedSwatch = palette.lightMutedSwatch
+        val lightVibrantSwatch = palette.lightVibrantSwatch
+        val darkVibrantSwatch = palette.darkVibrantSwatch
+        val darkMutedSwatch = palette.darkMutedSwatch
+
+        if (darkVibrantSwatch != null) {
+            vibrantColor.postValue(darkVibrantSwatch)
+        } else if (lightVibrantSwatch != null) {
+            vibrantColor.postValue(lightVibrantSwatch)
+        }
+
+        if (darkMutedSwatch != null) {
+            mutedColor.postValue(darkMutedSwatch)
+        } else if (lightMutedSwatch != null) {
+            mutedColor.postValue(lightMutedSwatch)
+        } else if (darkVibrantSwatch != null && lightVibrantSwatch != null) {
+            vibrantColor.postValue(lightVibrantSwatch)
+            mutedColor.postValue(darkVibrantSwatch)
+        }
     }
 
     fun updateAchievementData(achievements: List<Achievement>) {
         val id = _appId.value?.id
         if (id != null) {
             achievementsRepo.getGlobalAchievementStats(id, achievements)
-//            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-//                    achievements)
+            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+                    achievements)
         }
     }
 
