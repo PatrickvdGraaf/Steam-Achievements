@@ -29,13 +29,15 @@ abstract class NetworkBoundResource<ResultType, RequestType>
         result.value = Resource.loading(null)
         @Suppress("LeakingThis")
         val dbSource = loadFromDb()
-        result.addSource(dbSource) { data ->
-            result.removeSource(dbSource)
-            if (shouldFetch(data)) {
-                fetchFromNetwork(dbSource)
-            } else {
-                result.addSource(dbSource) { newData ->
-                    setValue(Resource.success(newData))
+        if (dbSource != null) {
+            result.addSource(dbSource) { data ->
+                result.removeSource(dbSource)
+                if (shouldFetch(data)) {
+                    fetchFromNetwork(dbSource)
+                } else {
+                    result.addSource(dbSource) { newData ->
+                        setValue(Resource.success(newData))
+                    }
                 }
             }
         }
@@ -59,23 +61,28 @@ abstract class NetworkBoundResource<ResultType, RequestType>
             result.removeSource(dbSource)
             when (response) {
                 is ApiSuccessResponse -> {
-                    appExecutors.diskIO().execute {
-                        saveCallResult(processResponse(response))
-                        appExecutors.mainThread().execute {
-                            // we specially request a new live data,
-                            // otherwise we will get immediately last cached value,
-                            // which may not be updated with latest results received from network.
-                            result.addSource(loadFromDb()) { newData ->
-                                setValue(Resource.success(newData))
+                    loadFromDb()?.let {
+                        appExecutors.diskIO().execute {
+                            saveCallResult(processResponse(response))
+                            appExecutors.mainThread().execute {
+                                // we specially request a new live data,
+                                // otherwise we will get immediately last cached value,
+                                // which may not be updated with latest results received from
+                                // network.
+                                result.addSource(it) { newData ->
+                                    setValue(Resource.success(newData))
+                                }
                             }
                         }
                     }
                 }
                 is ApiEmptyResponse -> {
-                    appExecutors.mainThread().execute {
-                        // reload from disk whatever we had
-                        result.addSource(loadFromDb()) { newData ->
-                            setValue(Resource.success(newData))
+                    loadFromDb()?.let {
+                        appExecutors.mainThread().execute {
+                            // reload from disk whatever we had
+                            result.addSource(it) { newData ->
+                                setValue(Resource.success(newData))
+                            }
                         }
                     }
                 }
@@ -109,7 +116,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
     protected abstract fun shouldFetch(data: ResultType?): Boolean
 
     @MainThread
-    protected abstract fun loadFromDb(): LiveData<ResultType>
+    protected abstract fun loadFromDb(): LiveData<ResultType>?
 
     @MainThread
     protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>

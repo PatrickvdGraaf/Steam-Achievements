@@ -192,7 +192,7 @@ fun TextView.setCompletedFlag(isCompleted: Boolean) {
             }, 0, 0, 0)
 }
 
-fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 300) {
+fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 800) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         setProgress(percentage, true)
     } else {

@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel
 import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
+import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.utils.AbsentLiveData
 import com.crepetete.steamachievements.utils.resource.Resource
 import javax.inject.Inject
@@ -24,6 +25,24 @@ class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
                     gameRepo.getGames(it)
                 }
             }
+
+    val achievements = achievementsRepository.getAchievementsFromDb()
+
+    fun updateAchievementsFor(appId: String) {
+        achievementsRepository.loadAchievementsForGame(appId)
+    }
+
+    fun updateAchievedStats(appId: String, achievements: List<Achievement>) {
+        if (achievements.isNotEmpty()) {
+            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, achievements)
+        }
+    }
+
+    fun updateGlobalStats(appId: String, achievements: List<Achievement>) {
+        if (achievements.isNotEmpty()) {
+            achievementsRepository.getGlobalAchievementStats(appId, achievements)
+        }
+    }
 
     fun setAppId(appId: String) {
         val update = UserId(appId)

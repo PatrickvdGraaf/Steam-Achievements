@@ -15,7 +15,6 @@ import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
-import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.model.Achievement
@@ -41,9 +40,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
 
     @Inject
     lateinit var gamesRepository: GameRepository
-
-    @Inject
-    lateinit var achievementsRepository: AchievementsRepository
 
     var adapter by autoCleared<GamesAdapter>()
 
@@ -79,6 +75,50 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(LibraryViewModel::class.java)
 
+        var userId: String
+        arguments?.let {
+            userId = it.getString(KEY_PLAYER_ID) ?: ""
+            if (userId.isBlank()) {
+                context.startActivity(LoginActivity.getInstance(context))
+            }
+            viewModel.setAppId(userId)
+        }
+
+        viewModel.games.observe(this, Observer { gamesResource ->
+            val gamesWithAchievements = gamesResource?.data?.sortPlaytime()
+            if (gamesWithAchievements != null) {
+                gamesWithAchievements.filter { it.achievements.isNotEmpty() }.forEach {
+                    it.game?.let { it1 ->
+                        val achievements = it.achievements
+                        // Copy the achievements from the Pair into the Game object itself.
+                        // TODO Might want to remove this, and always use the combined object.
+                        it1.setAchievements(it.achievements)
+                    }
+                }
+
+                gamesWithAchievements.forEach {
+                    it.game?.let { it1 -> viewModel.updateAchievementsFor(it1.appId) }
+                }
+
+                adapter.submitList(gamesWithAchievements)
+            }
+        })
+
+        viewModel.achievements.observe(this, Observer { allAchievements ->
+            if (allAchievements != null) {
+                viewModel.games.value?.data?.let { data ->
+                    data.asSequence().map { it.game?.appId }.filter { it != null }.toList()
+                            .forEach { appId ->
+                                val achievements = allAchievements.filter { it.appId == appId }
+                                if (achievements.isNotEmpty()) {
+                                    viewModel.updateAchievedStats(appId!!, achievements)
+                                    viewModel.updateGlobalStats(appId, achievements)
+                                }
+                            }
+                }
+            }
+        })
+
         initScrollFab()
         initRecyclerView()
 
@@ -110,25 +150,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
                 } else {
                     binding.fab.show()
                 }
-            }
-        })
-
-        var userId: String
-        arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID) ?: ""
-            if (userId.isBlank()) {
-                context.startActivity(LoginActivity.getInstance(context))
-            }
-            viewModel.setAppId(userId)
-        }
-
-        viewModel.games.observe(this, Observer { gamesResource ->
-            val gamesWithAchievements = gamesResource?.data
-            if (gamesWithAchievements != null) {
-                gamesWithAchievements.forEach {
-                    it.game?.setAchievements(it.achievements)
-                }
-                adapter.submitList(gamesWithAchievements.sortPlaytime())
             }
         })
     }

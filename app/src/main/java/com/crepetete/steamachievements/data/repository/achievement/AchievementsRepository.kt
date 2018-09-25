@@ -29,6 +29,8 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
+    fun getAchievementsFromDb(): LiveData<List<Achievement>> = dao.getAchievementsAsLiveData()
+
     /**
      * Fetch all achievements for a specific game without their global completion rate and achieved
      * info.
@@ -63,7 +65,6 @@ class AchievementsRepository @Inject constructor(
 
             override fun shouldFetch(data: List<Achievement>?) = data == null
                     || achievementsListRateLimit.shouldFetch(appId)
-
 
             override fun loadFromDb() = dao.getAchievementsForGameAsLiveData(appId)
 
@@ -103,10 +104,14 @@ class AchievementsRepository @Inject constructor(
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?) = data != null
+            override fun shouldFetch(data: List<Achievement>?): Boolean {
+                val should = data != null
+                        && achievementsListRateLimit.shouldFetch("${appId}_achieved_stats")
+                return should
+            }
 
-            override fun loadFromDb(): LiveData<List<Achievement>> {
-                return dao.getAchievementsAsLiveData()
+            override fun loadFromDb(): LiveData<List<Achievement>>? {
+                return dao.getAchievementsForGameAsLiveData(appId)
             }
 
             override fun createCall(): LiveData<ApiResponse<AchievedAchievementResponse>> {
@@ -136,6 +141,7 @@ class AchievementsRepository @Inject constructor(
 
             override fun shouldFetch(data: List<Achievement>?): Boolean {
                 return data != null
+                        && achievementsListRateLimit.shouldFetch("${appId}_global_stats")
             }
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
