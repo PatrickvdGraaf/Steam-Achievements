@@ -128,13 +128,8 @@ class AchievementPagerFragment : DaggerFragment() {
                                     val darkMutedSwatch = it?.darkMutedSwatch
 
                                     if (darkMutedSwatch != null) {
-                                        cardView.setBackgroundColorAnimated(
-                                                ContextCompat.getColor(context, R.color.colorPrimary),
-                                                darkMutedSwatch.rgb, 300)
-                                        iconContent.setBackgroundColorAnimated(
-                                                ContextCompat.getColor(context,
-                                                        R.color.colorPrimaryDark),
-                                                darkMutedSwatch.rgb)
+                                        cardView.setCardBackgroundColor(darkMutedSwatch.rgb)
+                                        iconContent.setCardBackgroundColor(darkMutedSwatch.rgb)
                                         dateView.setTextColor(darkMutedSwatch.bodyTextColor)
                                     } else if (darkVibrantSwatch != null) {
                                         cardView.setBackgroundColorAnimated(

@@ -16,7 +16,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:elevation="10dp"
+        android:elevation="@dimen/elevation_card_default"
         app:cardCornerRadius="4dp">
 
         <android.support.constraint.ConstraintLayout
@@ -86,12 +86,12 @@
                 android:id="@+id/name_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{game.name}"
                 android:background="#57000000"
                 android:paddingBottom="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
                 android:paddingStart="@dimen/default_margin"
                 android:paddingTop="@dimen/default_margin_halved"
+                android:text="@{game.name}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_header_five"
                 app:layout_constraintBottom_toTopOf="@+id/progressContainer"

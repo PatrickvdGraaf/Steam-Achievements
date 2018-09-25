@@ -34,4 +34,20 @@
     <dimen name="list_achievement_image_size">100dp</dimen>
     <dimen name="headerImageHeight">184dp</dimen>
 
+    <!-- ELEVATION -->
+    <dimen name="elevation_snackbar">6dp</dimen>
+    <dimen name="elevation_refresh_indicator">3dp</dimen>
+    <dimen name="elevation_nav_drawer">16dp</dimen>
+    <dimen name="elevation_menu_default">8dp</dimen>
+    <dimen name="elevation_switch_default">1dp</dimen>
+    <dimen name="elevation_switch_default_pressed">8dp</dimen>
+    <dimen name="elevation_bottom_app_bar">8dp</dimen>
+    <dimen name="elevation_card_default">1dp</dimen>
+    <dimen name="elevation_card_large">8dp</dimen>
+    <dimen name="elevation_fab_default">6dp</dimen>
+    <dimen name="elevation_fab_pressed">12dp</dimen>
+    <dimen name="elevation_button_default">2dp</dimen>
+    <dimen name="elevation_button_large">8dp</dimen>
+    <dimen name="elevation_dialog_default">24dp</dimen>
+
 </resources>
