@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/scrollView"
-    android:clickable="true"
-    android:focusable="true"
     android:layout_gravity="center_vertical"
-    android:fillViewport="true">
+    android:clickable="true"
+    android:fillViewport="true"
+    android:focusable="true">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clickable="false"
-        android:focusable="false"
         android:layout_marginEnd="@dimen/default_margin_double"
-        android:layout_marginStart="@dimen/default_margin_double">
+        android:layout_marginStart="@dimen/default_margin_double"
+        android:clickable="false"
+        android:focusable="false">
 
         <android.support.v7.widget.CardView
             android:id="@+id/achievement_cardview"
@@ -59,7 +59,6 @@
                 style="@style/AppTheme.Text.Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin_quarter"
                 android:text="11-01-1995" />
 
             <TextView
@@ -69,6 +68,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin_halved"
                 android:text="Description on how to achieve this achievement." />
+
+            <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+                android:id="@+id/label_global_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin_halved"
+                app:label="@string/label_global_achievement_rate"
+                app:value="100%" />
         </LinearLayout>
 
         <android.support.v7.widget.CardView

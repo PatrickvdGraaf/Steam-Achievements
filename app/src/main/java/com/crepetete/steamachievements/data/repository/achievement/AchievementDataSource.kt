@@ -20,7 +20,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
     override fun getBestAchievementsDay(): Single<Pair<String, Int>> {
         return dao.getAchievements()
                 .map { allAchievements ->
-                    // Create a list of Pairs<Date, Int>> from all achievements
+                    // Create a list of Pairs<Date, Int>> from all emptyAchievements
                     val newList = mutableListOf<Pair<String, Int>>()
                     allAchievements
                             .filter {

@@ -48,20 +48,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
 
     private lateinit var viewModel: LibraryViewModel
 
-    companion object {
-        const val TAG = "LIBRARY_FRAGMENT"
-        private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
-
-        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): LibraryFragment {
-            return LibraryFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(KEY_PLAYER_ID, playerId)
-                }
-                setLoaderIndicator(loadingIndicator)
-            }
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_library, container,
@@ -85,19 +71,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
 
         viewModel.finalData.observe(this, Observer { games ->
             if (games != null) {
-//                gamesWithAchievements.filter { it.achievements.isNotEmpty() }.forEach {
-//                    it.game?.let { it1 ->
-//                        val achievements = it.achievements
-//                        // Copy the achievements from the Pair into the Game object itself.
-//                        // TODO Might want to remove this, and always use the combined object.
-//                        it1.setAchievements(it.achievements)
-//                    }
-//                }
-//
-//                gamesWithAchievements.forEach {
-//                    it.game?.let { it1 -> viewModel.updateAchievementsFor(it1.appId) }
-//                }
-
                 adapter.submitList(games)
             }
         })
@@ -168,14 +141,14 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     }
 
     /**
-     * Retrieved a list of achievements from the presenter, which need to be updated in the Adapter
+     * Retrieved a list of emptyAchievements from the presenter, which need to be updated in the Adapter
      * for a specific game.
      *
-     * @param appId ID of the game that own the achievements
-     * @param achievements list of achievements for said game.
+     * @param appId ID of the game that own the emptyAchievements
+     * @param achievements list of emptyAchievements for said game.
      */
     override fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
-//        gamesAdapter.updateAchievementsForGame(appId, achievements)
+//        gamesAdapter.updateAchievementsForGame(appId, emptyAchievements)
     }
 
     /**
@@ -220,4 +193,19 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
         viewModel.rearrangeGames(sortingMethod)
     }
+
+    companion object {
+        const val TAG = "LIBRARY_FRAGMENT"
+        private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
+
+        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): LibraryFragment {
+            return LibraryFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(KEY_PLAYER_ID, playerId)
+                }
+                setLoaderIndicator(loadingIndicator)
+            }
+        }
+    }
+
 }

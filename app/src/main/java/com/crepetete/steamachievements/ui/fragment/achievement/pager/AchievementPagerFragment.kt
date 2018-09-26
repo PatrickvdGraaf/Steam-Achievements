@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
 import com.crepetete.steamachievements.utils.GlideApp
 import com.crepetete.steamachievements.utils.setBackgroundColorAnimated
 import dagger.android.support.DaggerFragment
@@ -46,6 +47,7 @@ class AchievementPagerFragment : DaggerFragment() {
     private lateinit var nameView: TextView
     private lateinit var dateView: TextView
     private lateinit var descView: TextView
+    private lateinit var globalStatsLabel: ValueWithLabelTextView
     private lateinit var content: ConstraintLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +62,7 @@ class AchievementPagerFragment : DaggerFragment() {
         descView = view.findViewById(R.id.achievement_desc_textview)
         content = view.findViewById(R.id.content)
         scrollView = view.findViewById(R.id.scrollView)
+        globalStatsLabel = view.findViewById(R.id.label_global_stats)
         iconContent = view.findViewById(R.id.icon_card_view)
 
         content.setOnClickListener {
@@ -99,6 +102,10 @@ class AchievementPagerFragment : DaggerFragment() {
         } else {
             descView.text = achievement.description
             descView.visibility = View.VISIBLE
+        }
+
+        if (achievement.percentage > 0.0) {
+            globalStatsLabel.setText("${achievement.percentage}%")
         }
     }
 

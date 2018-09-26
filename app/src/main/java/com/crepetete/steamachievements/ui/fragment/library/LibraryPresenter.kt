@@ -131,7 +131,7 @@ class LibraryPresenter(libraryView: LibraryView,
                 .subscribe({
                     showDebugToast("Inserted game in the database.")
                 }, {
-                    onError(it, "Error while getting achievements from DB")
+                    onError(it, "Error while getting emptyAchievements from DB")
                 }))
     }
 
@@ -145,7 +145,7 @@ class LibraryPresenter(libraryView: LibraryView,
                 .subscribe({
                     showDebugToast("Inserted game in the database.")
                 }, {
-                    onError(it, "Error while getting achievements from DB")
+                    onError(it, "Error while getting emptyAchievements from DB")
                 }))
     }
 
@@ -159,7 +159,7 @@ class LibraryPresenter(libraryView: LibraryView,
                 .subscribe({
                     showDebugToast("Inserted games in the database.")
                 }, {
-                    onError(it, "Error while getting achievements from DB")
+                    onError(it, "Error while getting emptyAchievements from DB")
                 }))
     }
 

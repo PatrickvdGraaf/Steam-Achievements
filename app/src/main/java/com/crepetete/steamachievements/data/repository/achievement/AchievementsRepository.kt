@@ -32,7 +32,7 @@ class AchievementsRepository @Inject constructor(
     fun getAchievementsFromDb(): LiveData<List<Achievement>> = dao.getAchievementsAsLiveData()
 
     /**
-     * Fetch all achievements for a specific game without their global completion rate and achieved
+     * Fetch all emptyAchievements for a specific game without their global completion rate and achieved
      * info.
      */
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {

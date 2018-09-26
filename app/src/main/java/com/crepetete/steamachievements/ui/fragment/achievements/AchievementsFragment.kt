@@ -90,7 +90,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     }
 
     /**
-     * Shows the total amount of achievements.
+     * Shows the total amount of emptyAchievements.
      */
     override fun setTotalAchievementsInfo(achievementCount: Int) {
         textViewAllAchievements.text = "$achievementCount"
@@ -106,14 +106,14 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     }
 
     /**
-     * Shows the date and amount of the day on which the user achieved most of his achievements.
+     * Shows the date and amount of the day on which the user achieved most of his emptyAchievements.
      */
     override fun showBestDay(day: Pair<String, Int>) {
-        bestDayTextView.text = "${day.first}; ${day.second} achievements."
+        bestDayTextView.text = "${day.first}; ${day.second} emptyAchievements."
     }
 
     /**
-     * Shows the users latest achievements in the RecyclerView and the graph.
+     * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
     override fun showLatestAchievements(achievements: List<Achievement>,
                                         allAchievements: List<Achievement>) {

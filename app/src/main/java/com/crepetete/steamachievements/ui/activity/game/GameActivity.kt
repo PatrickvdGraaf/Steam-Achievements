@@ -99,7 +99,7 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
             setGameInfo(game)
         })
 
-        viewModel.updatedAchievements.observe(this, Observer { resource ->
+        viewModel.finalAchievements.observe(this, Observer { resource ->
             val data = resource?.data
             if (data != null) {
                 setAchievements(data.filter {
@@ -181,7 +181,7 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
      * GraphView was clicked
      */
     override fun onDateTapped(date: Date) {
-        val achievements = viewModel.achievements.value?.data?.filter {
+        val achievements = viewModel.finalAchievements.value?.data?.filter {
             it.achieved
         }
 

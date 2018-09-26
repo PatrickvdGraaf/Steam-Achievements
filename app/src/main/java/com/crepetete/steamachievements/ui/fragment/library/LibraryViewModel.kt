@@ -77,14 +77,14 @@ class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
     }
 
     fun updateAchievedStats(appId: String, achievements: List<Achievement>) {
-//        if (achievements.isNotEmpty()) {
-//            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, achievements)
+//        if (emptyAchievements.isNotEmpty()) {
+//            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, emptyAchievements)
 //        }
     }
 
     fun updateGlobalStats(appId: String, achievements: List<Achievement>) {
-//        if (achievements.isNotEmpty()) {
-//            achievementsRepository.getGlobalAchievementStats(appId, achievements)
+//        if (emptyAchievements.isNotEmpty()) {
+//            achievementsRepository.getGlobalAchievementStats(appId, emptyAchievements)
 //        }
     }
 

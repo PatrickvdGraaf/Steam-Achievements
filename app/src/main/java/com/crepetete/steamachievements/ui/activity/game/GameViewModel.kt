@@ -31,21 +31,30 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
                 }
             }
 
-    val achievements: LiveData<Resource<List<Achievement>>> = Transformations
+    private val achievements: LiveData<Resource<List<Achievement>>> = Transformations
             .switchMap(_appId) { id ->
                 id.ifExists {
                     achievementsRepo.loadAchievementsForGame(it)
                 }
             }
 
-    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+    private val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
             .switchMap(achievements) {
                 val id = _appId.value?.id
                 val achievements = it.data
                 if (id != null && achievements != null) {
-                    achievementsRepo.getGlobalAchievementStats(id, achievements)
                     return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
                             achievements)
+                }
+                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+            }
+
+    val finalAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+            .switchMap(updatedAchievements) {
+                val id = _appId.value?.id
+                val achievements = it?.data
+                if (id != null && achievements != null) {
+                    return@switchMap achievementsRepo.getGlobalAchievementStats(id, achievements)
                 }
                 return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
             }
@@ -53,10 +62,6 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
 
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
     val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
-
-    init {
-//        mutedColor.postValue(ContextCompat.getColor(application, R.color.colorAccent))
-    }
 
     fun updatePalette(palette: Palette) {
         val lightMutedSwatch = palette.lightMutedSwatch
