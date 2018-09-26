@@ -18,7 +18,6 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.databinding.GameItemBinding
 import com.crepetete.steamachievements.model.Game
@@ -32,23 +31,24 @@ class GamesAdapter(appExecutors: AppExecutors,
                    private val dataBindingComponent: DataBindingComponent,
                    private val gameRepository: GameRepository,
                    private val gameClickCallback: ((Game, ImageView) -> Unit)?)
-    : DataBoundListAdapter<GameWithAchievements, GameItemBinding>(
+    : DataBoundListAdapter<Game, GameItemBinding>(
         appExecutors,
-        object : DiffUtil.ItemCallback<GameWithAchievements>() {
-            override fun areItemsTheSame(oldItem: GameWithAchievements,
-                                         newItem: GameWithAchievements): Boolean {
-                return oldItem.game?.appId == oldItem.game?.appId
-                        && oldItem.game?.name == oldItem.game?.name
+        object : DiffUtil.ItemCallback<Game>() {
+            override fun areItemsTheSame(oldItem: Game,
+                                         newItem: Game): Boolean {
+                return oldItem.appId == oldItem.appId
+                        && oldItem.name == oldItem.name
             }
 
-            override fun areContentsTheSame(oldGame: GameWithAchievements,
-                                            newGame: GameWithAchievements): Boolean {
-                return oldGame.game?.name == newGame.game?.name
-                        && oldGame.game?.playTime == newGame.game?.playTime
-                        && oldGame.game?.recentPlayTime == newGame.game?.recentPlayTime
-                        && oldGame.game?.iconUrl == newGame.game?.iconUrl
-                        && oldGame.game?.logoUrl == newGame.game?.logoUrl
-                        && oldGame.achievements.size == newGame.achievements.size
+            override fun areContentsTheSame(oldGame: Game,
+                                            newGame: Game): Boolean {
+                return oldGame.name == newGame.name
+                        && oldGame.playTime == newGame.playTime
+                        && oldGame.recentPlayTime == newGame.recentPlayTime
+                        && oldGame.iconUrl == newGame.iconUrl
+                        && oldGame.logoUrl == newGame.logoUrl
+                        && oldGame.getAmountOfAchievements() == newGame.getAmountOfAchievements()
+                        && oldGame.getAchievedAchievements() == newGame.getAchievedAchievements()
             }
         }), LifecycleObserver {
 
@@ -66,69 +66,66 @@ class GamesAdapter(appExecutors: AppExecutors,
         return binding
     }
 
-    override fun bind(binding: GameItemBinding, item: GameWithAchievements) {
-        val game = item.game
-        if (game != null) {
-            binding.game = game
-            val view = binding.root
+    override fun bind(binding: GameItemBinding, item: Game) {
+        binding.game = item
+        val view = binding.root
 
-            binding.totalPlayedTextView.text = game.getTotalPlayTimeString(view.context)
+        binding.totalPlayedTextView.text = item.getTotalPlayTimeString(view.context)
 
-            if (game.recentPlayTime > 0) {
-                binding.recentlyPlayedTextView.text = game.getRecentPlaytimeString(view.context)
-                binding.recentlyPlayedTextView.visibility = View.VISIBLE
-            } else {
-                binding.recentlyPlayedTextView.visibility = View.INVISIBLE
-            }
+        if (item.recentPlayTime > 0) {
+            binding.recentlyPlayedTextView.text = item.getRecentPlaytimeString(view.context)
+            binding.recentlyPlayedTextView.visibility = View.VISIBLE
+        } else {
+            binding.recentlyPlayedTextView.visibility = View.INVISIBLE
+        }
 
 //            achievementsRepository.getAchievedStatusForAchievementsForGame(game.appId, item.achievements)
 
-            if (game.hasAchievements()) {
-                binding.achievementsTextView.visibility = View.VISIBLE
-                val percentage = game.getPercentageCompleted().toInt()
-                if (percentage > 0 && binding.progressBar.progress == 0) {
-                    binding.progressBar.animateToPercentage(percentage)
-                } else {
-                    binding.progressBar.progress = percentage
-                }
-                binding.achievementsTextView.text = game.getAchievementsText()
-                binding.achievementsTextView.setCompletedFlag(game.isCompleted())
-            } else if (!game.achievementsWereAdded()) {
-                binding.achievementsTextView.visibility = View.VISIBLE
-                val context = binding.content.context
-                if (context != null) {
-                    binding.achievementsTextView.text = context.getString(R.string.msg_achievements_loading)
-                }
+        if (item.hasAchievements()) {
+            binding.achievementsTextView.visibility = View.VISIBLE
+            val percentage = item.getPercentageCompleted().toInt()
+            if (percentage > 0 && binding.progressBar.progress == 0) {
+                binding.progressBar.animateToPercentage(percentage)
             } else {
-                binding.achievementsTextView.visibility = View.GONE
-                binding.progressBar.progress = 0
+                binding.progressBar.progress = percentage
             }
-
-            Glide.with(view.context)
-                    .load(game.getFullLogoUrl())
-                    .into(object : SimpleTarget<Drawable>() {
-                        /**
-                         * The method that will be called when the resource load has finished.
-                         *
-                         * @param resource the loaded resource.
-                         */
-                        override fun onResourceReady(resource: Drawable,
-                                                     transition: Transition<in Drawable>?) {
-                            binding.gameBanner.setImageDrawable(resource)
-                            if (game.colorPrimaryDark == 0 && resource is BitmapDrawable) {
-                                animateBackground(game, binding.content, resource.bitmap)
-                            } else {
-                                binding.content.setBackgroundColor(game.colorPrimaryDark)
-                            }
-                        }
-                    })
+            binding.achievementsTextView.text = item.getAchievementsText()
+            binding.achievementsTextView.setCompletedFlag(item.isCompleted())
+        } else if (!item.achievementsWereAdded()) {
+            binding.achievementsTextView.visibility = View.VISIBLE
+            val context = binding.content.context
+            if (context != null) {
+                binding.achievementsTextView.text = context.getString(R.string.msg_achievements_loading)
+            }
+        } else {
+            binding.achievementsTextView.visibility = View.GONE
+            binding.progressBar.progress = 0
         }
+
+        Glide.with(view.context)
+                .load(item.getFullLogoUrl())
+                .into(object : SimpleTarget<Drawable>() {
+                    /**
+                     * The method that will be called when the resource load has finished.
+                     *
+                     * @param resource the loaded resource.
+                     */
+                    override fun onResourceReady(resource: Drawable,
+                                                 transition: Transition<in Drawable>?) {
+                        binding.gameBanner.setImageDrawable(resource)
+                        if (item.colorPrimaryDark == 0 && resource is BitmapDrawable) {
+                            animateBackground(item, binding.content, resource.bitmap)
+                        } else {
+                            binding.content.setBackgroundColor(item.colorPrimaryDark)
+                        }
+                    }
+                })
     }
 
-    fun submitList(list: List<GameWithAchievements>?, sortingType: SortingType = sortMethod) {
+    fun submitList(list: List<Game>?, sortingType: SortingType = sortMethod) {
         if (list != null) {
             sortMethod = sortingType
-            val sortedGames = sortWithAchievements(list.filter { it.game != null })
+            val sortedGames = sortWithAchievements(list)
             super.submitList(sortedGames)
         }
     }
@@ -151,16 +148,16 @@ class GamesAdapter(appExecutors: AppExecutors,
         }
     }
 
-    private fun sortWithAchievements(list: List<GameWithAchievements>): List<GameWithAchievements> {
+    private fun sortWithAchievements(list: List<Game>): List<Game> {
         return when (sortMethod) {
             SortingType.PLAYTIME -> {
-                list.sortPlaytime()
+                list.sortByPlaytime()
             }
             SortingType.NAME -> {
-                list.sortName()
+                list.sortByName()
             }
             SortingType.COMPLETION -> {
-                list.sortCompletion()
+                list.sortByCompletion()
             }
         }
     }

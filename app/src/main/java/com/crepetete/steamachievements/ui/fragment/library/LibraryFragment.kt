@@ -25,7 +25,6 @@ import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.utils.autoCleared
-import com.crepetete.steamachievements.utils.sortPlaytime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -84,23 +83,30 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
             viewModel.setAppId(userId)
         }
 
-        viewModel.games.observe(this, Observer { gamesResource ->
-            val gamesWithAchievements = gamesResource?.data?.sortPlaytime()
-            if (gamesWithAchievements != null) {
-                gamesWithAchievements.filter { it.achievements.isNotEmpty() }.forEach {
-                    it.game?.let { it1 ->
-                        val achievements = it.achievements
-                        // Copy the achievements from the Pair into the Game object itself.
-                        // TODO Might want to remove this, and always use the combined object.
-                        it1.setAchievements(it.achievements)
-                    }
-                }
+        viewModel.finalData.observe(this, Observer { games ->
+            if (games != null) {
+//                gamesWithAchievements.filter { it.achievements.isNotEmpty() }.forEach {
+//                    it.game?.let { it1 ->
+//                        val achievements = it.achievements
+//                        // Copy the achievements from the Pair into the Game object itself.
+//                        // TODO Might want to remove this, and always use the combined object.
+//                        it1.setAchievements(it.achievements)
+//                    }
+//                }
+//
+//                gamesWithAchievements.forEach {
+//                    it.game?.let { it1 -> viewModel.updateAchievementsFor(it1.appId) }
+//                }
 
-                gamesWithAchievements.forEach {
-                    it.game?.let { it1 -> viewModel.updateAchievementsFor(it1.appId) }
-                }
+                adapter.submitList(games)
+            }
+        })
 
-                adapter.submitList(gamesWithAchievements)
+        viewModel.games.observe(this, Observer {
+            if (it?.data != null) {
+                it.data.mapNotNull { it1 -> it1.game?.appId }.forEach { id ->
+                    viewModel.updateAchievementsFor(id)
+                }
             }
         })
 
@@ -212,6 +218,6 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * new sorting method.
      */
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
-        adapter.submitList(viewModel.games.value?.data, sortingMethod)
+        viewModel.rearrangeGames(sortingMethod)
     }
 }

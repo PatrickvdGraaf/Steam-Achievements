@@ -38,17 +38,17 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
                 }
             }
 
-//    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-//            .switchMap(achievements) {
-//                val id = _appId.value?.id
-//                val achievements = it.data
-//                if (id != null && achievements != null) {
-//                    achievementsRepo.getGlobalAchievementStats(id, achievements)
-//                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-//                            achievements)
-//                }
-//                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
-//            }
+    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+            .switchMap(achievements) {
+                val id = _appId.value?.id
+                val achievements = it.data
+                if (id != null && achievements != null) {
+                    achievementsRepo.getGlobalAchievementStats(id, achievements)
+                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+                            achievements)
+                }
+                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+            }
 
 
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
@@ -77,15 +77,6 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
         } else if (darkVibrantSwatch != null && lightVibrantSwatch != null) {
             vibrantColor.postValue(lightVibrantSwatch)
             mutedColor.postValue(darkVibrantSwatch)
-        }
-    }
-
-    fun updateAchievementData(achievements: List<Achievement>) {
-        val id = _appId.value?.id
-        if (id != null) {
-            achievementsRepo.getGlobalAchievementStats(id, achievements)
-            achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-                    achievements)
         }
     }
 

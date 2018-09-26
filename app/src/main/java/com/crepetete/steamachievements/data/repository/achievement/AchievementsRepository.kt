@@ -38,20 +38,11 @@ class AchievementsRepository @Inject constructor(
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
             /**
-             * Save the new Achievements in the Database. Conflicts will be replaced.
+             * Save the new Achievements in the Database. Conflicts will be ignored.
              */
             override fun saveCallResult(item: SchemaResponse) {
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {
-                    // Since our ConflictStrategy is REPLACE, we have to make sure the achieved
-                    // property of an existing Achievement stays the same.
-                    for (achievement in achievements) {
-                        val a = getAchievement(achievement.name, appId).value?.get(0)
-                        if (a != null && a.achieved) {
-                            achievement.achieved = achievement.achieved
-                        }
-                        achievement.appId = appId
-                    }
 
                     try {
                         dao.insert(achievements)
@@ -64,9 +55,11 @@ class AchievementsRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<Achievement>?) = data == null
-                    || achievementsListRateLimit.shouldFetch(appId)
+                    || achievementsListRateLimit.shouldFetch("${appId}_achievements")
 
-            override fun loadFromDb() = dao.getAchievementsForGameAsLiveData(appId)
+            override fun loadFromDb(): LiveData<List<Achievement>> {
+                return dao.getAchievementsForGameAsLiveData(appId)
+            }
 
             override fun createCall() = api.getSchemaForGameAsLiveData(appId)
 
@@ -92,8 +85,8 @@ class AchievementsRepository @Inject constructor(
                         .filter { it.achieved != 0 }
                         .map { ownedAchievement ->
                             allAchievements.filter {
-                                it.name == ownedAchievement.apiName
-                            }.forEach {
+                                it.name == ownedAchievement.name
+                            }.forEach { it ->
                                 it.unlockTime = ownedAchievement.getUnlockDate()
                                 it.achieved = ownedAchievement.achieved != 0
                                 it.description = ownedAchievement.description
@@ -105,12 +98,12 @@ class AchievementsRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<Achievement>?): Boolean {
-                val should = data != null
-                        && achievementsListRateLimit.shouldFetch("${appId}_achieved_stats")
-                return should
+                return data == null
+                        || achievementsListRateLimit.shouldFetch("${appId}_achieved_stats")
             }
 
             override fun loadFromDb(): LiveData<List<Achievement>>? {
+
                 return dao.getAchievementsForGameAsLiveData(appId)
             }
 
@@ -140,8 +133,7 @@ class AchievementsRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<Achievement>?): Boolean {
-                return data != null
-                        && achievementsListRateLimit.shouldFetch("${appId}_global_stats")
+                return achievementsListRateLimit.shouldFetch("${appId}_global_stats")
             }
 
             override fun loadFromDb(): LiveData<List<Achievement>> {

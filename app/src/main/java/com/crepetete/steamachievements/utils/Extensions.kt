@@ -20,9 +20,17 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+fun List<Game>.sort(method: SortingType): List<Game> {
+    return when (method) {
+        SortingType.PLAYTIME -> this.sortByPlaytime()
+        SortingType.COMPLETION -> this.sortByCompletion()
+        SortingType.NAME -> this.sortByName()
+    }
+}
 
 fun List<Game>.sortByCompletion(): List<Game> {
     return sortedWith(Comparator { o1, o2 ->
@@ -222,6 +230,14 @@ fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
 fun <T : View> Dialog.bind(@IdRes idRes: Int): Lazy<T> {
     @Suppress("UNCHECKED_CAST")
     return unsafeLazy { findViewById<T>(idRes) }
+}
+
+/**
+ * Appends all elements that are not `null` to the given [destination].
+ */
+public fun <C : MutableCollection<in T>, T : Any> Iterable<T?>.filterNotNullTo(destination: C): C {
+    for (element in this) if (element != null) destination.add(element)
+    return destination
 }
 
 private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)

@@ -83,6 +83,8 @@ data class Game(
 
     fun getAmountOfAchievements(): Int = achievements?.size ?: 0
 
+    fun getAchievedAchievements(): Int = achievements?.filter { it.achieved }?.size ?: 0
+
     fun getAchievementsText() = when {
         hasCompletedAchievements() ->
             "${getCompletedAchievements().size}/${achievements?.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."

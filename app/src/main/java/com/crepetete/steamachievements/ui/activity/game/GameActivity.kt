@@ -99,13 +99,12 @@ class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
             setGameInfo(game)
         })
 
-        viewModel.achievements.observe(this, Observer { resource ->
+        viewModel.updatedAchievements.observe(this, Observer { resource ->
             val data = resource?.data
             if (data != null) {
                 setAchievements(data.filter {
                     it.appId == appId
                 })
-                viewModel.updateAchievementData(data)
             }
         })
 

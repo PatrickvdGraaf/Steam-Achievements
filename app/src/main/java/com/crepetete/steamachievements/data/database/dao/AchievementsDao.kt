@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 @Dao
 interface AchievementsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(list: List<Achievement>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
