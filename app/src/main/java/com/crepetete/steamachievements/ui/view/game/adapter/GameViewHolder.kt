@@ -17,12 +17,13 @@ import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseView
 import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.common.adapter.games.GameAdapterListener
 import com.crepetete.steamachievements.utils.animateToPercentage
 import com.crepetete.steamachievements.utils.setBackgroundColorAnimated
 import com.crepetete.steamachievements.utils.setCompletedFlag
 
 class GameViewHolder(private val baseView: BaseView, private val view: View,
-                     private val listener: GamesAdapter.Listener? = null)
+                     private val listener: GameAdapterListener? = null)
     : RecyclerView.ViewHolder(view) {
     private lateinit var game: Game
 
@@ -38,7 +39,7 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
             R.id.achievements_textView)
     private val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 
-    fun bind(game: Game, listener: GamesAdapter.Listener?) {
+    fun bind(game: Game, listener: GameAdapterListener?) {
         this.game = game
 
         titleTextView.text = game.name

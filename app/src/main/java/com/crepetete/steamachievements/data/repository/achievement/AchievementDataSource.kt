@@ -20,16 +20,14 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
     override fun getBestAchievementsDay(): Single<Pair<String, Int>> {
         return dao.getAchievements()
                 .map { allAchievements ->
-                    // Create a list of Pairs<Date, Int>> from all achievements
+                    // Create a list of Pairs<Date, Int>> from all emptyAchievements
                     val newList = mutableListOf<Pair<String, Int>>()
                     allAchievements
                             .filter {
                                 it.achieved
                             }.forEach { achievement ->
                                 val key = achievement.getDateStringNoTime()
-                                if (key != null) {
-                                    newList.add(Pair(key, 1))
-                                }
+                                newList.add(Pair(key, 1))
                             }
                     newList
                 }.map { pairs ->
@@ -128,8 +126,8 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
     }
 
     private fun getGlobalStats(appId: String, achievements: List<Achievement>): Single<List<Achievement>> {
-        return api.getGlobalAchievementStats(appId).map {
-            it.achievementpercentages.achievements.map { response ->
+        return api.getGlobalAchievementStats(appId).map { globalAchievResponse ->
+            globalAchievResponse.achievementpercentages.achievements.map { response ->
                 achievements.filter { it.name == response.name }.forEach { achievement ->
                     achievement.percentage = response.percent
                 }
@@ -146,7 +144,7 @@ class AchievementDataSource @Inject constructor(private val api: SteamApiService
                     AchievedAchievementResponse(DataClass())
                 }
 
-                .map {response ->
+                .map { response ->
                     if (response.playerStats.success) {
                         val ownedAchievements = response.playerStats.achievements
                                 .filter { it.achieved != 0 }

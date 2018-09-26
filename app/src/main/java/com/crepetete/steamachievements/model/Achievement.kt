@@ -20,7 +20,7 @@ data class Achievement(
         val defaultValue: Int,
         val displayName: String,
         val hidden: Int,
-        val description: String?,
+        var description: String?,
         @Json(name = "icon")
         val iconUrl: String,
         @Json(name = "icongray")
@@ -30,19 +30,23 @@ data class Achievement(
         var updatedAt: Date?,
         var percentage: Float = 0.0f
 ) {
-    fun getDateString(): String {
+    private fun getDateString(): String {
         return if (unlockTime != null) {
-            DateFormat.format("hh:mm:ss a\ndd-MM-yyyy", unlockTime).toString()
+            DateFormat.format("HH:mm\ndd-MM-yyyy", unlockTime).toString()
         } else {
             "Locked"
         }
     }
 
-    fun getDateStringNoTime(): String? {
+    fun getDateStringNoBreak(): String {
+        return getDateString().replace("\n", " - ")
+    }
+
+    fun getDateStringNoTime(): String {
         return if (unlockTime != null) {
             DateFormat.format("dd-MM-yyyy", unlockTime).toString()
         } else {
-            null
+            "Locked"
         }
     }
 }

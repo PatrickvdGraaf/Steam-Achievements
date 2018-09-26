@@ -5,8 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
-import android.support.v4.content.ContextCompat
-import com.crepetete.steamachievements.R
+import android.support.v7.graphics.Palette
 import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.model.Achievement
@@ -32,14 +31,14 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
                 }
             }
 
-    val achievements: LiveData<Resource<List<Achievement>>> = Transformations
+    private val achievements: LiveData<Resource<List<Achievement>>> = Transformations
             .switchMap(_appId) { id ->
                 id.ifExists {
                     achievementsRepo.loadAchievementsForGame(it)
                 }
             }
 
-    val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+    private val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
             .switchMap(achievements) {
                 val id = _appId.value?.id
                 val achievements = it.data
@@ -50,11 +49,40 @@ class GameViewModel @Inject constructor(@Nonnull application: Application,
                 return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
             }
 
+    val finalAchievements: LiveData<Resource<List<Achievement>>> = Transformations
+            .switchMap(updatedAchievements) {
+                val id = _appId.value?.id
+                val achievements = it?.data
+                if (id != null && achievements != null) {
+                    return@switchMap achievementsRepo.getGlobalAchievementStats(id, achievements)
+                }
+                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+            }
 
-    val accentColor: MutableLiveData<Int> = MutableLiveData()
 
-    init {
-        accentColor.postValue(ContextCompat.getColor(application, R.color.colorAccent))
+    val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+
+    fun updatePalette(palette: Palette) {
+        val lightMutedSwatch = palette.lightMutedSwatch
+        val lightVibrantSwatch = palette.lightVibrantSwatch
+        val darkVibrantSwatch = palette.darkVibrantSwatch
+        val darkMutedSwatch = palette.darkMutedSwatch
+
+        if (darkVibrantSwatch != null) {
+            vibrantColor.postValue(darkVibrantSwatch)
+        } else if (lightVibrantSwatch != null) {
+            vibrantColor.postValue(lightVibrantSwatch)
+        }
+
+        if (darkMutedSwatch != null) {
+            mutedColor.postValue(darkMutedSwatch)
+        } else if (lightMutedSwatch != null) {
+            mutedColor.postValue(lightMutedSwatch)
+        } else if (darkVibrantSwatch != null && lightVibrantSwatch != null) {
+            vibrantColor.postValue(lightVibrantSwatch)
+            mutedColor.postValue(darkVibrantSwatch)
+        }
     }
 
     fun setAppId(appId: String) {

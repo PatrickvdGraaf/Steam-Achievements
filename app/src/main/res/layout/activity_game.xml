@@ -92,53 +92,28 @@
                     android:paddingStart="@dimen/default_margin"
                     android:text="@string/header_playtime" />
 
-                <LinearLayout
-                    android:id="@+id/container_recent_playtime"
-                    android:layout_width="match_parent"
+
+                <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+                    android:id="@+id/recently_played_textView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
-                    android:orientation="vertical"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingStart="@dimen/default_margin"
-                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview">
+                    app:label="@string/header_recent_playtime"
+                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
+                    app:value="" />
 
-                    <TextView
-                        style="@style/AppTheme.Text.Label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/recently_played_textView"
-                        android:text="@string/header_recent_playtime" />
-
-                    <TextView
-                        android:id="@+id/recently_played_textView"
-                        style="@style/AppTheme.Text.Value"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/container_total_playtime"
-                    android:layout_width="match_parent"
+                <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+                    android:id="@+id/total_played_textView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
-                    android:orientation="vertical"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingStart="@dimen/default_margin"
-                    app:layout_constraintTop_toBottomOf="@+id/container_recent_playtime">
-
-                    <TextView
-                        style="@style/AppTheme.Text.Label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/total_played_textView"
-                        android:text="@string/header_total_playtime" />
-
-                    <TextView
-                        android:id="@+id/total_played_textView"
-                        style="@style/AppTheme.Text.Value"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                    app:label="@string/header_total_playtime"
+                    app:layout_constraintTop_toBottomOf="@+id/recently_played_textView"
+                    app:value="" />
 
                 <LinearLayout
                     android:id="@+id/container_achievements_header"
@@ -149,7 +124,7 @@
                     android:orientation="vertical"
                     app:layout_constraintEnd_toStartOf="@id/button_sort_achievements"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/container_total_playtime">
+                    app:layout_constraintTop_toBottomOf="@+id/total_played_textView">
 
                     <TextView
                         style="@style/AppTheme.Text.Header"
@@ -180,6 +155,8 @@
                     style="@style/AppTheme.Achievements.RecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/default_margin_halved"
+                    android:paddingStart="@dimen/default_margin_halved"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -202,6 +179,8 @@
                     android:id="@+id/graph"
                     android:layout_width="match_parent"
                     android:layout_height="260dp"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginStart="@dimen/default_margin"
                     android:layout_marginTop="@dimen/default_margin"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingStart="@dimen/default_margin"

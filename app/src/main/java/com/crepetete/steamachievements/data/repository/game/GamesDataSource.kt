@@ -69,7 +69,7 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
         val gameIds = games.map { game -> game.appId }
 
         return achievementsRepository.getAchievementsFromApi(gameIds).map { achievements ->
-            // Add achievements to the games in the list.
+            // Add emptyAchievements to the games in the list.
             if (achievements.isNotEmpty()) {
                 games.forEach { game ->
                     val achievementsForGame = achievements.filter {
@@ -81,8 +81,8 @@ class GamesDataSource @Inject constructor(private val api: SteamApiService,
             }
             games
         }.map { updatedGames ->
-            // Let other classes know that we tried to set the achievements (applies to
-            // games without achievements, clears loading status for ViewHolders for
+            // Let other classes know that we tried to set the emptyAchievements (applies to
+            // games without emptyAchievements, clears loading status for ViewHolders for
             // example.
             updatedGames.forEach {
                 if (!it.achievementsWereAdded()) {

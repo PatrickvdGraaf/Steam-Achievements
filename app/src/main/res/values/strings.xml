@@ -28,4 +28,9 @@
     <string name="label_total_achievements">Total Achievements</string>
     <string name="label_achievement_completion">Completion</string>
     <string name="contentDescAchievIcon">Achievement icon.</string>
+    <string name="msg_achievements_loading">Loading Achievements…</string>
+    <string name="label_placeholder">Label placeholder</string>
+    <string name="value_placeholder">Value placeholder</string>
+    <string name="textview_label_contentDesc">Label for the below defined value.</string>
+    <string name="label_global_achievement_rate">Global achievement rate</string>
 </resources>

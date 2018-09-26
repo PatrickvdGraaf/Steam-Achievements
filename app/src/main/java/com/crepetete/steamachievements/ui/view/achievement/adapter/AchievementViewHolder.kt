@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.view.achievement.adapter
 
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
@@ -9,24 +8,24 @@ import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
 
-
-class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+class AchievementViewHolder(private val view: View, private val funShowPager: (Int) -> Unit)
+    : RecyclerView.ViewHolder(view) {
     private lateinit var achievement: Achievement
 
     private val imageViewIcon = view.findViewById<ImageButton>(R.id.icon)
     private val textViewTitle = view.findViewById<TextView>(R.id.textView_title)
 
-    fun bind(achievement: Achievement) {
+    private var startingIndex = 0
+
+    fun bind(achievement: Achievement, index: Int) {
         this.achievement = achievement
+        this.startingIndex = index
         textViewTitle.text = achievement.displayName
 
         val context = view.context
         if (context != null) {
             imageViewIcon.setOnClickListener {
-                AlertDialog.Builder(context)
-                        .setTitle(achievement.displayName)
-                        .setMessage(getDescription(achievement))
-                        .show()
+                showAchievementPager()
             }
 
             Glide.with(context)
@@ -37,6 +36,10 @@ class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(vi
                     })
                     .into(imageViewIcon)
         }
+    }
+
+    private fun showAchievementPager() {
+        funShowPager(startingIndex)
     }
 
     private fun getDescription(achievement: Achievement): String {

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:clipToPadding="false"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryLight"
     tools:context=".ui.activity.main.MainActivity">
@@ -42,6 +43,7 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
+        android:elevation="@dimen/elevation_fab_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_items" />
 </android.support.constraint.ConstraintLayout>

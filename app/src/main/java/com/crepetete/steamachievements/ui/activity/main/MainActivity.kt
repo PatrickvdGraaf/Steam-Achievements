@@ -18,12 +18,12 @@ import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
-import com.crepetete.steamachievements.ui.fragment.library.NavbarInteractionListener
+import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
-import com.crepetete.steamachievements.ui.view.game.adapter.GamesAdapter
 
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
@@ -43,7 +43,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
 
     private var currentTag = LibraryFragment.TAG
 
-    private var navBarListener: NavbarInteractionListener? = null
+    private var navBarListener: NavBarInteractionListener? = null
 
     @IdRes
     private val containerId: Int = R.id.fragment_container
@@ -150,15 +150,15 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menuSortCompletion -> {
-            navBarListener?.onSortingMethodChanged(GamesAdapter.COMPLETION)
+            navBarListener?.onSortingMethodChanged(SortingType.COMPLETION)
             true
         }
         R.id.menuSortName -> {
-            navBarListener?.onSortingMethodChanged(GamesAdapter.NAME)
+            navBarListener?.onSortingMethodChanged(SortingType.NAME)
             true
         }
         R.id.menuSortPlaytime -> {
-            navBarListener?.onSortingMethodChanged(GamesAdapter.PLAYTIME)
+            navBarListener?.onSortingMethodChanged(SortingType.PLAYTIME)
             true
         }
         R.id.action_refresh -> {
@@ -199,7 +199,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
             }
         }
 
-        navBarListener = if (fragment is NavbarInteractionListener) {
+        navBarListener = if (fragment is NavBarInteractionListener) {
             fragment
         } else {
             null

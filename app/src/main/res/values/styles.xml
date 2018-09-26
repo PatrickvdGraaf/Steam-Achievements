@@ -8,9 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Transparent" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <!-- BUTTON -->
     <style name="AppTheme.Button.Clear" parent="AppTheme">
-        <item name="android:background">@color/transparant</item>
+        <item name="android:background">@color/transparent</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
@@ -30,15 +37,15 @@
     <style name="AppTheme.Text.Label" parent="AppTheme">
         <item name="android:textColor">@color/colorTextLabel</item>
         <item name="android:textSize">@dimen/text_label</item>
-        <item name="android:layout_marginBottom">@dimen/default_margin_quarter</item>
     </style>
 
     <style name="AppTheme.Text.Value" parent="AppTheme">
         <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_body_one</item>
     </style>
 
     <style name="AppTheme.Text.Value.Big" parent="AppTheme.Text.Value">
-        <item name="android:textSize">@dimen/text_header_five</item>
+        <item name="android:textSize">@dimen/text_header_six</item>
     </style>
 
     <!-- ACHIEVEMENTS-->

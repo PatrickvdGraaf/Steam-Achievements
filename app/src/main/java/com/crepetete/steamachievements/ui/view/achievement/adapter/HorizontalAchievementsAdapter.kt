@@ -1,10 +1,12 @@
 package com.crepetete.steamachievements.ui.view.achievement.adapter
 
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.utils.sortByLastAchieved
 import com.crepetete.steamachievements.utils.sortByNotAchieved
 import com.crepetete.steamachievements.utils.sortByRarity
@@ -18,15 +20,27 @@ class HorizontalAchievementsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.list_achievement, parent, false)
-        return AchievementViewHolder(view)
+        return AchievementViewHolder(view) { index ->
+            val context = parent.context
+            if (context != null) {
+                val intent = Intent(context, TransparentPagerActivity::class.java)
+                intent.putExtra(TransparentPagerActivity.INTENT_KEY_INDEX, index)
+                intent.putExtra(TransparentPagerActivity.INTENT_KEY_APP_ID, ArrayList(achievements.map {
+                    it.appId
+                }))
+                intent.putExtra(TransparentPagerActivity.INTENT_KEY_NAME, ArrayList(achievements.map {
+                    it.name
+                }))
+
+                context.startActivity(intent)
+            }
+        }
     }
 
-    override fun getItemCount(): Int {
-        return achievements.size
-    }
+    override fun getItemCount() = achievements.size
 
     override fun onBindViewHolder(holder: AchievementViewHolder, position: Int) {
-        holder.bind(achievements[position])
+        holder.bind(achievements[position], position)
     }
 
     fun setAchievements(achievements: List<Achievement>) {

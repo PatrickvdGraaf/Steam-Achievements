@@ -67,13 +67,23 @@ data class Game(
 
     fun getFullLogoUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/$appId/$logoUrl.jpg"
 
-    fun getRecentPlaytimeString(context: Context? = null) = recentPlayTime.toHours(context)
+    fun getRecentPlaytimeString(context: Context? = null) = if (recentPlayTime <= 0) {
+        null
+    } else {
+        recentPlayTime.toHours(context)
+    }
 
-    fun getTotalPlayTimeString(context: Context? = null) = playTime.toHours(context)
+    fun getTotalPlayTimeString(context: Context? = null) = if (playTime <= 0) {
+        null
+    } else {
+        playTime.toHours(context)
+    }
 
     fun hasAchievements() = achievements?.isNotEmpty() ?: false
 
     fun getAmountOfAchievements(): Int = achievements?.size ?: 0
+
+    fun getAchievedAchievements(): Int = achievements?.filter { it.achieved }?.size ?: 0
 
     fun getAchievementsText() = when {
         hasCompletedAchievements() ->

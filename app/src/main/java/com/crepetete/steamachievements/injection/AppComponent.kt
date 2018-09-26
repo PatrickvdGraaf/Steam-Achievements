@@ -17,7 +17,7 @@ import javax.inject.Singleton
  *
  * AndroidInjectionModule : We didn’t create this. It is an internal class in Dagger 2.10.
  * Provides our activities and fragments with given module.
- * ActivityBuilder : We created this module. This is a given module to dagger.
+ * ActivityModule : We created this module. This is a given module to dagger.
  * We map all our activities here.
  * And Dagger know our activities in compile time. In our app we have Main and Detail activity.
  * So we map both activities here.
@@ -28,7 +28,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [(AndroidSupportInjectionModule::class),
     (AppModule::class),
-    (ActivityBuilder::class)])
+    (ActivityModule::class)])
 interface AppComponent : AndroidInjector<DaggerApplication> {
     fun inject(app: SteamAchievementsApplication)
 

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="game"
             type="com.crepetete.steamachievements.model.Game" />
@@ -12,18 +11,20 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:elevation="10dp"
-        app:cardCornerRadius="4dp">
+        android:layout_marginStart="@dimen/default_margin_halved"
+        android:layout_marginEnd="@dimen/default_margin_halved"
+        android:layout_marginTop="@dimen/default_margin_quarter"
+        android:layout_marginBottom="@dimen/default_margin_quarter"
+        app:cardBackgroundColor="#333"
+        app:cardCornerRadius="4dp"
+        android:clipToPadding="true"
+        app:cardElevation="@dimen/elevation_card_default"
+        app:cardUseCompatPadding="true">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#333">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/game_banner"
@@ -86,12 +87,12 @@
                 android:id="@+id/name_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{game.name}"
                 android:background="#57000000"
                 android:paddingBottom="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
                 android:paddingStart="@dimen/default_margin"
                 android:paddingTop="@dimen/default_margin_halved"
+                android:text="@{game.name}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_header_five"
                 app:layout_constraintBottom_toTopOf="@+id/progressContainer"
@@ -122,6 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#6b000000"
+                android:clipToPadding="false"
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"

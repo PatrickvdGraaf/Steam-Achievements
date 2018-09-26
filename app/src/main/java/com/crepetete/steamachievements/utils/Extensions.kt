@@ -3,13 +3,14 @@ package com.crepetete.steamachievements.utils
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Build
+import android.support.annotation.IdRes
 import android.support.annotation.Size
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -19,9 +20,17 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+fun List<Game>.sort(method: SortingType): List<Game> {
+    return when (method) {
+        SortingType.PLAYTIME -> this.sortByPlaytime()
+        SortingType.COMPLETION -> this.sortByCompletion()
+        SortingType.NAME -> this.sortByName()
+    }
+}
 
 fun List<Game>.sortByCompletion(): List<Game> {
     return sortedWith(Comparator { o1, o2 ->
@@ -161,13 +170,7 @@ fun Int.toPercentage(from: Int): Long {
     return this * 100L / from
 }
 
-fun Context.isConnectedToInternet(): Boolean {
-    val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-    return activeNetwork?.isConnectedOrConnecting == true
-}
-
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 300) {
+fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
     if (colorTo == null) {
         return
     }
@@ -197,7 +200,7 @@ fun TextView.setCompletedFlag(isCompleted: Boolean) {
             }, 0, 0, 0)
 }
 
-fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 300) {
+fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 800) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         setProgress(percentage, true)
     } else {
@@ -213,3 +216,28 @@ fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: 
 fun Date.getDaysFromNow(): Long {
     return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
 }
+
+fun <T : View> Activity.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+fun <T : View> Dialog.bind(@IdRes idRes: Int): Lazy<T> {
+    @Suppress("UNCHECKED_CAST")
+    return unsafeLazy { findViewById<T>(idRes) }
+}
+
+/**
+ * Appends all elements that are not `null` to the given [destination].
+ */
+public fun <C : MutableCollection<in T>, T : Any> Iterable<T?>.filterNotNullTo(destination: C): C {
+    for (element in this) if (element != null) destination.add(element)
+    return destination
+}
+
+private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
