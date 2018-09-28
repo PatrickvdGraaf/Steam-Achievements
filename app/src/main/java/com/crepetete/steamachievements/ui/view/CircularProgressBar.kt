@@ -6,7 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -44,7 +44,7 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
             strokeWidth = typedArray.getDimension(
                     R.styleable.CircleProgressBar_progressBarThickness,
                     strokeWidth)
-            progress = typedArray.getFloat(R.styleable.CircleProgressBar_progress, progress)
+            progress = typedArray.getFloat(R.styleable.CircleProgressBar_progressInPercentage, progress)
             color = typedArray.getInt(R.styleable.CircleProgressBar_progressbarColor, color)
             min = typedArray.getInt(R.styleable.CircleProgressBar_min, min)
             max = typedArray.getInt(R.styleable.CircleProgressBar_max, max)

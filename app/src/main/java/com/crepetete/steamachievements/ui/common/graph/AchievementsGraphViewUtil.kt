@@ -2,7 +2,7 @@ package com.crepetete.steamachievements.ui.common.graph
 
 import android.graphics.DashPathEffect
 import android.graphics.Paint
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.view.View
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.model.Achievement

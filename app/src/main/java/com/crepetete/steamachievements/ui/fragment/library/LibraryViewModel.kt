@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
-import android.arch.lifecycle.*
+import androidx.lifecycle.*
 import com.crepetete.steamachievements.data.database.model.GameWithAchievements
 import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository

@@ -10,8 +10,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.IdRes
-import android.support.annotation.Size
+import androidx.annotation.IdRes
+import androidx.annotation.Size
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar

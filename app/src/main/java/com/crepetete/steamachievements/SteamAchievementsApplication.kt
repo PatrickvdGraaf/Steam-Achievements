@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements
 
 import android.app.Activity
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 import android.util.Log
 import com.crepetete.steamachievements.injection.DaggerAppComponent
 import com.crepetete.steamachievements.utils.SaCrashLibrary

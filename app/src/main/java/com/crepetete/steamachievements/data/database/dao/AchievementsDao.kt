@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.data.database.dao
 
-import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.AchievementKeys
 import io.reactivex.Single

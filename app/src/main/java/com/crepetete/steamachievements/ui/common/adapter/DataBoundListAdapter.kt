@@ -1,9 +1,9 @@
 package com.crepetete.steamachievements.ui.common.adapter
 
-import android.databinding.ViewDataBinding
-import android.support.v7.recyclerview.extensions.AsyncDifferConfig
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.util.DiffUtil
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import com.crepetete.steamachievements.AppExecutors
 

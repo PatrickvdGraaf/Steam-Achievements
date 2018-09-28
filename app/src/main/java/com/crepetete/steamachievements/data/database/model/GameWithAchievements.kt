@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.data.database.model
 
-import android.arch.persistence.room.Embedded
-import android.arch.persistence.room.Relation
+import androidx.room.Embedded
+import androidx.room.Relation
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game
 

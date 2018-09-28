@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.ui.view.game.adapter
 
-import android.support.annotation.Nullable
-import android.support.v7.util.DiffUtil
+import androidx.annotation.Nullable
+import androidx.recyclerview.widget.DiffUtil
 import com.crepetete.steamachievements.model.Game
 
 class GameDiffCallback(

@@ -1,14 +1,14 @@
 package com.crepetete.steamachievements.ui.common.adapter.games
 
-import android.arch.lifecycle.LifecycleObserver
-import android.databinding.DataBindingComponent
-import android.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleObserver
+import androidx.databinding.DataBindingComponent
+import androidx.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.support.v7.graphics.Palette
-import android.support.v7.util.DiffUtil
+import androidx.core.content.ContextCompat
+import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.DiffUtil
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

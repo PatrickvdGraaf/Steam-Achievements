@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/default_margin"
@@ -72,13 +72,13 @@
             app:progressBarThickness="@dimen/default_margin_quarter" />
 
         <!-- ACHIEVEMENTS LIST -->
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latest_achievements_recyclerview"
             style="@style/AppTheme.Achievements.RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/custom_progressBar" />
 
         <!-- RECENT PLAYTIME -->
@@ -134,5 +134,5 @@
                 android:layout_height="280dp"
                 android:layout_marginTop="@dimen/default_margin" />
         </LinearLayout>
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

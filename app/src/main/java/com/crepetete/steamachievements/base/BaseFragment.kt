@@ -2,7 +2,7 @@ package com.crepetete.steamachievements.base
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import android.view.View
 import android.widget.Toast
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator

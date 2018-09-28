@@ -1,8 +1,8 @@
 package com.crepetete.steamachievements.data.database
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
-import android.arch.persistence.room.TypeConverters
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.database.dao.PlayerDao

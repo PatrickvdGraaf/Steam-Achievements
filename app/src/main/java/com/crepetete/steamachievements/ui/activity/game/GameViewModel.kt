@@ -1,11 +1,11 @@
 package com.crepetete.steamachievements.ui.activity.game
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
-import android.support.v7.graphics.Palette
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
 import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.model.Achievement

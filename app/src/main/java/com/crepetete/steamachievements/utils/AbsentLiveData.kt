@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.utils
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 
 /**
  * A LiveData class that has `null` value.

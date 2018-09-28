@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.main
 
-import android.support.v4.app.Fragment
-import com.crepetete.steamachievements.base.BaseFragment
+import androidx.fragment.app.Fragment
 import com.crepetete.steamachievements.base.BaseView
 import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.model.Game

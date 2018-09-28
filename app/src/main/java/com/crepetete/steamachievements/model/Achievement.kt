@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.model
 
-import android.arch.persistence.room.Entity
+import androidx.room.Entity
 import android.text.format.DateFormat
 import com.squareup.moshi.Json
 import java.util.*

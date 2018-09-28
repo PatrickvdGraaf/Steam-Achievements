@@ -1,11 +1,11 @@
 package com.crepetete.steamachievements.ui.activity.pager
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.view.ViewPager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter

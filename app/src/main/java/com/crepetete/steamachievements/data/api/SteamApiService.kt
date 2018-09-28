@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.data.api
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.data.api.response.ApiResponse
 import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
 import com.crepetete.steamachievements.data.api.response.achievement.GlobalAchievResponse

@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.injection.module
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import com.crepetete.steamachievements.data.database.SteamDatabase
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.database.dao.GamesDao

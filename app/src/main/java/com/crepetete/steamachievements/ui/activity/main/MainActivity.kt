@@ -1,18 +1,17 @@
 package com.crepetete.steamachievements.ui.activity.main
 
 import android.app.SearchManager
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ProgressBar
+import androidx.annotation.IdRes
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.base.BaseActivity
 import com.crepetete.steamachievements.model.Achievement
@@ -24,6 +23,7 @@ import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFrag
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,

@@ -1,11 +1,11 @@
 package com.crepetete.steamachievements.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.ForeignKey
-import android.arch.persistence.room.ForeignKey.CASCADE
-import android.arch.persistence.room.Ignore
-import android.arch.persistence.room.PrimaryKey
 import android.content.Context
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.crepetete.steamachievements.utils.getDaysFromNow
 import com.crepetete.steamachievements.utils.toHours
 import com.squareup.moshi.Json
@@ -87,7 +87,9 @@ data class Game(
 
     fun getAchievementsText() = when {
         hasCompletedAchievements() ->
-            "${getCompletedAchievements().size}/${achievements?.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."
+            "${getCompletedAchievements().size}/${achievements?.size} " +
+                    "(${DecimalFormat("0.##")
+                            .format(getPercentageCompleted())}%) achievements."
         hasAchievements() -> "${achievements?.size ?: 0} achievements."
         else -> ""
     }

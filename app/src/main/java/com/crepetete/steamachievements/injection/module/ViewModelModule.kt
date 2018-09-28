@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.injection.module
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.crepetete.steamachievements.injection.helper.ViewModelFactory
 import com.crepetete.steamachievements.injection.helper.annotation.ViewModelKey
 import com.crepetete.steamachievements.ui.activity.game.GameViewModel
