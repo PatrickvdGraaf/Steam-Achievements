@@ -60,6 +60,8 @@ class LoginActivity : AppCompatActivity(), Injectable {
         })
 
         setupWebView()
+
+
     }
 
     @SuppressLint("SetJavaScriptEnabled")

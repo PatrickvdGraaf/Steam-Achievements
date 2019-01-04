@@ -1,18 +1,12 @@
 package com.crepetete.steamachievements.vo
 
-import androidx.room.Entity
 import android.text.format.DateFormat
+import androidx.room.Entity
 import com.squareup.moshi.Json
 import java.util.*
 
 @Entity(tableName = "achievements",
         primaryKeys = ["name", "appId"])
-//,
-//foreignKeys = [(ForeignKey(
-//entity = Game::class,
-//parentColumns = ["appId"],
-//childColumns = ["appId"],
-//onDelete = ForeignKey.CASCADE))]
 data class Achievement(
         var appId: String,
         val name: String,

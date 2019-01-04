@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.di
 
+import com.crepetete.steamachievements.ui.fragment.achievement.pager.AchievementPagerFragment
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
@@ -17,4 +18,7 @@ abstract class FragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeProfileFragment(): ProfileFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeAchievementPagerFragment(): AchievementPagerFragment
 }

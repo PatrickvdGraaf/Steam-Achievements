@@ -140,11 +140,18 @@ class GamesAdapter(
      * Update the achievements in the existing list of games.
      */
     fun setAchievements(achievements: List<Achievement>) {
-        for (i in 0 until items.size) {
-            val game = items[i]
-            game.setAchievements(achievements.filter { it.appId == game.appId })
+
+    }
+
+    fun setAchievements(appId: String, achievements: List<Achievement>) {
+        items.filter { it.appId == appId }.forEach {
+            if (it.getAchievements() != achievements) {
+                it.setAchievements(achievements)
+                notifyItemChanged(items.indexOf(it))
+            }
         }
-        submitList(items)
+
+//        submitList(items)
     }
 
     private fun animateBackground(game: Game, view: View, bitmap: Bitmap) {

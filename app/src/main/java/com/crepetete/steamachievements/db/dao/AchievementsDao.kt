@@ -12,11 +12,11 @@ import com.crepetete.steamachievements.vo.AchievementKeys
 @Dao
 @OpenForTesting
 abstract class AchievementsDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(list: List<Achievement>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(games: List<Achievement>)
+    abstract fun update(achievements: List<Achievement>)
 
     @Query("SELECT * FROM achievements")
     abstract fun getAchievements(): LiveData<List<Achievement>>

@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
+import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
@@ -53,7 +54,7 @@ fun Activity.startGameActivity(appId: String, imageView: ImageView) {
     }, options.toBundle())
 }
 
-class GameActivity : AppCompatActivity(), OnGraphDateTappedListener {
+class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 

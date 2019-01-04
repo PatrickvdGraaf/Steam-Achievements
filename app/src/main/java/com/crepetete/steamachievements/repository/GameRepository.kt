@@ -6,21 +6,21 @@ import com.crepetete.steamachievements.api.ApiResponse
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
-import com.crepetete.steamachievements.repository.user.UserRepository
+import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
-import com.crepetete.steamachievements.vo.Resource
 import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.Resource
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@OpenForTesting
 class GameRepository @Inject constructor(
     private val appExecutors: AppExecutors,
     private val dao: GamesDao,
-    private val api: SteamApiService,
-    private val userRepository: UserRepository
+    private val api: SteamApiService
 ) {
 
     private val gameListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
@@ -42,34 +42,15 @@ class GameRepository @Inject constructor(
                 || data.isEmpty()
                 || gameListRateLimit.shouldFetch("getGamesForUser$userId")
 
-            override fun loadFromDb(): LiveData<List<Game>> {
-                Timber.d("Getting games from DB.")
-                val g = dao.getGamesAsLiveData()
-                val gValue = g.value
-                return g
-            }
+            override fun loadFromDb(): LiveData<List<Game>> = dao.getGamesAsLiveData()
 
-            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUserAsLiveData(userId)
+            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
 
             override fun onFetchFailed() {
                 gameListRateLimit.reset(userId)
             }
         }.asLiveData()
     }
-
-//    /**
-//     * Retrieves a list of all Game IDs in the database.
-//     */
-//    fun getGameIds(): Single<List<String>> {
-//        return dao.getGameIds()
-//    }
-//
-//    /**
-//     * Retrieves a list of all Games in the database.
-//     */
-//    fun getGamesFromDb(): Single<List<Game>> {
-//        return dao.getGamesForUser()
-//    }
 
     /**
      * Inserts a single Game in the database.
@@ -84,79 +65,6 @@ class GameRepository @Inject constructor(
     fun insert(games: List<Game>) {
         dao.insert(games)
     }
-
-//    /**
-//     * Retrieves all owned games from API.
-//     * It also retrieves the Achievements for each games from the API before the list is returned.
-//     * This is because Achievements are retrieved in a separate call.
-//     */
-//    fun getGamesFromApi(): Single<List<Game>> {
-//        val userId = userRepository.getCurrentPlayerId()
-//        return api.getGamesForUser(userId)
-//            .map {
-//                it.response.games
-//            }
-//            .doAfterSuccess {
-//                insertOrUpdateGames(it, userId)
-//            }
-//    }
-
-//    private fun insertOrUpdateGames(games: List<Game>, userId: String) {
-//        getGameIds().subscribe({ ids ->
-//            val newGames = games
-//                .filter { !ids.contains(it.appId) }
-//                .map {
-//                    it.lastUpdated = Calendar.getInstance().time.time
-//                    it
-//                }
-//            if (newGames.isNotEmpty()) {
-//                newGames.map {
-//                    it.userId = userId
-//                }
-//                newGames.forEach {
-//                    insertGame(it)
-//                }
-//            }
-//
-//            val updatedGames = games
-//                .filter {
-//                    ids.contains(it.appId) && it.shouldUpdate()
-//                }.map {
-//                    it.lastUpdated = Calendar.getInstance().time.time
-//                    it.userId = userId
-//                    it
-//                }
-//            if (updatedGames.isNotEmpty()) {
-//                updatedGames.forEach {
-//                    updateGame(it)
-//                }
-//            }
-//        }, {
-//            Timber.e(it)
-//        })
-//    }
-
-//    fun updateGame(game: Game) {
-//        Single.fromCallable { dao.update(listOf(game)) }
-//            .subscribeOn(Schedulers.computation())
-//            .observeOn(Schedulers.io())
-//            .subscribe({
-//                Timber.d("Updated ${game.name} in the Database.")
-//            }, {
-//                Timber.e(it)
-//            })
-//    }
-//
-//    private fun insertGame(game: Game) {
-//        Single.fromCallable { dao.insert(listOf(game)) }
-//            .subscribeOn(Schedulers.computation())
-//            .observeOn(Schedulers.io())
-//            .subscribe({
-//                Timber.d("Updated ${game.name} in the Database.")
-//            }, {
-//                Timber.e(it)
-//            })
-//    }
 
     /**
      * Returns a specific [Game] from the database.]

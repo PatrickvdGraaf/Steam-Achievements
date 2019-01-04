@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.repository
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.api.ApiResponse
@@ -9,9 +10,13 @@ import com.crepetete.steamachievements.api.response.achievement.GlobalAchievResp
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.repository.user.UserRepository
+import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Resource
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -19,6 +24,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@OpenForTesting
 class AchievementsRepository @Inject constructor(
     private val appExecutors: AppExecutors,
     private val userRepository: UserRepository,
@@ -34,30 +40,119 @@ class AchievementsRepository @Inject constructor(
      */
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
-            // Save the new Achievements in the Database. Conflicts will be ignored.
             override fun saveCallResult(item: SchemaResponse) {
-                Timber.d("Saving Achievements in DB for appId: $appId")
+                Timber.d("steamachievements; Saving Achievements in DB for appId: $appId")
 
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {
+                    achievements.forEach {
+                        it.appId = appId
+                    }
                     dao.insert(achievements)
                 }
             }
 
             override fun shouldFetch(data: List<Achievement>?) = data == null
                 || data.isEmpty()
+                || achievementsListRateLimit.shouldFetch("ACHIEVEMENTS_$appId")
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
-                Timber.d("Getting achievements from DB for appId: $appId")
+                Timber.i("steamachievements; Getting achievements from database for game $appId")
                 return dao.getAchievements(appId)
             }
 
-            override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = api.getSchemaForGameAsLiveData(appId)
+            override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = api.getSchemaForGame(appId)
 
         }.asLiveData()
     }
 
+    @SuppressLint("CheckResult")
+    fun updateAchievementsForGame(appId: String, listener: AchievementsListener) {
+        api.getSchemaForGameAsSingle(appId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                val data = it.game.availableGameStats?.achievements
+                if (data != null) {
+                    data.forEach { achievement ->
+                        achievement.appId = appId
+                    }
+
+                    getStatsPerAchievements(appId, data, listener)
+                }
+            }, {
+                Timber.e(it)
+            })
+    }
+
+    private fun insertAchievementsList(achievements: List<Achievement>) {
+        Single.create<Void> {
+            dao.insert(achievements)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    @SuppressLint("CheckResult")
+    private fun getStatsPerAchievements(appId: String, allAchievements: List<Achievement>, listener: AchievementsListener) {
+        Timber.d("Getting Personal achievement stats for game: $appId")
+        api.getAchievementsForPlayerAsSingle(appId, userRepository.getCurrentPlayerId() ?: "-1")
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ response ->
+                val achievements = mutableListOf<Achievement>()
+                response.playerStats.achievements
+                    .asSequence()
+                    .filter { it.achieved != 0 }
+                    .map { ownedAchievement ->
+                        allAchievements.filter {
+                            it.name == ownedAchievement.apiName
+                        }.forEach { it ->
+                            it.unlockTime = ownedAchievement.getUnlockDate()
+                            it.achieved = ownedAchievement.achieved != 0
+                            it.description = ownedAchievement.description
+                            achievements.add(it)
+                        }
+                    }
+                    .toList()
+                //                getGlobalStats(appId, allAchievements, listener)
+                insertAchievementsList(allAchievements)
+                listener.onAchievementsLoadedForGame(appId, allAchievements)
+            }, {
+                Timber.e(it)
+                insertAchievementsList(allAchievements)
+                listener.onAchievementsLoadedForGame(appId, allAchievements)
+            })
+    }
+
+    @SuppressLint("CheckResult")
+    private fun getGlobalStats(appId: String, allAchievements: List<Achievement>, listener: AchievementsListener) {
+        Timber.d("Getting Global achievement stats for game: $appId")
+        api.getGlobalAchievementStatsAsSingle(appId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ item ->
+                item.achievementpercentages.achievements.forEach { response ->
+                    allAchievements.filter {
+                        it.name == response.name
+                    }.forEach {
+                        it.percentage = response.percent
+                    }
+                    insertAchievementsList(allAchievements)
+                    listener.onAchievementsLoadedForGame(appId, allAchievements)
+                }
+            }, {
+                Timber.e(it)
+                insertAchievementsList(allAchievements)
+                listener.onAchievementsLoadedForGame(appId, allAchievements)
+            })
+
+    }
+
     fun getAchievementsFromDb(): LiveData<List<Achievement>> = dao.getAchievements()
+
+    fun getAchievementsFromApi(appId: String) = api.getSchemaForGame(appId)
 
     fun getAchievedStatusForAchievementsForGame(appId: String, allAchievements: List<Achievement>): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, AchievedAchievementResponse>(appExecutors) {
@@ -69,7 +164,7 @@ class AchievementsRepository @Inject constructor(
                     .filter { it.achieved != 0 }
                     .map { ownedAchievement ->
                         allAchievements.filter {
-                            it.name == ownedAchievement.name
+                            it.name == ownedAchievement.apiName
                         }.forEach { it ->
                             it.unlockTime = ownedAchievement.getUnlockDate()
                             it.achieved = ownedAchievement.achieved != 0
@@ -81,19 +176,15 @@ class AchievementsRepository @Inject constructor(
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?): Boolean {
-                return data == null
-                    || achievementsListRateLimit.shouldFetch("${appId}_achieved_stats")
-            }
+            override fun shouldFetch(data: List<Achievement>?) = data != null && data.isNotEmpty() && achievementsListRateLimit.shouldFetch("getAchievedStatusForAchievementsForGame_$appId")
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
-
                 return dao.getAchievements(appId)
             }
 
             override fun createCall(): LiveData<ApiResponse<AchievedAchievementResponse>> {
                 // TODO Refactor invalid user id logic.
-                return api.getAchievementsForPlayerAsLiveData(appId, userRepository.getCurrentPlayerId() ?: "-1")
+                return api.getAchievementsForPlayer(appId, userRepository.getCurrentPlayerId() ?: "-1")
             }
 
             override fun onFetchFailed() {
@@ -117,16 +208,14 @@ class AchievementsRepository @Inject constructor(
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?): Boolean {
-                return achievementsListRateLimit.shouldFetch("${appId}_global_stats")
-            }
+            override fun shouldFetch(data: List<Achievement>?) = data != null && data.isNotEmpty() && achievementsListRateLimit.shouldFetch("GlobalAchievementStats_$appId")
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
                 return dao.getAchievements(appId)
             }
 
             override fun createCall(): LiveData<ApiResponse<GlobalAchievResponse>> {
-                return api.getGlobalAchievementStatsAsLiveData(appId)
+                return api.getGlobalAchievementStats(appId)
             }
         }.asLiveData()
     }
@@ -192,4 +281,8 @@ class AchievementsRepository @Inject constructor(
     //            achievements
     //        }
     //    }
+
+    interface AchievementsListener {
+        fun onAchievementsLoadedForGame(appId: String, achievements: List<Achievement>)
+    }
 }

@@ -17,6 +17,7 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
@@ -69,16 +70,10 @@ class LibraryFragment : Fragment(), Injectable,
             viewModel.setAppId(userId)
         }
 
-        //        viewModel.finalData.observe(this, Observer { games ->
-        //            if (games != null) {
-        //                adapter.submitList(games)
-        //            }
-        //        })
-
         viewModel.games.observe(this, Observer {
-            if (it?.data != null) {
-                adapter.setGames(it.data)
-                viewModel.loadAchievementsFromDb()
+            val games = it?.data
+            if (games != null) {
+                adapter.setGames(games)
             }
         })
 
@@ -104,7 +99,11 @@ class LibraryFragment : Fragment(), Injectable,
      * Updates the achievements for a specific game when it is shown in the RecyclerView.
      */
     override fun onGameBoundInAdapter(appId: String) {
-        viewModel.updateAchievementsFor(appId)
+        viewModel.updateAchievementsFor(appId, object : AchievementsRepository.AchievementsListener {
+            override fun onAchievementsLoadedForGame(appId: String, achievements: List<Achievement>) {
+                adapter.setAchievements(appId, achievements)
+            }
+        })
     }
 
     /**
@@ -213,7 +212,7 @@ class LibraryFragment : Fragment(), Injectable,
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-//                setLoaderIndicator(loadingIndicator)
+                //                setLoaderIndicator(loadingIndicator)
             }
         }
     }

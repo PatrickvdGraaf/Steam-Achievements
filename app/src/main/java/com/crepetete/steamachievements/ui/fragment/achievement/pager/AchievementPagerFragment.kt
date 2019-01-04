@@ -1,7 +1,5 @@
 package com.crepetete.steamachievements.ui.fragment.achievement.pager
 
-
-import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,6 +12,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -24,17 +23,17 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.GlideApp
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
-import dagger.android.support.DaggerFragment
+import com.crepetete.steamachievements.vo.Achievement
 import javax.inject.Inject
 
 /**
  * ViewPager Fragment that shows a Dialog-like view for an [Achievement].
  */
-class AchievementPagerFragment : DaggerFragment() {
+class AchievementPagerFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -54,7 +53,7 @@ class AchievementPagerFragment : DaggerFragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_achievement_pager, container,
-                false)
+            false)
         iconView = view.findViewById(R.id.achievement_icon_imageview)
         cardView = view.findViewById(R.id.achievement_cardview)
         nameView = view.findViewById(R.id.achievement_name_textview)
@@ -72,10 +71,11 @@ class AchievementPagerFragment : DaggerFragment() {
         return view
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(PagerFragmentViewModel::class.java)
+            .get(PagerFragmentViewModel::class.java)
 
         val achievementName = arguments?.getString(INTENT_KEY_NAME)
         val achievementAppId = arguments?.getString(INTENT_KEY_APP_ID)
@@ -113,45 +113,45 @@ class AchievementPagerFragment : DaggerFragment() {
         val context = context
         if (context != null) {
             GlideApp.with(context)
-                    .load(iconUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?,
-                                                  model: Any?,
-                                                  target: Target<Drawable>?,
-                                                  isFirstResource: Boolean): Boolean {
-                            // TODO
-                            return false
-                        }
+                .load(iconUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?,
+                                              model: Any?,
+                                              target: Target<Drawable>?,
+                                              isFirstResource: Boolean): Boolean {
+                        // TODO
+                        return false
+                    }
 
-                        override fun onResourceReady(resource: Drawable?,
-                                                     model: Any?,
-                                                     target: Target<Drawable>?,
-                                                     dataSource: DataSource?,
-                                                     isFirstResource: Boolean): Boolean {
-                            if (resource != null && resource is BitmapDrawable) {
-                                Palette.from(resource.bitmap).generate {
-                                    val darkVibrantSwatch = it?.darkVibrantSwatch
-                                    val darkMutedSwatch = it?.darkMutedSwatch
+                    override fun onResourceReady(resource: Drawable?,
+                                                 model: Any?,
+                                                 target: Target<Drawable>?,
+                                                 dataSource: DataSource?,
+                                                 isFirstResource: Boolean): Boolean {
+                        if (resource != null && resource is BitmapDrawable) {
+                            Palette.from(resource.bitmap).generate {
+                                val darkVibrantSwatch = it?.darkVibrantSwatch
+                                val darkMutedSwatch = it?.darkMutedSwatch
 
-                                    if (darkMutedSwatch != null) {
-                                        cardView.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                        iconContent.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                        dateView.setTextColor(darkMutedSwatch.bodyTextColor)
-                                    } else if (darkVibrantSwatch != null) {
-                                        cardView.setBackgroundColorAnimated(
-                                                ContextCompat.getColor(context, R.color.colorPrimary),
-                                                darkVibrantSwatch.rgb, 300)
-                                        iconContent.setBackgroundColorAnimated(
-                                                ContextCompat.getColor(context,
-                                                        R.color.colorPrimaryDark),
-                                                darkVibrantSwatch.rgb)
-                                    }
+                                if (darkMutedSwatch != null) {
+                                    cardView.setCardBackgroundColor(darkMutedSwatch.rgb)
+                                    iconContent.setCardBackgroundColor(darkMutedSwatch.rgb)
+                                    dateView.setTextColor(darkMutedSwatch.bodyTextColor)
+                                } else if (darkVibrantSwatch != null) {
+                                    cardView.setBackgroundColorAnimated(
+                                        ContextCompat.getColor(context, R.color.colorPrimary),
+                                        darkVibrantSwatch.rgb, 300)
+                                    iconContent.setBackgroundColorAnimated(
+                                        ContextCompat.getColor(context,
+                                            R.color.colorPrimaryDark),
+                                        darkVibrantSwatch.rgb)
                                 }
                             }
-                            return false
                         }
-                    }).into(iconView)
+                        return false
+                    }
+                }).into(iconView)
         }
     }
 
