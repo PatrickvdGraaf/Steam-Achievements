@@ -1,0 +1,24 @@
+{
+  "response": {
+    "players": [
+      {
+        "steamid": "76561198053621803",
+        "communityvisibilitystate": 3,
+        "profilestate": 1,
+        "personaname": "Crêpe Tête",
+        "lastlogoff": 1546612992,
+        "commentpermission": 1,
+        "profileurl": "https://steamcommunity.com/id/crepe-tete/",
+        "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/e6e01b76f0eb48602d507e07184350e38c0c77af.jpg",
+        "avatarmedium": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/e6e01b76f0eb48602d507e07184350e38c0c77af_medium.jpg",
+        "avatarfull": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/e6e01b76f0eb48602d507e07184350e38c0c77af_full.jpg",
+        "personastate": 0,
+        "realname": "Patrick",
+        "primaryclanid": "103582791429521408",
+        "timecreated": 1322662289,
+        "personastateflags": 0,
+        "loccountrycode": "NL"
+      }
+    ]
+  }
+}

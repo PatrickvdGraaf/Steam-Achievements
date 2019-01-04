@@ -9,7 +9,6 @@ import com.crepetete.steamachievements.api.response.achievement.AchievedAchievem
 import com.crepetete.steamachievements.api.response.achievement.GlobalAchievResponse
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.db.dao.AchievementsDao
-import com.crepetete.steamachievements.repository.user.UserRepository
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Achievement
@@ -111,7 +110,9 @@ class AchievementsRepository @Inject constructor(
                         }.forEach { it ->
                             it.unlockTime = ownedAchievement.getUnlockDate()
                             it.achieved = ownedAchievement.achieved != 0
-                            it.description = ownedAchievement.description
+                            if (ownedAchievement.description != null) {
+                                it.description = ownedAchievement.description
+                            }
                             achievements.add(it)
                         }
                     }
@@ -176,7 +177,8 @@ class AchievementsRepository @Inject constructor(
                 return dao.update(achievements)
             }
 
-            override fun shouldFetch(data: List<Achievement>?) = data != null && data.isNotEmpty() && achievementsListRateLimit.shouldFetch("getAchievedStatusForAchievementsForGame_$appId")
+            override fun shouldFetch(data: List<Achievement>?) = data != null && data.isNotEmpty()
+                && achievementsListRateLimit.shouldFetch("getAchievedStatusForAchievementsForGame_$appId")
 
             override fun loadFromDb(): LiveData<List<Achievement>> {
                 return dao.getAchievements(appId)

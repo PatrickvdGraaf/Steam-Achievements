@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.AppExecutors
@@ -86,6 +87,7 @@ class GamesAdapter(
 
         if (item.hasAchievements()) {
             binding.achievementsTextView.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             val percentage = item.getPercentageCompleted().toInt()
             if (percentage > 0 && binding.progressBar.progress == 0) {
                 binding.progressBar.animateToPercentage(percentage)
@@ -94,19 +96,15 @@ class GamesAdapter(
             }
             binding.achievementsTextView.text = item.getAchievementsText()
             binding.achievementsTextView.setCompletedFlag(item.isCompleted())
-        } else if (!item.achievementsWereAdded()) {
-            binding.achievementsTextView.visibility = View.VISIBLE
-            val context = binding.content.context
-            if (context != null) {
-                binding.achievementsTextView.text = context.getString(R.string.msg_achievements_loading)
-            }
         } else {
             binding.achievementsTextView.visibility = View.GONE
             binding.progressBar.progress = 0
+            binding.progressBar.visibility = View.GONE
         }
 
         Glide.with(view.context)
             .load(item.getFullLogoUrl())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(object : SimpleTarget<Drawable>() {
                 /**
                  * The method that will be called when the resource load has finished.
@@ -151,7 +149,7 @@ class GamesAdapter(
             }
         }
 
-//        submitList(items)
+        //        submitList(items)
     }
 
     private fun animateBackground(game: Game, view: View, bitmap: Bitmap) {

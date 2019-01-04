@@ -42,18 +42,13 @@ class LibraryViewModel @Inject constructor(
     //        games.value = nonNullGames.toList().sort(order)
     //    }.also { sortingType = order }
 
+    // TODO find out why the loadAchievementsForGame method doesn't call API.
     fun updateAchievementsFor(appId: String, achievementsListener: AchievementsRepository.AchievementsListener) {
+        // This doesn't work for API calls for some reason
         achievementsRepository.loadAchievementsForGame(appId)
+
+        // This does work, but not as nice as I'd like.
         achievementsRepository.updateAchievementsForGame(appId, achievementsListener)
-        //        val achievementsForGame: LiveData<ApiResponse<SchemaResponse>> = achievementsRepository.getAchievementsFromApi(appId)
-        //        val data = Transformations.switchMap(achievementsForGame) { response ->
-        //            if (response is ApiSuccessResponse) {
-        //                val value = Pair("", response.body.game.availableGameStats?.achievements)
-        //                MutableLiveData<Pair<String, List<Achievement>>>()
-        //            } else {
-        //                AbsentLiveData.create<Pair<String, List<Achievement>>>()
-        //            }
-        //        }
     }
 
     fun updateAchievedStats(appId: String, achievements: List<Achievement>) {

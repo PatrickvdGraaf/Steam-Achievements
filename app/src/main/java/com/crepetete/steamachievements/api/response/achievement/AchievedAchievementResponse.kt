@@ -21,7 +21,6 @@ data class AchievedAchievement(
         val description: String?
 ) {
     fun getUnlockDate(): Date {
-        Timber.d("Created Unlock Date From Long: $unlockTime")
         return Date(unlockTime * 1000L)
     }
 }

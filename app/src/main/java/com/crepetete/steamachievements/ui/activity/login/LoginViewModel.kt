@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.crepetete.steamachievements.repository.user.UserRepository
+import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.vo.Player
