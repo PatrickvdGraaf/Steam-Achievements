@@ -1,91 +1,65 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
-import androidx.lifecycle.*
-import com.crepetete.steamachievements.data.database.model.GameWithAchievements
-import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
-import com.crepetete.steamachievements.data.repository.game.GameRepository
-import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.model.Game
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import com.crepetete.steamachievements.repository.AchievementsRepository
+import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
-import com.crepetete.steamachievements.utils.AbsentLiveData
-import com.crepetete.steamachievements.utils.resource.Resource
-import com.crepetete.steamachievements.utils.sort
+import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
-
-class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
-                                           private var achievementsRepository: AchievementsRepository) : ViewModel() {
+class LibraryViewModel @Inject constructor(
+    private var gameRepo: GameRepository,
+    private var achievementsRepository: AchievementsRepository
+) : ViewModel() {
     private val _userId = MutableLiveData<UserId>()
     val userId: LiveData<UserId>
         get() = _userId
 
-    val games: LiveData<Resource<List<GameWithAchievements>>> = Transformations
-            .switchMap(_userId) { id ->
-                id.ifExists {
-                    gameRepo.getGames(it)
-                }
+    val games: LiveData<Resource<List<Game>>> = Transformations
+        .switchMap(_userId) { id ->
+            id.ifExists {
+                gameRepo.getGames(it)
             }
+        }
 
-    val achievements = achievementsRepository.getAchievementsFromDb()
-
-    val finalData = MediatorLiveData<List<Game>>()
+    var achievements: LiveData<List<Achievement>> = MutableLiveData<List<Achievement>>()
 
     private var sortingType = SortingType.PLAYTIME
 
-    init {
-        finalData.addSource(games) { resource ->
-            resource?.data?.asSequence()?.mapNotNull { it.game }?.toList()
-                    ?.let {
-                        val games = mutableListOf<Game>()
-                        it.forEach { game ->
-                            achievements.value?.filter { a -> a.appId == game.appId }.let { filteredAchievements ->
-                                if (filteredAchievements != null) {
-                                    game.setAchievements(filteredAchievements)
-                                }
-                            }
-                            games.add(game)
-                        }
-                        finalData.value = games.sort(sortingType)
-                    }
-        }
+    //    fun rearrangeGames(order: SortingType) = games.value?.data?.map { it.game }?.let {
+    //        val nonNullGames = mutableListOf<Game>()
+    //        it.forEach { game ->
+    //            if (game != null) {
+    //                nonNullGames.add(game)
+    //            }
+    //        }
+    //        games.value = nonNullGames.toList().sort(order)
+    //    }.also { sortingType = order }
 
-        finalData.addSource(achievements) { achievements ->
-            if (achievements != null) {
-                val games = finalData.value
-                games?.forEach { game ->
-                    game.setAchievements(achievements.filter { achievement ->
-                        achievement.appId == game.appId
-                    })
-                }
-                finalData.value = games
-            }
-        }
+    fun loadAchievementsFromDb() {
+        achievements = achievementsRepository.getAchievementsFromDb()
     }
-
-    fun rearrangeGames(order: SortingType) = games.value?.data?.map { it.game }?.let {
-        val nonNullGames = mutableListOf<Game>()
-        it.forEach { game ->
-            if (game != null) {
-                nonNullGames.add(game)
-            }
-        }
-        finalData.value = nonNullGames.toList().sort(order)
-    }.also { sortingType = order }
 
     fun updateAchievementsFor(appId: String) {
         achievementsRepository.loadAchievementsForGame(appId)
     }
 
     fun updateAchievedStats(appId: String, achievements: List<Achievement>) {
-//        if (emptyAchievements.isNotEmpty()) {
-//            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, emptyAchievements)
-//        }
+        //        if (emptyAchievements.isNotEmpty()) {
+        //            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, emptyAchievements)
+        //        }
     }
 
     fun updateGlobalStats(appId: String, achievements: List<Achievement>) {
-//        if (emptyAchievements.isNotEmpty()) {
-//            achievementsRepository.getGlobalAchievementStats(appId, emptyAchievements)
-//        }
+        //        if (emptyAchievements.isNotEmpty()) {
+        //            achievementsRepository.getGlobalAchievementStats(appId, emptyAchievements)
+        //        }
     }
 
     fun setAppId(appId: String) {
@@ -94,6 +68,13 @@ class LibraryViewModel @Inject constructor(private var gameRepo: GameRepository,
             return
         }
         _userId.value = update
+    }
+
+    fun updatePrimaryColorForGame(appId: String, rgb: Int) {
+        gameRepo.getGameFromDb(appId).value?.let { game ->
+            game.colorPrimaryDark = rgb
+            gameRepo.update(game)
+        }
     }
 
     data class UserId(val id: String) {

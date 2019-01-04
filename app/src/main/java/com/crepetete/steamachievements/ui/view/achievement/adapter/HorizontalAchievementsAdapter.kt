@@ -5,11 +5,11 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerActivity
-import com.crepetete.steamachievements.utils.sortByLastAchieved
-import com.crepetete.steamachievements.utils.sortByNotAchieved
-import com.crepetete.steamachievements.utils.sortByRarity
+import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
+import com.crepetete.steamachievements.util.extensions.sortByNotAchieved
+import com.crepetete.steamachievements.util.extensions.sortByRarity
 
 class HorizontalAchievementsAdapter(
         private var sortingMethod: AchievSortingMethod = AchievSortingMethod.ACHIEVED)

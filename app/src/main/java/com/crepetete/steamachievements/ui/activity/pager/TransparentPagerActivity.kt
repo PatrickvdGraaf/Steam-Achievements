@@ -2,6 +2,7 @@ package com.crepetete.steamachievements.ui.activity.pager
 
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -9,14 +10,14 @@ import androidx.viewpager.widget.ViewPager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
-import com.crepetete.steamachievements.utils.bind
+import com.crepetete.steamachievements.util.extensions.bind
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
 /**
  * Activity which holds a ViewPager that shows an achievement.
  */
-class TransparentPagerActivity : DaggerAppCompatActivity() {
+class TransparentPagerActivity : AppCompatActivity() {
     companion object {
         const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
         const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"

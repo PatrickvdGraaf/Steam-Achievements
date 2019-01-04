@@ -2,7 +2,7 @@ package com.crepetete.steamachievements.ui.view.game.adapter
 
 import androidx.annotation.Nullable
 import androidx.recyclerview.widget.DiffUtil
-import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.vo.Game
 
 class GameDiffCallback(
         private val oldGamesList: List<Game>,

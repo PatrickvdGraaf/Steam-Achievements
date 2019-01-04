@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.ui.common.adapter.games
 
 import android.widget.ImageView
-import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.vo.Game
 import io.reactivex.disposables.Disposable
 
 /**

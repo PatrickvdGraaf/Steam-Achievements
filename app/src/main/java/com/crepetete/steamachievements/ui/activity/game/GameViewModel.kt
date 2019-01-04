@@ -6,59 +6,58 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.palette.graphics.Palette
-import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
-import com.crepetete.steamachievements.data.repository.game.GameRepository
-import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.model.Game
-import com.crepetete.steamachievements.utils.AbsentLiveData
-import com.crepetete.steamachievements.utils.resource.Resource
-import javax.annotation.Nonnull
+import com.crepetete.steamachievements.repository.AchievementsRepository
+import com.crepetete.steamachievements.repository.GameRepository
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
-class GameViewModel @Inject constructor(@Nonnull application: Application,
-                                        private var gameRepo: GameRepository,
-                                        private var achievementsRepo: AchievementsRepository)
-    : AndroidViewModel(application) {
+class GameViewModel @Inject constructor(
+    application: Application,
+    private val gameRepo: GameRepository,
+    private val achievementsRepo: AchievementsRepository
+) : AndroidViewModel(application) {
 
     private val _appId = MutableLiveData<AppId>()
     val appId: LiveData<AppId>
         get() = _appId
 
     val game: LiveData<Game> = Transformations
-            .switchMap(_appId) { id ->
-                id.ifExists {
-                    gameRepo.getGameFromDb(it)
-                }
+        .switchMap(_appId) { id ->
+            id.ifExists {
+                gameRepo.getGameFromDb(it)
             }
+        }
 
     private val achievements: LiveData<Resource<List<Achievement>>> = Transformations
-            .switchMap(_appId) { id ->
-                id.ifExists {
-                    achievementsRepo.loadAchievementsForGame(it)
-                }
+        .switchMap(_appId) { id ->
+            id.ifExists {
+                achievementsRepo.loadAchievementsForGame(it)
             }
+        }
 
     private val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-            .switchMap(achievements) {
-                val id = _appId.value?.id
-                val achievements = it.data
-                if (id != null && achievements != null) {
-                    return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-                            achievements)
-                }
-                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+        .switchMap(achievements) {
+            val id = _appId.value?.id
+            val achievements = it.data
+            if (id != null && achievements != null) {
+                return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
+                    achievements)
             }
+            return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+        }
 
     val finalAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-            .switchMap(updatedAchievements) {
-                val id = _appId.value?.id
-                val achievements = it?.data
-                if (id != null && achievements != null) {
-                    return@switchMap achievementsRepo.getGlobalAchievementStats(id, achievements)
-                }
-                return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+        .switchMap(updatedAchievements) {
+            val id = _appId.value?.id
+            val achievements = it?.data
+            if (id != null && achievements != null) {
+                return@switchMap achievementsRepo.getGlobalAchievementStats(id, achievements)
             }
-
+            return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
+        }
 
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
     val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()

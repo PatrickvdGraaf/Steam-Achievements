@@ -5,7 +5,7 @@
     <data>
         <variable
             name="game"
-            type="com.crepetete.steamachievements.model.Game" />
+            type="com.crepetete.steamachievements.vo.Game" />
     </data>
 
     <androidx.cardview.widget.CardView

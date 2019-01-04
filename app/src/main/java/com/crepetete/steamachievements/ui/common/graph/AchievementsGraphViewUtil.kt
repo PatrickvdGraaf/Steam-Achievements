@@ -5,10 +5,10 @@ import android.graphics.Paint
 import androidx.core.content.ContextCompat
 import android.view.View
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
-import com.crepetete.steamachievements.utils.sortByLastAchieved
+import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.LineGraphSeries

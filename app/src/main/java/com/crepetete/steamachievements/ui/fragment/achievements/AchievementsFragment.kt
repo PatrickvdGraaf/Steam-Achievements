@@ -10,16 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseFragment
-import com.crepetete.steamachievements.model.Achievement
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.view.CircularProgressBar
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import java.text.DecimalFormat
 
-class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsView {
+class AchievementsFragment : Fragment(){
     companion object {
         const val TAG = "ACHIEVEMENTS_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
@@ -29,7 +28,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                setLoaderIndicator(loadingIndicator)
+//                setLoaderIndicator(loadingIndicator)
             }
         }
     }
@@ -92,7 +91,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     /**
      * Shows the total amount of emptyAchievements.
      */
-    override fun setTotalAchievementsInfo(achievementCount: Int) {
+    fun setTotalAchievementsInfo(achievementCount: Int) {
         textViewAllAchievements.text = "$achievementCount"
         this.achievementCount = achievementCount
     }
@@ -100,7 +99,7 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     /**
      * Shows total completion percentage.
      */
-    override fun setCompletionPercentage(percentage: Double) {
+    fun setCompletionPercentage(percentage: Double) {
         completionPercentage = percentage
         circularProgressBar.setProgressWithAnimation(percentage.toFloat())
     }
@@ -108,14 +107,14 @@ class AchievementsFragment : BaseFragment<AchievementPresenter>(), AchievementsV
     /**
      * Shows the date and amount of the day on which the user achieved most of his emptyAchievements.
      */
-    override fun showBestDay(day: Pair<String, Int>) {
+    fun showBestDay(day: Pair<String, Int>) {
         bestDayTextView.text = "${day.first}; ${day.second} emptyAchievements."
     }
 
     /**
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
-    override fun showLatestAchievements(achievements: List<Achievement>,
+    fun showLatestAchievements(achievements: List<Achievement>,
                                         allAchievements: List<Achievement>) {
         this.achievements = achievements
         this.allAchievements = allAchievements

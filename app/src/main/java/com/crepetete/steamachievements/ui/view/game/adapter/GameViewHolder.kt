@@ -15,12 +15,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseView
-import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.ui.base.BaseView
+import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.ui.common.adapter.games.GameAdapterListener
-import com.crepetete.steamachievements.utils.animateToPercentage
-import com.crepetete.steamachievements.utils.setBackgroundColorAnimated
-import com.crepetete.steamachievements.utils.setCompletedFlag
+import com.crepetete.steamachievements.util.extensions.animateToPercentage
+import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
+import com.crepetete.steamachievements.util.extensions.setCompletedFlag
 
 class GameViewHolder(private val baseView: BaseView, private val view: View,
                      private val listener: GameAdapterListener? = null)

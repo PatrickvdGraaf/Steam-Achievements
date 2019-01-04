@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -13,32 +14,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.RefreshableFragment
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
-import com.crepetete.steamachievements.data.repository.game.GameRepository
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
-import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.model.Game
+import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
-import com.crepetete.steamachievements.utils.autoCleared
+import com.crepetete.steamachievements.util.autoCleared
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
 import timber.log.Timber
 import javax.inject.Inject
 
+class LibraryFragment : Fragment(), Injectable,
+    NavBarInteractionListener, GamesAdapter.OnGameBindListener {
 
-class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
-        NavBarInteractionListener {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     @Inject
     lateinit var appExecutors: AppExecutors
-
-    @Inject
-    lateinit var gamesRepository: GameRepository
 
     var adapter by autoCleared<GamesAdapter>()
 
@@ -51,66 +48,78 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_library, container,
-                false, dataBindingComponent)
+            false, dataBindingComponent)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(LibraryViewModel::class.java)
+            .get(LibraryViewModel::class.java)
 
+        // Check if there is a userId property in the arguments.
         var userId: String
         arguments?.let {
             userId = it.getString(KEY_PLAYER_ID) ?: ""
             if (userId.isBlank()) {
-                context.startActivity(LoginActivity.getInstance(context))
+                // Go to Login page.
+                context?.startActivity(LoginActivity.getInstance(requireContext()))
             }
             viewModel.setAppId(userId)
         }
 
-        viewModel.finalData.observe(this, Observer { games ->
-            if (games != null) {
-                adapter.submitList(games)
-            }
-        })
+        //        viewModel.finalData.observe(this, Observer { games ->
+        //            if (games != null) {
+        //                adapter.submitList(games)
+        //            }
+        //        })
 
         viewModel.games.observe(this, Observer {
             if (it?.data != null) {
-                it.data.mapNotNull { it1 -> it1.game?.appId }.forEach { id ->
-                    viewModel.updateAchievementsFor(id)
-                }
+                adapter.setGames(it.data)
+                viewModel.loadAchievementsFromDb()
             }
         })
 
-        viewModel.achievements.observe(this, Observer { allAchievements ->
-            if (allAchievements != null) {
-                viewModel.games.value?.data?.let { data ->
-                    data.asSequence().map { it.game?.appId }.filter { it != null }.toList()
-                            .forEach { appId ->
-                                val achievements = allAchievements.filter { it.appId == appId }
-                                if (achievements.isNotEmpty()) {
-                                    viewModel.updateAchievedStats(appId!!, achievements)
-                                    viewModel.updateGlobalStats(appId, achievements)
-                                }
-                            }
-                }
-            }
+        viewModel.achievements.observe(this, Observer { achievements ->
+            adapter.setAchievements(achievements)
         })
 
         initScrollFab()
         initRecyclerView()
 
         val gamesAdapter = GamesAdapter(
-                dataBindingComponent = dataBindingComponent,
-                appExecutors = appExecutors,
-                gameRepository = gamesRepository,
-                gameClickCallback = { game, imageView ->
-                    activity?.startGameActivity(game.appId, imageView)
-                }
+            appExecutors = appExecutors,
+            dataBindingComponent = dataBindingComponent
         )
+
+        gamesAdapter.listener = this
+
         binding.listGames.adapter = gamesAdapter
         adapter = gamesAdapter
+    }
+
+    /**
+     * Updates the achievements for a specific game when it is shown in the RecyclerView.
+     */
+    override fun onGameBoundInAdapter(appId: String) {
+        viewModel.updateAchievementsFor(appId)
+    }
+
+    /**
+     * Invoked when a game item in the RecyclerView is clicked.
+     */
+    override fun onGameClicked(appId: String, imageView: ImageView) {
+        activity?.startGameActivity(appId, imageView)
+    }
+
+    /**
+     * Invoked when the Adapter has created a primary rgb color for the games thumbnail.
+     * Calls the ViewModel so it can update this property in the Database.
+     */
+    override fun onPrimaryGameColorCreated(appId: String, rgb: Int) {
+        viewModel.updatePrimaryColorForGame(appId, rgb)
     }
 
     private fun initScrollFab() {
@@ -136,8 +145,8 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
     /**
      * Retrieved a new game from the presenter that needs to be added to the ListView.
      */
-    override fun addGame(game: Game) {
-//        gamesAdapter.addGame(game)
+    fun addGame(game: Game) {
+        //        gamesAdapter.addGame(game)
     }
 
     /**
@@ -147,8 +156,8 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * @param appId ID of the game that own the emptyAchievements
      * @param achievements list of emptyAchievements for said game.
      */
-    override fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
-//        gamesAdapter.updateAchievementsForGame(appId, emptyAchievements)
+    fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
+        //        gamesAdapter.updateAchievementsForGame(appId, emptyAchievements)
     }
 
     /**
@@ -158,7 +167,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * @param imageView Banner which displays the game's banner-image in the ListView, used to
      * animate to the next view.
      */
-    override fun showGameActivity(appId: String, imageView: ImageView) {
+    fun showGameActivity(appId: String, imageView: ImageView) {
         activity?.startGameActivity(appId, imageView)
     }
 
@@ -166,16 +175,16 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * Refreshes the list of games by first refreshing the games from the database, and then
      * automatically calls the API for an update.
      */
-    override fun refresh() {
-        presenter.getGameIdsFromDb()
+    fun refresh() {
+        //        presenter.getGameIdsFromDb()
     }
 
     /**
      * A list of games have been received from the presenter and need to be updated in our adapter.
      */
-    override fun updateGames(games: List<Game>) {
+    fun updateGames(games: List<Game>) {
         Timber.d("Updating games.")
-//        gamesAdapter.updateGames(games)
+        //        gamesAdapter.updateGames(games)
     }
 
     /**
@@ -183,7 +192,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      */
     override fun onSearchQueryUpdate(query: String) {
         // TODO fix Search
-//        gamesAdapter.updateSearchQuery(query)
+        //        gamesAdapter.updateSearchQuery(query)
     }
 
     /**
@@ -191,7 +200,8 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
      * new sorting method.
      */
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
-        viewModel.rearrangeGames(sortingMethod)
+        // TODO fix sorting
+        //        viewModel.rearrangeGames(sortingMethod)
     }
 
     companion object {
@@ -203,7 +213,7 @@ class LibraryFragment : RefreshableFragment<LibraryPresenter>(), LibraryView,
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                setLoaderIndicator(loadingIndicator)
+//                setLoaderIndicator(loadingIndicator)
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.fragment.profile
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +7,22 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseFragment
-import com.crepetete.steamachievements.model.Player
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
+import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.vo.Player
+import javax.inject.Inject
 
-class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
+class ProfileFragment : Fragment(), Injectable {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var profileViewModel: ProfileViewModel
+
     private lateinit var imageViewProfile: ImageView
     private lateinit var textViewPersona: TextView
 
@@ -22,12 +30,11 @@ class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
         const val TAG = "PROFILE_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
 
-        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): Fragment {
+        fun getInstance(playerId: String): Fragment {
             return ProfileFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                setLoaderIndicator(loadingIndicator)
             }
         }
     }
@@ -41,11 +48,25 @@ class ProfileFragment : BaseFragment<ProfilePresenter>(), ProfileView {
         return view
     }
 
-    override fun onPlayerLoaded(player: Player) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(ProfileViewModel::class.java)
+
+        // Set observers
+        profileViewModel.currentUser.observe(this, Observer {
+            if (it?.data != null) {
+                onPlayerLoaded(it.data)
+            }
+        })
+    }
+
+    private fun onPlayerLoaded(player: Player) {
         textViewPersona.text = player.persona
 
-        Glide.with(context)
-                .load(player.avatarFullUrl)
-                .into(imageViewProfile)
+        Glide.with(requireContext())
+            .load(player.avatarFullUrl)
+            .into(imageViewProfile)
     }
 }

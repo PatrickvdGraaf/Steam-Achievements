@@ -8,14 +8,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.base.BaseActivity
-import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
@@ -23,11 +20,15 @@ import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFrag
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
+import javax.inject.Inject
 
-
-class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), LoadingIndicator,
+    BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
     companion object {
         private const val INTENT_USER_ID = "user_id"
 
@@ -37,6 +38,9 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
             }
         }
     }
+
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     @IdRes
     private var selectedNavItem = R.id.menu_library
@@ -78,17 +82,10 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
 
         val fragment: LibraryFragment = LibraryFragment.getInstance(userId, this)
         fragmentManager.beginTransaction()
-                .replace(containerId, fragment, LibraryFragment.TAG)
-                .addToBackStack(null)
-                .commit()
+            .replace(containerId, fragment, LibraryFragment.TAG)
+            .addToBackStack(null)
+            .commit()
         navBarListener = fragment
-
-        presenter.player.observe(this, Observer {
-
-        })
-
-        presenter.onViewCreated()
-        presenter.setPlayerId(userId)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -162,7 +159,8 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
             true
         }
         R.id.action_refresh -> {
-            presenter.onRefreshClicked()
+            // TODO fix refresh
+//            presenter.onRefreshClicked()
             true
         }
         else -> {
@@ -180,7 +178,7 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
                 currentTag = ProfileFragment.TAG
                 fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
-                    fragment = ProfileFragment.getInstance(userId, this)
+                    fragment = ProfileFragment.getInstance(userId)
                 }
             }
             R.id.menu_library -> {
@@ -209,61 +207,63 @@ class MainActivity : BaseActivity<MainPresenter>(), MainView, LoadingIndicator,
 
         if (fragment != null) {
             transaction.replace(containerId, fragment, currentTag)
-                    .addToBackStack(null)
-                    .commit()
+                .addToBackStack(null)
+                .commit()
         }
         return true
     }
 
+    // TODO let Fragments set Page titles.
     private fun updateTitle() {
-        when (selectedNavItem) {
-            R.id.menu_profile -> setTitle("Profile")
-            R.id.menu_achievements -> setTitle("${presenter.player.value?.persona
-                    ?: "players"}'s Achievements")
-            else -> setTitle("${presenter.player.value?.persona ?: "players"}'s Library")
-        }
+        //        when (selectedNavItem) {
+        //            R.id.menu_profile -> setTitle("Profile")
+        //            R.id.menu_achievements -> setTitle("${presenter.currentPlayer.value?.persona
+        //                    ?: "players"}'s Achievements")
+        //            else -> setTitle("${presenter.currentPlayer.value?.persona ?: "players"}'s Library")
+        //        }
     }
 
-    override fun getCurrentFragment(): Fragment? {
+    fun getCurrentFragment(): Fragment? {
         return fragmentManager.findFragmentByTag(currentTag)
     }
 
-    override fun showPlayerDetails(persona: String) {
+    fun showPlayerDetails(persona: String) {
         title = "$persona's Games"
     }
 
-    override fun setTitle(title: String) {
+    fun setTitle(title: String) {
         this.title = title
     }
 
-    override fun showAchievements(achievements: List<Achievement>, appId: String) {
-//        gamesAdapter.addAchievementsForGame(achievements, appId)
+    fun showAchievements(achievements: List<Achievement>, appId: String) {
+        //        gamesAdapter.addAchievementsForGame(achievements, appId)
     }
 
-    override fun showGames(games: List<Game>) {
-//        gamesAdapter.updateGames(games)
+    fun showGames(games: List<Game>) {
+        //        gamesAdapter.updateGames(games)
     }
 
     /**
      * Displays the loading indicator of the view
      */
     override fun showLoading() {
-//        loadingIndicator.visibility = View.VISIBLE
+        //        loadingIndicator.visibility = View.VISIBLE
     }
 
     /**
      * Hides the loading indicator of the view
      */
     override fun hideLoading() {
-//        loadingIndicator.visibility = View.GONE
+        //        loadingIndicator.visibility = View.GONE
     }
 
     override fun onDestroy() {
-        presenter.onViewDestroyed()
         super.onDestroy()
     }
 
-    override fun openLoginActivity() {
+    fun openLoginActivity() {
         startActivity(LoginActivity.getInstance(this))
     }
+
+    override fun supportFragmentInjector() = dispatchingAndroidInjector
 }

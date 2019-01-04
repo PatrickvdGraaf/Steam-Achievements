@@ -5,11 +5,11 @@
 
     <data>
 
-        <import type="com.crepetete.steamachievements.model.Game" />
+        <import type="com.crepetete.steamachievements.vo.Game" />
 
-        <import type="com.crepetete.steamachievements.model.Achievement" />
+        <import type="com.crepetete.steamachievements.vo.Achievement" />
 
-        <import type="com.crepetete.steamachievements.utils.resource.Resource" />
+        <import type="com.crepetete.steamachievements.vo.Resource" />
 
         <!--<variable-->
         <!--name="game"-->
@@ -17,7 +17,7 @@
 
         <variable
             name="gameResource"
-            type="Resource" />
+            type="com.crepetete.steamachievements.vo.Resource" />
 
         <variable
             name="achievements"

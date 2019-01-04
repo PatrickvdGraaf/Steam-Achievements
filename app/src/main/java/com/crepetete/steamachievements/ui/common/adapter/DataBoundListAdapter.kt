@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import com.crepetete.steamachievements.AppExecutors
+import com.crepetete.steamachievements.ui.common.DataBoundViewHolder
 
 /**
  * A generic RecyclerView adapter that uses Data Binding & DiffUtil.

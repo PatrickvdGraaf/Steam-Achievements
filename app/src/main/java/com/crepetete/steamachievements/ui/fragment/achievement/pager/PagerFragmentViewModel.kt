@@ -3,8 +3,8 @@ package com.crepetete.steamachievements.ui.fragment.achievement.pager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.crepetete.steamachievements.data.repository.achievement.AchievementsRepository
-import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.repository.AchievementsRepository
+import com.crepetete.steamachievements.vo.Achievement
 import javax.inject.Inject
 
 /**

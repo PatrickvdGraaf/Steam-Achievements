@@ -6,7 +6,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.vo.Achievement
 
 class AchievementViewHolder(private val view: View, private val funShowPager: (Int) -> Unit)
     : RecyclerView.ViewHolder(view) {

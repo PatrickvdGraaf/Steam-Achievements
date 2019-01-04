@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
@@ -29,16 +30,15 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
-import com.crepetete.steamachievements.model.Achievement
-import com.crepetete.steamachievements.model.Game
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.jjoe64.graphview.GraphView
-import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
@@ -53,7 +53,7 @@ fun Activity.startGameActivity(appId: String, imageView: ImageView) {
     }, options.toBundle())
 }
 
-class GameActivity : DaggerAppCompatActivity(), OnGraphDateTappedListener {
+class GameActivity : AppCompatActivity(), OnGraphDateTappedListener {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 

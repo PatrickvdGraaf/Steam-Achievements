@@ -24,10 +24,10 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.model.Achievement
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
-import com.crepetete.steamachievements.utils.GlideApp
-import com.crepetete.steamachievements.utils.setBackgroundColorAnimated
+import com.crepetete.steamachievements.util.GlideApp
+import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
