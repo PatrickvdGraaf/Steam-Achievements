@@ -37,18 +37,17 @@ import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSorting
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
 import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.jjoe64.graphview.GraphView
 import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
-
 private const val INTENT_GAME_ID = "gameId"
 fun Activity.startGameActivity(appId: String, imageView: ImageView) {
     val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-            imageView as View, "banner")
+        imageView as View, "banner")
     startActivity(Intent(this, GameActivity::class.java).apply {
         putExtra(INTENT_GAME_ID, appId)
     }, options.toBundle())
@@ -84,7 +83,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         // Inflate view and obtain an instance of the binding class.
         val binding: ActivityGameBinding = DataBindingUtil.setContentView(this,
-                R.layout.activity_game)
+            R.layout.activity_game)
 
         // Specify the current activity as the lifecycle owner.
         binding.setLifecycleOwner(this)
@@ -110,13 +109,13 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         })
 
 
-        viewModel.vibrantColor.observe(this, Observer {swatch ->
+        viewModel.vibrantColor.observe(this, Observer { swatch ->
             if (swatch != null) {
                 setCollapsingToolbarColors(swatch.rgb)
             }
         })
 
-        viewModel.mutedColor.observe(this, Observer {swatch ->
+        viewModel.mutedColor.observe(this, Observer { swatch ->
             if (swatch != null) {
                 playtime_header_textview.setTextColor(swatch.bodyTextColor)
                 scrollView.setBackgroundColor(swatch.rgb)
@@ -132,7 +131,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         sortMethodDescription.text = "Sorted by: $description"
     }
 
-    private fun setGameInfo(game: Game?) {
+    private fun setGameInfo(game: GameWithAchievements?) {
         if (game == null) {
             return
         }
@@ -141,41 +140,41 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         totalPlayedTextView.setText(game.getTotalPlayTimeString())
 
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL,
-                false)
+            LinearLayoutManager.HORIZONTAL,
+            false)
 
         recyclerViewLatestAchievements.adapter = achievementsAdapter
 
         Glide.with(this)
-                .load(game.getFullLogoUrl())
-                .into(object : SimpleTarget<Drawable>() {
-                    /**
-                     * The method that will be called when the resource load has finished.
-                     *
-                     * @param resource the loaded resource.
-                     */
-                    override fun onResourceReady(resource: Drawable,
-                                                 transition: Transition<in Drawable>?) {
-                        if (resource is BitmapDrawable) {
-                            Palette.from(resource.bitmap).generate {
-                                it?.let { it1 -> viewModel.updatePalette(it1) }
-                                banner.setImageDrawable(resource)
-                            }
+            .load(game.getFullLogoUrl())
+            .into(object : SimpleTarget<Drawable>() {
+                /**
+                 * The method that will be called when the resource load has finished.
+                 *
+                 * @param resource the loaded resource.
+                 */
+                override fun onResourceReady(resource: Drawable,
+                                             transition: Transition<in Drawable>?) {
+                    if (resource is BitmapDrawable) {
+                        Palette.from(resource.bitmap).generate {
+                            it?.let { it1 -> viewModel.updatePalette(it1) }
+                            banner.setImageDrawable(resource)
                         }
                     }
-                })
+                }
+            })
 
-        collapsingToolbarLayout.title = game.name
-        title = game.name
+        collapsingToolbarLayout.title = game.getName()
+        title = game.getName()
 
-        setCollapsingToolbarColors(game.colorPrimaryDark)
+        setCollapsingToolbarColors(game.getPrimaryColor())
     }
 
     private fun setAchievements(achievements: List<Achievement>) {
         achievementsAdapter.setAchievements(achievements)
 
         AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, achievements,
-                this)
+            this)
     }
 
     /**
@@ -196,11 +195,11 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
                 calAchievement.time = achievement.unlockTime
 
                 if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
-                        && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
-                        && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
-                                Calendar.DAY_OF_MONTH)) {
+                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
+                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
+                        Calendar.DAY_OF_MONTH)) {
                     recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
-                            - index)
+                        - index)
                 }
             }
         }
@@ -219,7 +218,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
     }
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context,
-            R.color.statusbar_translucent)) {
+        R.color.statusbar_translucent)) {
         val sdkInt = Build.VERSION.SDK_INT
         if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
             setTranslucentStatusBarLollipop(color)
@@ -230,7 +229,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setTranslucentStatusBarLollipop(color: Int = ContextCompat.getColor(window.context,
-            R.color.statusbar_translucent)) {
+        R.color.statusbar_translucent)) {
         window.statusBarColor = color
     }
 

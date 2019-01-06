@@ -9,6 +9,7 @@ import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import io.reactivex.Single
 import timber.log.Timber
@@ -75,6 +76,8 @@ class GameRepository @Inject constructor(
      */
     fun getGameFromDb(appId: String): LiveData<Game> = dao.getGameAsLiveData(appId)
 
+    fun getGameWithAchFromDb(appId: String): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
+
     fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 
     fun update(item: Game) {
@@ -82,4 +85,6 @@ class GameRepository @Inject constructor(
             dao.update(item)
         }
     }
+
+    fun getGamesWithAchievements() = dao.getGamesWithAchievementsAsLiveData()
 }

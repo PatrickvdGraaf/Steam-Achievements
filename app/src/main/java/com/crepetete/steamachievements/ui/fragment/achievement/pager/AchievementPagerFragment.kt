@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.ui.fragment.achievement.pager
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,7 +95,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
     private fun setAchievementInfo(achievement: Achievement) {
         nameView.text = achievement.displayName
-        dateView.text = achievement.getDateStringNoBreak()
+        dateView.text = getDateStringNoBreak(achievement)
 
         val desc = achievement.description
         if (desc.isNullOrBlank()) {
@@ -106,6 +107,22 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
         if (achievement.percentage > 0.0) {
             globalStatsLabel.setText("${achievement.percentage}%")
+        }
+    }
+
+    fun getDateStringNoBreak(achievement: Achievement): String {
+        return getDateString(achievement).replace("\n", " - ")
+    }
+
+    fun getDateStringNoTime(achievement: Achievement): String {
+        return DateFormat.format("dd-MM-yyyy", achievement.unlockTime).toString()
+    }
+
+    private fun getDateString(achievement: Achievement): String {
+        return if (achievement.unlockTime != null) {
+            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString()
+        } else {
+            "Locked"
         }
     }
 

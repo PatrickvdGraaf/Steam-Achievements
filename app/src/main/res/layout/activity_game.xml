@@ -5,23 +5,11 @@
 
     <data>
 
-        <import type="com.crepetete.steamachievements.vo.Game" />
-
-        <import type="com.crepetete.steamachievements.vo.Achievement" />
-
-        <import type="com.crepetete.steamachievements.vo.Resource" />
-
-        <!--<variable-->
-        <!--name="game"-->
-        <!--type="Game" />-->
+        <import type="com.crepetete.steamachievements.vo.GameWithAchievements" />
 
         <variable
-            name="gameResource"
-            type="com.crepetete.steamachievements.vo.Resource" />
-
-        <variable
-            name="achievements"
-            type="java.util.List" />
+            name="gameWithAchievements"
+            type="com.crepetete.steamachievements.vo.GameWithAchievements" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

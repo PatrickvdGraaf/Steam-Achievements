@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 /**
  * ViewModel for [TransparentPagerActivity], responsible for holding the AchievementsPager data in
- * Pairs (name, appId).
+ * Pairs (getName, getAppId).
  */
 class TransparentPagerViewModel @Inject constructor() : ViewModel() {
     private val _index = MutableLiveData<Int>()

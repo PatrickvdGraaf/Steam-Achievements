@@ -10,6 +10,7 @@ import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -24,14 +25,13 @@ class LibraryViewModel @Inject constructor(
         get() = _userId
 
     val games: LiveData<Resource<List<Game>>> = Transformations
-        .switchMap(_userId) { id ->
+        .switchMap(userId) { id ->
             id.ifExists {
                 gameRepo.getGames(it)
             }
         }
 
-    // Create LiveData reference to the Achievements in the DB.
-    var achievements: LiveData<List<Achievement>> = achievementsRepository.getAchievementsFromDb()
+    val gamesWithAchievement: LiveData<List<GameWithAchievements>> = gameRepo.getGamesWithAchievements()
 
     //    private var sortingType = SortingType.PLAYTIME
 
@@ -56,13 +56,13 @@ class LibraryViewModel @Inject constructor(
 
     fun updateAchievedStats(appId: String, achievements: List<Achievement>) {
         //        if (emptyAchievements.isNotEmpty()) {
-        //            achievementsRepository.getAchievedStatusForAchievementsForGame(appId, emptyAchievements)
+        //            achievementsRepository.getAchievedStatusForAchievementsForGame(getAppId, emptyAchievements)
         //        }
     }
 
     fun updateGlobalStats(appId: String, achievements: List<Achievement>) {
         //        if (emptyAchievements.isNotEmpty()) {
-        //            achievementsRepository.getGlobalAchievementStats(appId, emptyAchievements)
+        //            achievementsRepository.getGlobalAchievementStats(getAppId, emptyAchievements)
         //        }
     }
 

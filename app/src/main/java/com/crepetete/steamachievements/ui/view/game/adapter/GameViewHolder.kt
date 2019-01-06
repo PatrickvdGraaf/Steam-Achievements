@@ -16,53 +16,53 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.base.BaseView
-import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.ui.common.adapter.games.GameAdapterListener
 import com.crepetete.steamachievements.util.extensions.animateToPercentage
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.extensions.setCompletedFlag
+import com.crepetete.steamachievements.vo.GameWithAchievements
 
 class GameViewHolder(private val baseView: BaseView, private val view: View,
                      private val listener: GameAdapterListener? = null)
     : RecyclerView.ViewHolder(view) {
-    private lateinit var game: Game
+    private lateinit var game: GameWithAchievements
 
     private val container = view.findViewById<ConstraintLayout>(R.id.content)
 
     private val imageView = view.findViewById<ImageView>(R.id.game_banner)
     private val titleTextView = view.findViewById<TextView>(R.id.name_textView)
     private val recentPlayedTextView = view.findViewById<TextView>(
-            R.id.recently_played_textView)
+        R.id.recently_played_textView)
     private val totalPlayedTextView = view.findViewById<TextView>(
-            R.id.total_played_textView)
+        R.id.total_played_textView)
     private val achievementsTextView = view.findViewById<TextView>(
-            R.id.achievements_textView)
+        R.id.achievements_textView)
     private val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 
-    fun bind(game: Game, listener: GameAdapterListener?) {
+    fun bind(game: GameWithAchievements, listener: GameAdapterListener?) {
         this.game = game
 
-        titleTextView.text = game.name
+        titleTextView.text = game.getName()
         totalPlayedTextView.text = game.getTotalPlayTimeString(baseView.getContext())
 
         Glide.with(baseView.getContext())
-                .load(game.getFullLogoUrl())
-                .into(object : SimpleTarget<Drawable>() {
-                    /**
-                     * The method that will be called when the resource load has finished.
-                     *
-                     * @param resource the loaded resource.
-                     */
-                    override fun onResourceReady(resource: Drawable,
-                                                 transition: Transition<in Drawable>?) {
-                        imageView.setImageDrawable(resource)
-                        if (game.colorPrimaryDark == 0 && resource is BitmapDrawable) {
-                            animateBackground(resource.bitmap)
-                        } else {
-                            container.setBackgroundColor(game.colorPrimaryDark)
-                        }
+            .load(game.getFullLogoUrl())
+            .into(object : SimpleTarget<Drawable>() {
+                /**
+                 * The method that will be called when the resource load has finished.
+                 *
+                 * @param resource the loaded resource.
+                 */
+                override fun onResourceReady(resource: Drawable,
+                                             transition: Transition<in Drawable>?) {
+                    imageView.setImageDrawable(resource)
+                    if (game.getPrimaryColor() == 0 && resource is BitmapDrawable) {
+                        animateBackground(resource.bitmap)
+                    } else {
+                        container.setBackgroundColor(game.getPrimaryColor())
                     }
-                })
+                }
+            })
 
         listener?.let { l ->
             view.setOnClickListener {
@@ -70,7 +70,7 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
             }
         }
 
-        if (game.recentPlayTime > 0) {
+        if (game.getRecentPlaytime() > 0) {
             recentPlayedTextView.text = game.getRecentPlaytimeString(baseView.getContext())
             recentPlayedTextView.visibility = View.VISIBLE
         } else {
@@ -87,9 +87,6 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
             }
             achievementsTextView.text = game.getAchievementsText()
             achievementsTextView.setCompletedFlag(game.isCompleted())
-        } else if (!game.achievementsWereAdded()) {
-            achievementsTextView.visibility = View.VISIBLE
-            achievementsTextView.text = "Loading Achievements..."
         } else {
             achievementsTextView.visibility = View.GONE
             progressBar.progress = 0
@@ -102,11 +99,11 @@ class GameViewHolder(private val baseView: BaseView, private val view: View,
 
             if (swatch?.rgb != null) {
                 container.setBackgroundColorAnimated(
-                        ContextCompat.getColor(view.context,
-                                R.color.colorGameViewHolderTitleBackground),
-                        swatch.rgb)
+                    ContextCompat.getColor(view.context,
+                        R.color.colorGameViewHolderTitleBackground),
+                    swatch.rgb)
 
-                game.colorPrimaryDark = swatch.rgb
+                game.setPrimaryColor(swatch.rgb)
                 listener?.updateGame(game)
             }
         }

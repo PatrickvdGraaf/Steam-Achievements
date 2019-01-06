@@ -109,6 +109,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.3'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
+    implementation 'com.google.code.gson:gson:2.8.2'
+
     // Graph Library http://www.android-graphview.org/download-getting-started/
     implementation 'com.jjoe64:graphview:4.2.2'
 

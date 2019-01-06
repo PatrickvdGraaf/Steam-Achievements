@@ -24,7 +24,7 @@ abstract class AchievementsDao {
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     abstract fun getAchievements(appId: String): LiveData<List<Achievement>>
 
-    @Query("SELECT * FROM achievements WHERE appId=:appId AND name=:name")
+    @Query("SELECT * FROM achievements WHERE appId=:appId AND appId=:name")
     abstract fun getAchievements(appId: String, name: String?): LiveData<List<Achievement>>
 
     @Query("SELECT * FROM achievements WHERE name=:name AND appId=:appId")

@@ -8,9 +8,9 @@ import androidx.lifecycle.Transformations
 import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
-import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
@@ -24,10 +24,10 @@ class GameViewModel @Inject constructor(
     val appId: LiveData<AppId>
         get() = _appId
 
-    val game: LiveData<Game> = Transformations
+    val game: LiveData<GameWithAchievements> = Transformations
         .switchMap(_appId) { id ->
             id.ifExists {
-                gameRepo.getGameFromDb(it)
+                gameRepo.getGameWithAchFromDb(it)
             }
         }
 

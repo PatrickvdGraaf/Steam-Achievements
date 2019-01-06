@@ -70,15 +70,10 @@ class LibraryFragment : Fragment(), Injectable,
             viewModel.setAppId(userId)
         }
 
-        viewModel.games.observe(this, Observer {
-            val games = it?.data
-            if (games != null) {
-                adapter.setGames(games)
+        viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchievements ->
+            if (gameWithAchievements != null) {
+                adapter.setGames(gameWithAchievements)
             }
-        })
-
-        viewModel.achievements.observe(this, Observer { achievements ->
-            adapter.setAchievements(achievements)
         })
 
         initScrollFab()
@@ -156,7 +151,7 @@ class LibraryFragment : Fragment(), Injectable,
      * @param achievements list of emptyAchievements for said game.
      */
     fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
-        //        gamesAdapter.updateAchievementsForGame(appId, emptyAchievements)
+        //        gamesAdapter.updateAchievementsForGame(getAppId, emptyAchievements)
     }
 
     /**

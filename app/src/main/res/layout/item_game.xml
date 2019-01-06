@@ -6,9 +6,11 @@
 
     <data>
 
+        <import type="com.crepetete.steamachievements.vo.GameWithAchievements"/>
+
         <variable
-            name="game"
-            type="com.crepetete.steamachievements.vo.Game"/>
+            name="gameWithAch"
+            type="com.crepetete.steamachievements.vo.GameWithAchievements"/>
     </data>
 
     <androidx.cardview.widget.CardView
@@ -51,7 +53,7 @@
                     android:paddingTop="@dimen/default_margin_halved"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingBottom="@dimen/default_margin_halved"
-                    android:text="@{game.name}"
+                    android:text="@{gameWithAch.name}"
                     android:textColor="@color/colorAccent"
                     android:textSize="@dimen/text_header_five"
                     app:layout_constraintBottom_toTopOf="@+id/progressContainer"
@@ -70,6 +72,7 @@
                     android:paddingBottom="@dimen/default_margin_halved"
                     android:textColor="@color/colorAccent"
                     android:textSize="14sp"
+                    android:text="@{gameWithAch.getAchievementsText()}"
                     app:layout_constraintTop_toBottomOf="@id/progressContainer"
                     tools:text="42/42 (100%) achievements"/>
 
@@ -86,8 +89,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="32dp"
                         android:layout_gravity="center"
-                        android:background="@color/transparent"
-                        android:backgroundTint="@color/transparent"
                         android:progressTint="#7affffff"
                         app:layout_constraintEnd_toStartOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

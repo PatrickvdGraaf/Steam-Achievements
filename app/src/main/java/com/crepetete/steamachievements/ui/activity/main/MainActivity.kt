@@ -236,7 +236,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
     }
 
     fun showAchievements(achievements: List<Achievement>, appId: String) {
-        //        gamesAdapter.addAchievementsForGame(achievements, appId)
+        //        gamesAdapter.addAchievementsForGame(achievements, getAppId)
     }
 
     fun showGames(games: List<Game>) {

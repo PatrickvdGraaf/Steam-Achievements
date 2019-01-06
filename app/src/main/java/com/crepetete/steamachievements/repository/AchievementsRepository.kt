@@ -40,7 +40,7 @@ class AchievementsRepository @Inject constructor(
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
             override fun saveCallResult(item: SchemaResponse) {
-                Timber.d("steamachievements; Saving Achievements in DB for appId: $appId")
+                Timber.d("steamachievements; Saving Achievements in DB for getAppId: $appId")
 
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {
@@ -117,7 +117,7 @@ class AchievementsRepository @Inject constructor(
                         }
                     }
                     .toList()
-                //                getGlobalStats(appId, allAchievements, listener)
+                //                getGlobalStats(getAppId, allAchievements, listener)
                 insertAchievementsList(allAchievements)
                 listener.onAchievementsLoadedForGame(appId, allAchievements)
             }, {
@@ -272,10 +272,10 @@ class AchievementsRepository @Inject constructor(
             || existingCalendat.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)
     }
 
-    //    private fun getGlobalStats(appId: String, achievements: List<Achievement>): Single<List<Achievement>> {
-    //        return api.getGlobalAchievementStats(appId).map { globalAchievResponse ->
+    //    private fun getGlobalStats(getAppId: String, achievements: List<Achievement>): Single<List<Achievement>> {
+    //        return api.getGlobalAchievementStats(getAppId).map { globalAchievResponse ->
     //            globalAchievResponse.achievementpercentages.achievements.map { response ->
-    //                achievements.filter { it.name == response.name }.forEach { achievement ->
+    //                achievements.filter { it.getName == response.getName }.forEach { achievement ->
     //                    achievement.percentage = response.percent
     //                }
     //            }

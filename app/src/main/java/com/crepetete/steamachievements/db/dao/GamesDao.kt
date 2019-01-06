@@ -5,6 +5,7 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import io.reactivex.Single
 
 /**
@@ -43,4 +44,10 @@ abstract class GamesDao {
 
     @Query("SELECT appId FROM games")
     abstract fun getGameIds(): Single<List<String>>
+
+    @Query("SELECT * FROM games")
+    abstract fun getGamesWithAchievementsAsLiveData(): LiveData<List<GameWithAchievements>>
+
+    @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
+    abstract fun getGamesWithAchievementsAsLiveData(appId: String): LiveData<GameWithAchievements>
 }
