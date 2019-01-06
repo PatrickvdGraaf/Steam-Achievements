@@ -95,7 +95,7 @@ data class Game(
                     "(${DecimalFormat("0.##")
                             .format(getPercentageCompleted())}%) achievements."
         hasAchievements() -> "${achievements?.size ?: 0} achievements."
-        else -> ""
+        else -> "No achievements available."
     }
 
     fun getPercentageCompleted(): Float {

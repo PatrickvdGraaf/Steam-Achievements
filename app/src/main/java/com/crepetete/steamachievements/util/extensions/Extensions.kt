@@ -16,6 +16,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.Size
+import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.vo.Achievement
@@ -162,6 +163,19 @@ fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Lon
     colorAnimation.start()
 }
 
+fun CardView.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
+    if (colorTo == null) {
+        return
+    }
+
+    val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+    colorAnimation.duration = duration // milliseconds
+    colorAnimation.addUpdateListener { animator ->
+        setCardBackgroundColor(animator.animatedValue as Int)
+    }
+    colorAnimation.start()
+}
+
 fun TextView.setColor(color: Int) {
     setTextColor(color)
     compoundDrawables.forEach { drawable: Drawable? ->
@@ -179,7 +193,7 @@ fun TextView.setCompletedFlag(isCompleted: Boolean) {
         }, 0, 0, 0)
 }
 
-fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 800) {
+fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 1600) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         setProgress(percentage, true)
     } else {

@@ -38,8 +38,8 @@ class GamesAdapter(
     object : DiffUtil.ItemCallback<Game>() {
         override fun areItemsTheSame(oldItem: Game,
                                      newItem: Game): Boolean {
-            return oldItem.appId == oldItem.appId
-                && oldItem.name == oldItem.name
+            return oldItem.appId == newItem.appId
+                && oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(oldGame: Game,
@@ -80,14 +80,13 @@ class GamesAdapter(
 
         if (item.recentPlayTime > 0) {
             binding.recentlyPlayedTextView.text = item.getRecentPlaytimeString(view.context)
-            binding.recentlyPlayedTextView.visibility = View.VISIBLE
+//            binding.recentlyPlayedTextView.visibility = View.VISIBLE
         } else {
-            binding.recentlyPlayedTextView.visibility = View.INVISIBLE
+//            binding.recentlyPlayedTextView.visibility = View.INVISIBLE
         }
 
         if (item.hasAchievements()) {
-            binding.achievementsTextView.visibility = View.VISIBLE
-            binding.progressBar.visibility = View.VISIBLE
+//            binding.achievementsTextView.visibility = View.VISIBLE
             val percentage = item.getPercentageCompleted().toInt()
             if (percentage > 0 && binding.progressBar.progress == 0) {
                 binding.progressBar.animateToPercentage(percentage)
@@ -97,9 +96,8 @@ class GamesAdapter(
             binding.achievementsTextView.text = item.getAchievementsText()
             binding.achievementsTextView.setCompletedFlag(item.isCompleted())
         } else {
-            binding.achievementsTextView.visibility = View.GONE
+//            binding.achievementsTextView.visibility = View.GONE
             binding.progressBar.progress = 0
-            binding.progressBar.visibility = View.GONE
         }
 
         Glide.with(view.context)
@@ -164,7 +162,6 @@ class GamesAdapter(
                 vibrantRgb != null -> vibrantRgb
                 else -> defaultBackgroundColor
             }
-
 
             view.setBackgroundColorAnimated(defaultBackgroundColor, rgb)
 

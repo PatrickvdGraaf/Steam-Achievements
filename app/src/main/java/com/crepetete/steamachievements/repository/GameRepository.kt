@@ -10,6 +10,7 @@ import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.Resource
+import io.reactivex.Single
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -73,6 +74,8 @@ class GameRepository @Inject constructor(
      * @return LiveData object with the requested [Game]
      */
     fun getGameFromDb(appId: String): LiveData<Game> = dao.getGameAsLiveData(appId)
+
+    fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 
     fun update(item: Game) {
         appExecutors.diskIO().execute {

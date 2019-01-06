@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -10,6 +11,8 @@ import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.Resource
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 class LibraryViewModel @Inject constructor(
@@ -71,11 +74,17 @@ class LibraryViewModel @Inject constructor(
         _userId.value = update
     }
 
+    @SuppressLint("CheckResult")
     fun updatePrimaryColorForGame(appId: String, rgb: Int) {
-        gameRepo.getGameFromDb(appId).value?.let { game ->
-            game.colorPrimaryDark = rgb
-            gameRepo.update(game)
-        }
+        gameRepo.getGameFromDbAsSingle(appId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe({game ->
+                game.colorPrimaryDark = rgb
+                gameRepo.update(game)
+            }, {error ->
+                Timber.e(error)
+            })
     }
 
     data class UserId(val id: String) {

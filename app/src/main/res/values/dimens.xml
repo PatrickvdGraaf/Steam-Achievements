@@ -42,7 +42,7 @@
     <dimen name="elevation_switch_default">1dp</dimen>
     <dimen name="elevation_switch_default_pressed">8dp</dimen>
     <dimen name="elevation_bottom_app_bar">8dp</dimen>
-    <dimen name="elevation_card_default">1dp</dimen>
+    <dimen name="elevation_card_default">8dp</dimen>
     <dimen name="elevation_card_large">8dp</dimen>
     <dimen name="elevation_fab_default">6dp</dimen>
     <dimen name="elevation_fab_pressed">12dp</dimen>
