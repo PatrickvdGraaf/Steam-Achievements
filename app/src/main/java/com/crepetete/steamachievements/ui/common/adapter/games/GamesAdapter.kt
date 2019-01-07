@@ -24,7 +24,6 @@ import com.crepetete.steamachievements.util.extensions.animateToPercentage
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.extensions.setCompletedFlag
 import com.crepetete.steamachievements.util.extensions.sort
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
 
 /**
@@ -60,32 +59,22 @@ class GamesAdapter(
 
     var listener: OnGameBindListener? = null
 
-    override fun createBinding(parent: ViewGroup): ItemGameBinding {
-        return DataBindingUtil.inflate<ItemGameBinding>(LayoutInflater.from(parent.context),
-            R.layout.item_game, parent, false, dataBindingComponent)
-    }
+    override fun createBinding(parent: ViewGroup): ItemGameBinding = DataBindingUtil.inflate(
+        LayoutInflater.from(parent.context),
+        R.layout.item_game,
+        parent,
+        false,
+        dataBindingComponent
+    )
 
     override fun bind(binding: ItemGameBinding, item: GameWithAchievements) {
         binding.gameWithAch = item
-        val view = binding.root
 
-        view.setOnClickListener {
-            listener?.onGameClicked(item.getAppId(), binding.gameBanner)
-        }
+        binding.progressBar.animateToPercentage(item.getPercentageCompleted().toInt())
 
-        binding.totalPlayedTextView.text = item.getTotalPlayTimeString(view.context)
-
-        if (item.getRecentPlaytime() > 0) {
-            binding.recentlyPlayedTextView.text = item.getRecentPlaytimeString(view.context)
-        }
-
-        val percentage = item.getPercentageCompleted().toInt()
-        binding.progressBar.animateToPercentage(percentage)
-
-        binding.achievementsTextView.text = item.getAchievementsText()
         binding.achievementsTextView.setCompletedFlag(item.isCompleted())
 
-        Glide.with(view.context)
+        Glide.with(binding.root.context)
             .load(item.getFullLogoUrl())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(object : SimpleTarget<Drawable>() {
@@ -105,6 +94,10 @@ class GamesAdapter(
                 }
             })
 
+        binding.root.setOnClickListener {
+            listener?.onGameClicked(item.getAppId(), binding.gameBanner)
+        }
+
         listener?.onGameBoundInAdapter(item.getAppId())
     }
 
@@ -115,29 +108,6 @@ class GamesAdapter(
     fun setGames(games: List<GameWithAchievements>) {
         items = games.sort(sortMethod)
         submitList(items)
-    }
-
-    /**
-     * Update the achievements in the existing list of games.
-     */
-    fun setAchievements(achievements: List<Achievement>) {
-        //        val gamesWithAchievements = items.toMutableList()
-        //        gamesWithAchievements.forEach { game ->
-        //            game.setAchievements(achievements.filter { achievement -> achievement.getAppId == game.getAppId })
-        //        }
-        //
-        //        submitList(gamesWithAchievements)
-    }
-
-    fun setAchievements(appId: String, achievements: List<Achievement>) {
-        val gamesWithAchievements = items.toMutableList()
-        gamesWithAchievements.filter { it.getAppId() == appId }.forEach {
-            if (it.achievements != achievements) {
-                it.achievements
-            }
-        }
-
-        submitList(gamesWithAchievements)
     }
 
     private fun animateBackground(game: GameWithAchievements, view: View, bitmap: Bitmap) {

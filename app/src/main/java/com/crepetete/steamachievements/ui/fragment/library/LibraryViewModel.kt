@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.util.AbsentLiveData
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
@@ -21,7 +20,7 @@ class LibraryViewModel @Inject constructor(
     private var achievementsRepository: AchievementsRepository
 ) : ViewModel() {
     private val _userId = MutableLiveData<UserId>()
-    val userId: LiveData<UserId>
+    private val userId: LiveData<UserId>
         get() = _userId
 
     val games: LiveData<Resource<List<Game>>> = Transformations
@@ -46,24 +45,12 @@ class LibraryViewModel @Inject constructor(
     //    }.also { sortingType = order }
 
     // TODO find out why the loadAchievementsForGame method doesn't call API.
-    fun updateAchievementsFor(appId: String, achievementsListener: AchievementsRepository.AchievementsListener) {
+    fun updateAchievementsFor(appId: String) {
         // This doesn't work for API calls for some reason
         achievementsRepository.loadAchievementsForGame(appId)
 
         // This does work, but not as nice as I'd like.
-        achievementsRepository.updateAchievementsForGame(appId, achievementsListener)
-    }
-
-    fun updateAchievedStats(appId: String, achievements: List<Achievement>) {
-        //        if (emptyAchievements.isNotEmpty()) {
-        //            achievementsRepository.getAchievedStatusForAchievementsForGame(getAppId, emptyAchievements)
-        //        }
-    }
-
-    fun updateGlobalStats(appId: String, achievements: List<Achievement>) {
-        //        if (emptyAchievements.isNotEmpty()) {
-        //            achievementsRepository.getGlobalAchievementStats(getAppId, emptyAchievements)
-        //        }
+        achievementsRepository.updateAchievementsForGame(appId)
     }
 
     fun setAppId(appId: String) {

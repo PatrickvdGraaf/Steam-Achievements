@@ -17,16 +17,12 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.util.autoCleared
-import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.Game
-import timber.log.Timber
 import javax.inject.Inject
 
 class LibraryFragment : Fragment(), Injectable,
@@ -94,11 +90,7 @@ class LibraryFragment : Fragment(), Injectable,
      * Updates the achievements for a specific game when it is shown in the RecyclerView.
      */
     override fun onGameBoundInAdapter(appId: String) {
-        viewModel.updateAchievementsFor(appId, object : AchievementsRepository.AchievementsListener {
-            override fun onAchievementsLoadedForGame(appId: String, achievements: List<Achievement>) {
-                adapter.setAchievements(appId, achievements)
-            }
-        })
+        viewModel.updateAchievementsFor(appId)
     }
 
     /**
@@ -137,51 +129,6 @@ class LibraryFragment : Fragment(), Injectable,
     }
 
     /**
-     * Retrieved a new game from the presenter that needs to be added to the ListView.
-     */
-    fun addGame(game: Game) {
-        //        gamesAdapter.addGame(game)
-    }
-
-    /**
-     * Retrieved a list of emptyAchievements from the presenter, which need to be updated in the Adapter
-     * for a specific game.
-     *
-     * @param appId ID of the game that own the emptyAchievements
-     * @param achievements list of emptyAchievements for said game.
-     */
-    fun updateAchievementsForGame(appId: String, achievements: List<Achievement>) {
-        //        gamesAdapter.updateAchievementsForGame(getAppId, emptyAchievements)
-    }
-
-    /**
-     * Opens the GameActivity.
-     *
-     * @param appId ID for the Game which needs to be shown.
-     * @param imageView Banner which displays the game's banner-image in the ListView, used to
-     * animate to the next view.
-     */
-    fun showGameActivity(appId: String, imageView: ImageView) {
-        activity?.startGameActivity(appId, imageView)
-    }
-
-    /**
-     * Refreshes the list of games by first refreshing the games from the database, and then
-     * automatically calls the API for an update.
-     */
-    fun refresh() {
-        //        presenter.getGameIdsFromDb()
-    }
-
-    /**
-     * A list of games have been received from the presenter and need to be updated in our adapter.
-     */
-    fun updateGames(games: List<Game>) {
-        Timber.d("Updating games.")
-        //        gamesAdapter.updateGames(games)
-    }
-
-    /**
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
@@ -207,7 +154,6 @@ class LibraryFragment : Fragment(), Injectable,
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                //                setLoaderIndicator(loadingIndicator)
             }
         }
     }

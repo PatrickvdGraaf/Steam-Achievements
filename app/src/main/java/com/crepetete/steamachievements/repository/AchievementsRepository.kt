@@ -66,7 +66,7 @@ class AchievementsRepository @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    fun updateAchievementsForGame(appId: String, listener: AchievementsListener) {
+    fun updateAchievementsForGame(appId: String) {
         api.getSchemaForGameAsSingle(appId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -77,7 +77,7 @@ class AchievementsRepository @Inject constructor(
                         achievement.appId = appId
                     }
 
-                    getStatsPerAchievements(appId, data, listener)
+                    getStatsPerAchievements(appId, data)
                 }
             }, {
                 Timber.e(it)
@@ -94,7 +94,7 @@ class AchievementsRepository @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    private fun getStatsPerAchievements(appId: String, allAchievements: List<Achievement>, listener: AchievementsListener) {
+    private fun getStatsPerAchievements(appId: String, allAchievements: List<Achievement>) {
         Timber.d("Getting Personal achievement stats for game: $appId")
         api.getAchievementsForPlayerAsSingle(appId, userRepository.getCurrentPlayerId() ?: "-1")
             .subscribeOn(Schedulers.io())
@@ -119,16 +119,14 @@ class AchievementsRepository @Inject constructor(
                     .toList()
                 //                getGlobalStats(getAppId, allAchievements, listener)
                 insertAchievementsList(allAchievements)
-                listener.onAchievementsLoadedForGame(appId, allAchievements)
             }, {
                 Timber.e(it)
                 insertAchievementsList(allAchievements)
-                listener.onAchievementsLoadedForGame(appId, allAchievements)
             })
     }
 
     @SuppressLint("CheckResult")
-    private fun getGlobalStats(appId: String, allAchievements: List<Achievement>, listener: AchievementsListener) {
+    private fun getGlobalStats(appId: String, allAchievements: List<Achievement>) {
         Timber.d("Getting Global achievement stats for game: $appId")
         api.getGlobalAchievementStatsAsSingle(appId)
             .subscribeOn(Schedulers.io())
@@ -141,12 +139,10 @@ class AchievementsRepository @Inject constructor(
                         it.percentage = response.percent
                     }
                     insertAchievementsList(allAchievements)
-                    listener.onAchievementsLoadedForGame(appId, allAchievements)
                 }
             }, {
                 Timber.e(it)
                 insertAchievementsList(allAchievements)
-                listener.onAchievementsLoadedForGame(appId, allAchievements)
             })
 
     }

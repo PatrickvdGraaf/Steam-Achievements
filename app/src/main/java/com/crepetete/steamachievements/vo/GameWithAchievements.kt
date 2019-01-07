@@ -64,7 +64,7 @@ class GameWithAchievements(
     fun getAchievementsText() = when {
         // Show a completion percentage
         hasCompletedAchievements() ->
-            "${getCompletedAchievements().size}/${achievements.size} (${DecimalFormat("0.##)")
+            "${getCompletedAchievements().size}/${achievements.size} (${DecimalFormat("0.##")
                 .format(getPercentageCompleted())}%) achievements."
         // Only show total amount of achievements.
         achievements.isNotEmpty() -> "${achievements.size} achievements."
