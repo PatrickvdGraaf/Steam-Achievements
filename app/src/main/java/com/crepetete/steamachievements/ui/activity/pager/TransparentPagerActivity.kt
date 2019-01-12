@@ -63,8 +63,8 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
             val index = intent?.getIntExtra(INTENT_KEY_INDEX, 0) ?: 0
             viewModel.setIndex(index)
 
-            val names = intent?.getSerializableExtra(INTENT_KEY_NAME) as ArrayList<String>?
-            val appIds = intent?.getSerializableExtra(INTENT_KEY_APP_ID) as ArrayList<String>?
+            val names = intent?.getStringArrayListExtra(INTENT_KEY_NAME)
+            val appIds = intent?.getStringArrayListExtra(INTENT_KEY_APP_ID)
             if (names != null && appIds != null) {
                 viewModel.setAchievementData(names, appIds)
             }

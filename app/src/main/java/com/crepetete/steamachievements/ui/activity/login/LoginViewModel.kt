@@ -19,7 +19,7 @@ class LoginViewModel @Inject constructor(
 
     private val currentPlayerId = MutableLiveData<String?>()
 
-    val currentPlayer: LiveData<Resource<Player>?> = Transformations.switchMap(currentPlayerId) {
+    val currentPlayer: LiveData<Resource<Player>> = Transformations.switchMap(currentPlayerId) {
         if (it != null) {
             userRepository.getPlayer(it)
         } else {

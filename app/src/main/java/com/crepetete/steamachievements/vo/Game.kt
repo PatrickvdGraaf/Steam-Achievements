@@ -1,13 +1,12 @@
 package com.crepetete.steamachievements.vo
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import java.util.*
 
 @Entity(tableName = "games",
+    indices =[Index("appId")],
     foreignKeys = [(ForeignKey(
         entity = Player::class,
         parentColumns = ["steamId"],
@@ -18,6 +17,7 @@ data class Game(
     @Json(name = "appid")
     val appId: String,
     // TODO remove userId property, let a user have a list of game Ids instead.
+    @ColumnInfo(name = "userId")
     var userId: String,
     val name: String,
     @Json(name = "playtime_2weeks")

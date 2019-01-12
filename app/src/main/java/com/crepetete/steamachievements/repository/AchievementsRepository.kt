@@ -117,8 +117,7 @@ class AchievementsRepository @Inject constructor(
                         }
                     }
                     .toList()
-                //                getGlobalStats(getAppId, allAchievements, listener)
-                insertAchievementsList(allAchievements)
+                getGlobalStats(appId, allAchievements)
             }, {
                 Timber.e(it)
                 insertAchievementsList(allAchievements)
@@ -192,8 +191,7 @@ class AchievementsRepository @Inject constructor(
         }.asLiveData()
     }
 
-    fun getGlobalAchievementStats(appId: String, achievements: List<Achievement>)
-        : LiveData<Resource<List<Achievement>>> {
+    fun getGlobalAchievementStats(appId: String, achievements: List<Achievement>): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, GlobalAchievResponse>(appExecutors) {
             override fun saveCallResult(item: GlobalAchievResponse) {
                 item.achievementpercentages.achievements.forEach { response ->

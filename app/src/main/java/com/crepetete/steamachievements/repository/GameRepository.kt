@@ -22,13 +22,15 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor(
     private val appExecutors: AppExecutors,
     private val dao: GamesDao,
-    private val api: SteamApiService
+    private val api: SteamApiService,
+    private val userRepository: UserRepository
 ) {
 
     private val gameListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
-    fun getGames(userId: String): LiveData<Resource<List<Game>>> {
-        return object : NetworkBoundResource<List<Game>, BaseGameResponse>(appExecutors) {
+    fun getGames(userId: String = userRepository.getCurrentPlayerId() ?: ""): LiveData<Resource<List<GameWithAchievements>>> {
+        return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
+
             override fun saveCallResult(item: BaseGameResponse) {
                 Timber.d("Saving Games in DB")
 
@@ -40,11 +42,11 @@ class GameRepository @Inject constructor(
                 dao.insert(games)
             }
 
-            override fun shouldFetch(data: List<Game>?) = data == null
+            override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
                 || data.isEmpty()
                 || gameListRateLimit.shouldFetch("getGamesForUser$userId")
 
-            override fun loadFromDb(): LiveData<List<Game>> = dao.getGamesAsLiveData()
+            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = dao.getGamesWithAchievementsAsLiveData()
 
             override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
 
@@ -85,6 +87,4 @@ class GameRepository @Inject constructor(
             dao.update(item)
         }
     }
-
-    fun getGamesWithAchievements() = dao.getGamesWithAchievementsAsLiveData()
 }

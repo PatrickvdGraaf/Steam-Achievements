@@ -21,8 +21,10 @@ import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.util.autoCleared
+import com.crepetete.steamachievements.vo.Status
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
 class LibraryFragment : Fragment(), Injectable,
@@ -36,54 +38,87 @@ class LibraryFragment : Fragment(), Injectable,
 
     var adapter by autoCleared<GamesAdapter>()
 
-    private var dataBindingComponent = FragmentDataBindingComponent(this)
-
     var binding by autoCleared<FragmentLibraryBinding>()
+
+    private var dataBindingComponent = FragmentDataBindingComponent()
 
     private lateinit var viewModel: LibraryViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_library, container,
-            false, dataBindingComponent)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_library,
+            container,
+            false,
+            dataBindingComponent
+        )
+
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        // Provide ViewModel.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(LibraryViewModel::class.java)
 
         // Check if there is a userId property in the arguments.
         var userId: String
         arguments?.let {
             userId = it.getString(KEY_PLAYER_ID) ?: ""
             if (userId.isBlank()) {
-                // Go to Login page.
                 context?.startActivity(LoginActivity.getInstance(requireContext()))
+                return
             }
-            viewModel.setAppId(userId)
         }
 
-        viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchievements ->
-            if (gameWithAchievements != null) {
-                adapter.setGames(gameWithAchievements)
+        // Provide ViewModel.
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(LibraryViewModel::class.java)
+
+        viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchResponse ->
+            when (gameWithAchResponse.status) {
+                Status.SUCCESS -> {
+                    progressBar.visibility = View.GONE
+                    adapter.setGames(gameWithAchResponse.data)
+                }
+                Status.ERROR -> {
+                    progressBar.visibility = View.GONE
+                    Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
+                }
+                Status.LOADING -> {
+                    progressBar.visibility = View.VISIBLE
+                }
             }
         })
 
         initScrollFab()
         initRecyclerView()
+    }
 
-        val gamesAdapter = GamesAdapter(
+    private fun initScrollFab() {
+        fab.setOnClickListener {
+            list_games.smoothScrollToPosition(0)
+        }
+    }
+
+    private fun initRecyclerView() {
+        list_games.layoutManager = LinearLayoutManager(context)
+
+        adapter = GamesAdapter(
             appExecutors = appExecutors,
             dataBindingComponent = dataBindingComponent
         )
 
-        gamesAdapter.listener = this
-
-        binding.listGames.adapter = gamesAdapter
-        adapter = gamesAdapter
+        adapter.listener = this
+        list_games.adapter = adapter
+        list_games.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy <= 0) {
+                    binding.fab.hide()
+                } else {
+                    binding.fab.show()
+                }
+            }
+        })
     }
 
     /**
@@ -108,26 +143,6 @@ class LibraryFragment : Fragment(), Injectable,
         viewModel.updatePrimaryColorForGame(appId, rgb)
     }
 
-    private fun initScrollFab() {
-        binding.fab.setOnClickListener {
-            binding.listGames.smoothScrollToPosition(0)
-        }
-    }
-
-    private fun initRecyclerView() {
-        binding.listGames.layoutManager = LinearLayoutManager(context)
-        binding.listGames.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy <= 0) {
-                    binding.fab.hide()
-                } else {
-                    binding.fab.show()
-                }
-            }
-        })
-    }
-
     /**
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
@@ -149,7 +164,7 @@ class LibraryFragment : Fragment(), Injectable,
         const val TAG = "LIBRARY_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
 
-        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): LibraryFragment {
+        fun getInstance(playerId: String): LibraryFragment {
             return LibraryFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)

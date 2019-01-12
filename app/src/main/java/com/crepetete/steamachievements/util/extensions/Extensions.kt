@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.Dialog
@@ -9,9 +8,9 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.view.View
-import android.view.animation.DecelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.IdRes
@@ -193,29 +192,6 @@ fun TextView.setColor(color: Int) {
     setTextColor(color)
     compoundDrawables.forEach { drawable: Drawable? ->
         drawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-    }
-}
-
-fun TextView.setCompletedFlag(isCompleted: Boolean) {
-    compoundDrawablePadding = 16
-    setCompoundDrawablesWithIntrinsicBounds(
-        if (isCompleted) {
-            R.drawable.ic_completed_24dp
-        } else {
-            0
-        }, 0, 0, 0)
-}
-
-fun ProgressBar.animateToPercentage(@Size(max = 100) percentage: Int, duration: Long = 1600) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        setProgress(percentage, true)
-    } else {
-        progress = percentage
-        val animation = ObjectAnimator.ofInt(this, "progress",
-            this.progress, percentage)
-        animation.duration = duration
-        animation.interpolator = DecelerateInterpolator()
-        animation.start()
     }
 }
 

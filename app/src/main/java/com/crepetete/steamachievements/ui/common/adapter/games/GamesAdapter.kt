@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.ui.common.adapter.games
 
-import android.graphics.Bitmap
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -13,17 +13,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.Priority
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.DataBoundListAdapter
-import com.crepetete.steamachievements.util.extensions.animateToPercentage
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
-import com.crepetete.steamachievements.util.extensions.setCompletedFlag
 import com.crepetete.steamachievements.util.extensions.sort
+import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 
 /**
@@ -59,40 +58,23 @@ class GamesAdapter(
 
     var listener: OnGameBindListener? = null
 
-    override fun createBinding(parent: ViewGroup): ItemGameBinding = DataBindingUtil.inflate(
+    override fun createBinding(parent: ViewGroup) = DataBindingUtil.inflate(
         LayoutInflater.from(parent.context),
         R.layout.item_game,
         parent,
         false,
         dataBindingComponent
-    )
+    ) as ItemGameBinding
 
     override fun bind(binding: ItemGameBinding, item: GameWithAchievements) {
-        binding.gameWithAch = item
+        val dataItem = GameData(item)
+        binding.gameData = dataItem
 
-        binding.progressBar.animateToPercentage(item.getPercentageCompleted().toInt())
-
-        binding.achievementsTextView.setCompletedFlag(item.isCompleted())
-
-        Glide.with(binding.root.context)
-            .load(item.getFullLogoUrl())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : SimpleTarget<Drawable>() {
-                /**
-                 * The method that will be called when the resource load has finished.
-                 *
-                 * @param resource the loaded resource.
-                 */
-                override fun onResourceReady(resource: Drawable,
-                                             transition: Transition<in Drawable>?) {
-                    binding.gameBanner.setImageDrawable(resource)
-                    if (item.getPrimaryColor() == 0 && resource is BitmapDrawable) {
-                        animateBackground(item, binding.content, resource.bitmap)
-                    } else {
-                        binding.content.setBackgroundColor(item.getPrimaryColor())
-                    }
-                }
-            })
+        if (item.getPrimaryColor() == 0) {
+            updateBackgroundColorFromBanner(binding.root.context, binding.content, dataItem.getImageUrl(), item.getAppId())
+        } else {
+            binding.content.setBackgroundColor(item.getPrimaryColor())
+        }
 
         binding.root.setOnClickListener {
             listener?.onGameClicked(item.getAppId(), binding.gameBanner)
@@ -101,34 +83,45 @@ class GamesAdapter(
         listener?.onGameBoundInAdapter(item.getAppId())
     }
 
+    private fun updateBackgroundColorFromBanner(context: Context, view: View, url: String, appId: String) {
+        Glide.with(context)
+            .load(url)
+            .priority(Priority.LOW)
+            .into(object : SimpleTarget<Drawable>() {
+                override fun onResourceReady(resource: Drawable,
+                                             transition: Transition<in Drawable>?) {
+                    if (resource is BitmapDrawable) {
+                        Palette.from(resource.bitmap).generate {
+                            val vibrantRgb = it?.darkVibrantSwatch?.rgb
+                            val mutedRgb = it?.darkMutedSwatch?.rgb
+                            val defaultBackgroundColor = ContextCompat.getColor(context,
+                                R.color.colorGameViewHolderTitleBackground)
+
+                            val rgb = when {
+                                mutedRgb != null -> mutedRgb
+                                vibrantRgb != null -> vibrantRgb
+                                else -> defaultBackgroundColor
+                            }
+
+                            // TODO remove this and let LiveData observers refresh the list.
+                            view.setBackgroundColorAnimated(defaultBackgroundColor, rgb)
+
+                            // Listener should update the database, which will trigger LiveData observers,
+                            // and the view should reload with the new background color.
+                            listener?.onPrimaryGameColorCreated(appId, rgb)
+                        }
+                    }
+                }
+            })
+    }
+
     /**
      * Set the games list shown in the RecyclerView attached to this adapter.
      * Sorts the list with the current sorting method before submitting.
      */
-    fun setGames(games: List<GameWithAchievements>) {
+    fun setGames(games: List<GameWithAchievements>?) {
         items = games.sort(sortMethod)
         submitList(items)
-    }
-
-    private fun animateBackground(game: GameWithAchievements, view: View, bitmap: Bitmap) {
-        Palette.from(bitmap).generate {
-            val vibrantRgb = it?.darkVibrantSwatch?.rgb
-            val mutedRgb = it?.darkMutedSwatch?.rgb
-            val defaultBackgroundColor = ContextCompat.getColor(view.context,
-                R.color.colorGameViewHolderTitleBackground)
-
-            val rgb = when {
-                mutedRgb != null -> mutedRgb
-                vibrantRgb != null -> vibrantRgb
-                else -> defaultBackgroundColor
-            }
-
-            view.setBackgroundColorAnimated(defaultBackgroundColor, rgb)
-
-            if (rgb != defaultBackgroundColor) {
-                listener?.onPrimaryGameColorCreated(game.getAppId(), rgb)
-            }
-        }
     }
 
     interface OnGameBindListener {

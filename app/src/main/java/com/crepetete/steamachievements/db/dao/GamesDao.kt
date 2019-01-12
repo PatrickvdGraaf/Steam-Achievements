@@ -38,16 +38,17 @@ abstract class GamesDao {
     @Query("SELECT * FROM games")
     abstract fun getGamesForUser(): Single<List<Game>>
 
-    @Transaction
     @Query("SELECT * FROM games")
-    abstract fun getGamesAsLiveData(): LiveData<List<Game>>
+    abstract fun getGamesAsLiveData(): LiveData<List<Game>?>
 
     @Query("SELECT appId FROM games")
     abstract fun getGameIds(): Single<List<String>>
 
+    @Transaction
     @Query("SELECT * FROM games")
     abstract fun getGamesWithAchievementsAsLiveData(): LiveData<List<GameWithAchievements>>
 
+    @Transaction
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGamesWithAchievementsAsLiveData(appId: String): LiveData<GameWithAchievements>
 }

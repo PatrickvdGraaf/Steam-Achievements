@@ -6,11 +6,11 @@
 
     <data>
 
-        <import type="com.crepetete.steamachievements.vo.GameWithAchievements"/>
+        <import type="com.crepetete.steamachievements.vo.GameData"/>
 
         <variable
-            name="gameWithAch"
-            type="com.crepetete.steamachievements.vo.GameWithAchievements"/>
+            name="gameData"
+            type="com.crepetete.steamachievements.vo.GameData"/>
     </data>
 
     <androidx.cardview.widget.CardView
@@ -31,6 +31,7 @@
                 android:id="@+id/game_banner"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:src="@{gameData.getImageUrl()}"
                 android:transitionName="banner"
                 app:layout_constraintDimensionRatio="184:69"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +54,7 @@
                     android:paddingTop="@dimen/default_margin_halved"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingBottom="@dimen/default_margin_halved"
-                    android:text="@{gameWithAch.name}"
+                    android:text="@{gameData.getName()}"
                     android:textColor="@color/colorAccent"
                     android:textSize="@dimen/text_header_five"
                     app:layout_constraintBottom_toTopOf="@+id/progressContainer"
@@ -62,6 +63,7 @@
 
                 <TextView
                     android:id="@+id/achievements_textView"
+                    completionFlagVisibility="@{gameData.completed}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -70,63 +72,67 @@
                     android:paddingTop="@dimen/default_margin_halved"
                     android:paddingEnd="@dimen/default_margin"
                     android:paddingBottom="@dimen/default_margin_halved"
+                    android:text="@{gameData.getAchievementsText()}"
                     android:textColor="@color/colorAccent"
                     android:textSize="14sp"
-                    android:text="@{gameWithAch.getAchievementsText()}"
                     app:layout_constraintTop_toBottomOf="@id/progressContainer"
                     tools:text="42/42 (100%) achievements"/>
 
                 <FrameLayout
                     android:id="@+id/progressContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="4dp"
+                    android:layout_height="2dp"
                     app:layout_constraintBottom_toTopOf="@id/time_info_container"
                     app:layout_constraintTop_toBottomOf="@+id/achievements_textView">
 
                     <ProgressBar
                         android:id="@+id/progressBar"
                         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                        progressAnimated="@{gameData.getPercentageCompleted()}"
                         android:layout_width="match_parent"
-                        android:layout_height="32dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:progressTint="#ffffff"
+                        android:progressTint="@android:color/white"
                         app:layout_constraintEnd_toStartOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:progress="75"/>
                 </FrameLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:id="@+id/time_info_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     app:layout_constraintTop_toBottomOf="@+id/achievements_textView">
 
                     <TextView
                         android:id="@+id/total_played_textView"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:drawableStart="@drawable/ic_all_time_24dp"
                         android:drawablePadding="@dimen/default_margin_halved"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/default_margin"
                         android:paddingTop="@dimen/default_margin_halved"
                         android:paddingEnd="@dimen/default_margin"
-                        android:text="@{gameWithAch.getTotalPlayTimeString(context)}"
                         android:textColor="@color/colorAccent"
                         android:textSize="@dimen/text_label_small"
                         app:layout_constraintBottom_toTopOf="@id/recently_played_textView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="81h 31m"/>
 
                     <TextView
                         android:id="@+id/recently_played_textView"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:drawableStart="@drawable/ic_recent_24dp"
                         android:drawablePadding="@dimen/default_margin_halved"
                         android:gravity="center_vertical"
-                        android:text="@{gameWithAch.getRecentPlaytimeString(context)}"
                         android:paddingStart="@dimen/default_margin"
                         android:paddingTop="@dimen/default_margin_halved"
                         android:paddingEnd="@dimen/default_margin"
@@ -136,8 +142,9 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/total_played_textView"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        app:layout_constraintTop_toBottomOf="@+id/total_played_textView"
+                        tools:text="2h 42m"/>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

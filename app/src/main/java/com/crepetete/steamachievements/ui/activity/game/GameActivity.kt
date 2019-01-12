@@ -3,8 +3,6 @@ package com.crepetete.steamachievements.ui.activity.game
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -22,12 +20,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -99,16 +93,6 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
             setGameInfo(game)
         })
 
-        viewModel.finalAchievements.observe(this, Observer { resource ->
-            val data = resource?.data
-            if (data != null) {
-                setAchievements(data.filter {
-                    it.appId == appId
-                })
-            }
-        })
-
-
         viewModel.vibrantColor.observe(this, Observer { swatch ->
             if (swatch != null) {
                 setCollapsingToolbarColors(swatch.rgb)
@@ -136,8 +120,8 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
             return
         }
 
-        recentlyPlayedTextView.setText(game.getRecentPlaytimeString())
-        totalPlayedTextView.setText(game.getTotalPlayTimeString())
+//        recentlyPlayedTextView.setText(game.getRecentPlaytimeString())
+//        totalPlayedTextView.setText(game.getTotalPlayTimeString())
 
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(this,
             LinearLayoutManager.HORIZONTAL,
@@ -145,24 +129,24 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         recyclerViewLatestAchievements.adapter = achievementsAdapter
 
-        Glide.with(this)
-            .load(game.getFullLogoUrl())
-            .into(object : SimpleTarget<Drawable>() {
-                /**
-                 * The method that will be called when the resource load has finished.
-                 *
-                 * @param resource the loaded resource.
-                 */
-                override fun onResourceReady(resource: Drawable,
-                                             transition: Transition<in Drawable>?) {
-                    if (resource is BitmapDrawable) {
-                        Palette.from(resource.bitmap).generate {
-                            it?.let { it1 -> viewModel.updatePalette(it1) }
-                            banner.setImageDrawable(resource)
-                        }
-                    }
-                }
-            })
+//        Glide.with(this)
+//            .load(game.getFullLogoUrl())
+//            .into(object : SimpleTarget<Drawable>() {
+//                /**
+//                 * The method that will be called when the resource load has finished.
+//                 *
+//                 * @param resource the loaded resource.
+//                 */
+//                override fun onResourceReady(resource: Drawable,
+//                                             transition: Transition<in Drawable>?) {
+//                    if (resource is BitmapDrawable) {
+//                        Palette.from(resource.bitmap).generate {
+//                            it?.let { it1 -> viewModel.updatePalette(it1) }
+//                            banner.setImageDrawable(resource)
+//                        }
+//                    }
+//                }
+//            })
 
         collapsingToolbarLayout.title = game.getName()
         title = game.getName()
@@ -181,28 +165,28 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
      * GraphView was clicked
      */
     override fun onDateTapped(date: Date) {
-        val achievements = viewModel.finalAchievements.value?.data?.filter {
-            it.achieved
-        }
+//        val achievements = viewModel.finalAchievements.value?.data?.filter {
+//            it.achieved
+//        }
 
-        if (achievements != null) {
-            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
-
-            val calTapped = Calendar.getInstance()
-            calTapped.time = date
-            achievements.forEachIndexed { index, achievement ->
-                val calAchievement = Calendar.getInstance()
-                calAchievement.time = achievement.unlockTime
-
-                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
-                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
-                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
-                        Calendar.DAY_OF_MONTH)) {
-                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
-                        - index)
-                }
-            }
-        }
+//        if (achievements != null) {
+//            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
+//
+//            val calTapped = Calendar.getInstance()
+//            calTapped.time = date
+//            achievements.forEachIndexed { index, achievement ->
+//                val calAchievement = Calendar.getInstance()
+//                calAchievement.time = achievement.unlockTime
+//
+//                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
+//                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
+//                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
+//                        Calendar.DAY_OF_MONTH)) {
+//                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
+//                        - index)
+//                }
+//            }
+//        }
     }
 
     private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {

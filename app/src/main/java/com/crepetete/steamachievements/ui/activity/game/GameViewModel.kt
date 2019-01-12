@@ -9,9 +9,7 @@ import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.util.AbsentLiveData
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
@@ -27,36 +25,9 @@ class GameViewModel @Inject constructor(
     val game: LiveData<GameWithAchievements> = Transformations
         .switchMap(_appId) { id ->
             id.ifExists {
+                achievementsRepo.updateAchievementsForGame(it)
                 gameRepo.getGameWithAchFromDb(it)
             }
-        }
-
-    private val achievements: LiveData<Resource<List<Achievement>>> = Transformations
-        .switchMap(_appId) { id ->
-            id.ifExists {
-                achievementsRepo.loadAchievementsForGame(it)
-            }
-        }
-
-    private val updatedAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-        .switchMap(achievements) {
-            val id = _appId.value?.id
-            val achievements = it.data
-            if (id != null && achievements != null) {
-                return@switchMap achievementsRepo.getAchievedStatusForAchievementsForGame(id,
-                    achievements)
-            }
-            return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
-        }
-
-    val finalAchievements: LiveData<Resource<List<Achievement>>> = Transformations
-        .switchMap(updatedAchievements) {
-            val id = _appId.value?.id
-            val achievements = it?.data
-            if (id != null && achievements != null) {
-                return@switchMap achievementsRepo.getGlobalAchievementStats(id, achievements)
-            }
-            return@switchMap AbsentLiveData.create<Resource<List<Achievement>>>()
         }
 
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()

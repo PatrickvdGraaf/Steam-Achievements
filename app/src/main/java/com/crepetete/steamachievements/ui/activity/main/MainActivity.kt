@@ -20,8 +20,6 @@ import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFrag
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
-import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.Game
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -80,7 +78,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         navigation.selectedItemId = R.id.menu_library
         navigation.setOnNavigationItemSelectedListener(this)
 
-        val fragment: LibraryFragment = LibraryFragment.getInstance(userId, this)
+        val fragment: LibraryFragment = LibraryFragment.getInstance(userId)
         fragmentManager.beginTransaction()
             .replace(containerId, fragment, LibraryFragment.TAG)
             .addToBackStack(null)
@@ -185,7 +183,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
                 currentTag = LibraryFragment.TAG
                 fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
-                    fragment = LibraryFragment.getInstance(userId, this)
+                    fragment = LibraryFragment.getInstance(userId)
                 }
             }
             R.id.menu_achievements -> {
@@ -223,26 +221,6 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         //        }
     }
 
-    fun getCurrentFragment(): Fragment? {
-        return fragmentManager.findFragmentByTag(currentTag)
-    }
-
-    fun showPlayerDetails(persona: String) {
-        title = "$persona's Games"
-    }
-
-    fun setTitle(title: String) {
-        this.title = title
-    }
-
-    fun showAchievements(achievements: List<Achievement>, appId: String) {
-        //        gamesAdapter.addAchievementsForGame(achievements, getAppId)
-    }
-
-    fun showGames(games: List<Game>) {
-        //        gamesAdapter.updateGames(games)
-    }
-
     /**
      * Displays the loading indicator of the view
      */
@@ -257,11 +235,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         //        loadingIndicator.visibility = View.GONE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    fun openLoginActivity() {
+    private fun openLoginActivity() {
         startActivity(LoginActivity.getInstance(this))
     }
 
