@@ -20,7 +20,7 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
         hasCompletedAchievements() -> "${getCompletedAchievements().size}/${game.achievements.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."
         // Only show total amount of achievements.
         game.achievements.isNotEmpty() -> "${game.achievements.size} achievements."
-        else -> ""
+        else -> "No achievements"
     }
 
     @Bindable
@@ -40,14 +40,14 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      *
      * @return A base text representation of the total playtime.
      */
-    fun getTotalPlayTimeString(context: Context? = null, playTime: Long) = playTime.toHours(context)
+    fun getTotalPlayTimeString(context: Context? = null) = game.getPlaytime().toHours(context)
 
     /**
      * Formats recent play tim Long into readable text using [toHours].
      *
      * @return A base text representation of the recent playtime.
      */
-    fun getRecentPlaytimeString(context: Context? = null, playTime: Long) = playTime.toHours(context)
+    fun getRecentPlaytimeString(context: Context? = null) = game.getRecentPlaytime().toHours(context)
 
     /**
      * @return a float representing a percentage (achieved achievements over total achievements).

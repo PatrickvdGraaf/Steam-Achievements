@@ -20,7 +20,6 @@ import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.DataBoundListAdapter
-import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -47,6 +46,7 @@ class GamesAdapter(
             && oldGame.getRecentPlaytime() == newGame.getRecentPlaytime()
             && oldGame.getIconUrl() == newGame.getIconUrl()
             && oldGame.getBannerUrl() == newGame.getBannerUrl()
+            && oldGame.getPrimaryColor() == newGame.getPrimaryColor()
             && oldGame.getAmountOfAchievements() == newGame.getAmountOfAchievements()
             && oldGame.getAchievedAchievements() == newGame.getAchievedAchievements()
     }
@@ -71,9 +71,9 @@ class GamesAdapter(
         binding.gameData = dataItem
 
         if (item.getPrimaryColor() == 0) {
-            updateBackgroundColorFromBanner(binding.root.context, binding.content, dataItem.getImageUrl(), item.getAppId())
+            updateBackgroundColorFromBanner(binding.root.context, binding.background, dataItem.getImageUrl(), item.getAppId())
         } else {
-            binding.content.setBackgroundColor(item.getPrimaryColor())
+            binding.background.setBackgroundColor(item.getPrimaryColor())
         }
 
         binding.root.setOnClickListener {
@@ -102,9 +102,6 @@ class GamesAdapter(
                                 vibrantRgb != null -> vibrantRgb
                                 else -> defaultBackgroundColor
                             }
-
-                            // TODO remove this and let LiveData observers refresh the list.
-                            view.setBackgroundColorAnimated(defaultBackgroundColor, rgb)
 
                             // Listener should update the database, which will trigger LiveData observers,
                             // and the view should reload with the new background color.
