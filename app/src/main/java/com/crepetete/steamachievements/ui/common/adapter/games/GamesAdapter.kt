@@ -20,6 +20,7 @@ import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.DataBoundListAdapter
+import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -71,19 +72,25 @@ class GamesAdapter(
         binding.gameData = dataItem
 
         if (item.getPrimaryColor() == 0) {
-            updateBackgroundColorFromBanner(binding.root.context, binding.background, dataItem.getImageUrl(), item.getAppId())
+            updateBackgroundColorFromBanner(binding.root.context, dataItem.getImageUrl(), item.getAppId())
         } else {
-            binding.background.setBackgroundColor(item.getPrimaryColor())
+            binding.background.setBackgroundColorAnimated(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.colorGameViewHolderTitleBackground
+                ),
+                item.getPrimaryColor()
+            )
         }
 
         binding.root.setOnClickListener {
-            listener?.onGameClicked(item.getAppId(), binding.gameBanner)
+            listener?.onGameClicked(item, binding.gameBanner, binding.background, binding.nameTextView)
         }
 
         listener?.onGameBoundInAdapter(item.getAppId())
     }
 
-    private fun updateBackgroundColorFromBanner(context: Context, view: View, url: String, appId: String) {
+    private fun updateBackgroundColorFromBanner(context: Context, url: String, appId: String) {
         Glide.with(context)
             .load(url)
             .priority(Priority.LOW)
@@ -123,7 +130,7 @@ class GamesAdapter(
 
     interface OnGameBindListener {
         fun onGameBoundInAdapter(appId: String)
-        fun onGameClicked(appId: String, imageView: ImageView)
+        fun onGameClicked(appId: GameWithAchievements, imageView: ImageView, background: View, title: View)
         fun onPrimaryGameColorCreated(appId: String, rgb: Int)
     }
 }

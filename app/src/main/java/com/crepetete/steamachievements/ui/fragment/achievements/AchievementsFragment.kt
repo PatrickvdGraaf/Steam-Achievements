@@ -68,7 +68,7 @@ class AchievementsFragment : Fragment(){
             updatePercentageText(it.animatedValue as Float)
         })
 
-        recyclerViewLatestAchievements = view.findViewById(R.id.latest_achievements_recyclerview)
+        recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewLatestAchievements)
         recyclerViewLatestAchievements.adapter = achievementsAdapter
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
                 LinearLayoutManager.HORIZONTAL, false)

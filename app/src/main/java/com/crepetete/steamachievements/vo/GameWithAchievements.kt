@@ -1,18 +1,25 @@
 package com.crepetete.steamachievements.vo
 
+import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Relation
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Combined database model with a game and its achievements.
+ *
+ * Uses experimental feature [Parcelize], which removes boilerplate code.
+ * More info;
+ * @see <a href="https://proandroiddev.com/parcelable-in-kotlin-here-comes-parcelize-b998d5a5fcac">this link</a>.
  */
+@Parcelize
 class GameWithAchievements(
     @Embedded
     var game: Game? = null,
 
     @Relation(parentColumn = "appId", entityColumn = "appId", entity = Achievement::class)
     var achievements: List<Achievement> = listOf()
-) {
+): Parcelable {
 
     fun getPercentageCompleted(): Float {
         val achievedSize = achievements.filter { it.achieved }.size.toFloat()
@@ -20,22 +27,9 @@ class GameWithAchievements(
         return achievedSize / totalSize * 100F
     }
 
-    /*
-     Game Methods.
-      */
-    fun setPrimaryColor(rgb: Int) {
-        game?.colorPrimaryDark = rgb
-    }
-
     fun getAmountOfAchievements() = achievements.size
-
     fun getAchievedAchievements() = achievements.filter { achievement -> achievement.achieved }
-
-    /*
-    Game Getters.
-    */
     fun getRecentPlaytime() = game?.recentPlayTime ?: 0
-
     fun getPrimaryColor() = game?.colorPrimaryDark ?: 0
     fun getAppId() = game?.appId ?: ""
     fun getName() = game?.name ?: ""

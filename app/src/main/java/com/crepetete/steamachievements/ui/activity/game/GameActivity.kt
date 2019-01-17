@@ -1,27 +1,27 @@
 package com.crepetete.steamachievements.ui.activity.game
 
 import android.annotation.TargetApi
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -29,45 +29,41 @@ import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
 import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
-import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
-import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.jjoe64.graphview.GraphView
 import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
-private const val INTENT_GAME_ID = "gameId"
-fun Activity.startGameActivity(appId: String, imageView: ImageView) {
-    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-        imageView as View, "banner")
-    startActivity(Intent(this, GameActivity::class.java).apply {
-        putExtra(INTENT_GAME_ID, appId)
-    }, options.toBundle())
-}
-
 class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener {
+    companion object {
+        private const val INTENT_GAME_ID = "INTENT_GAME_ID"
+        private const val INTENT_GAME = "INTENT_GAME"
+
+        private const val INVALID_ID = "-1"
+
+        fun getInstance(context: Context, appId: String): Intent {
+            return Intent(context, GameActivity::class.java).apply {
+                putExtra(INTENT_GAME_ID, appId)
+            }
+        }
+
+        fun getInstance(context: Context, game: GameWithAchievements): Intent {
+            return Intent(context, GameActivity::class.java).apply {
+                putExtra(INTENT_GAME, game)
+            }
+        }
+    }
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    lateinit var binding: ActivityGameBinding
+
     private lateinit var viewModel: GameViewModel
 
-    private val banner: ImageView by lazy { findViewById<ImageView>(R.id.banner) }
-    private val toolBar: Toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
-    private val collapsingToolbarLayout by lazy { findViewById<CollapsingToolbarLayout>(R.id.main_collapsing) }
-
-    // Recently Played
-    private val recentlyPlayedTextView by lazy { findViewById<ValueWithLabelTextView>(R.id.recently_played_textView) }
-
-    // Total Playtime
-    private val totalPlayedTextView by lazy { findViewById<ValueWithLabelTextView>(R.id.total_played_textView) }
-
-    // Achievements
-    private val recyclerViewLatestAchievements by lazy { findViewById<RecyclerView>(R.id.latest_achievements_recyclerview) }
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter() }
-    private val sortAchievementsButton by lazy { findViewById<Button>(R.id.button_sort_achievements) }
-    private val sortMethodDescription by lazy { findViewById<TextView>(R.id.sorting_textview) }
 
     // Achievements over Time Graph
     private val achievementsOverTimeGraph by lazy { findViewById<GraphView>(R.id.graph) }
@@ -76,21 +72,30 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         super.onCreate(savedInstanceState)
 
         // Inflate view and obtain an instance of the binding class.
-        val binding: ActivityGameBinding = DataBindingUtil.setContentView(this,
-            R.layout.activity_game)
-
-        // Specify the current activity as the lifecycle owner.
-        binding.setLifecycleOwner(this)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_game)
 
         setContentView(binding.root)
-        setSupportActionBar(toolBar)
+        setSupportActionBar(toolbar)
 
-        val appId = intent.getStringExtra(INTENT_GAME_ID)
-
+        // Init view model
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
-        viewModel.setAppId(appId)
+
+        // Retrieve data.
+        val id = intent.getStringExtra(INTENT_GAME_ID) ?: INVALID_ID
+        if (id != INVALID_ID) {
+            viewModel.setAppId(id)
+        } else {
+            intent.getParcelableExtra<GameWithAchievements>(INTENT_GAME)?.let { game ->
+                setGameInfo(game)
+                viewModel.setGame(game)
+            }
+        }
+
+        // Set observers
         viewModel.game.observe(this, Observer { game ->
-            setGameInfo(game)
+            if (game?.data != null) {
+                setGameInfo(game.data)
+            }
         })
 
         viewModel.vibrantColor.observe(this, Observer { swatch ->
@@ -115,78 +120,113 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         sortMethodDescription.text = "Sorted by: $description"
     }
 
-    private fun setGameInfo(game: GameWithAchievements?) {
-        if (game == null) {
-            return
-        }
+    private fun setGameInfo(game: GameWithAchievements) {
+        val data = GameData(game)
+        binding.gameData = data
 
-//        recentlyPlayedTextView.setText(game.getRecentPlaytimeString())
-//        totalPlayedTextView.setText(game.getTotalPlayTimeString())
+        if (game.getPrimaryColor() <= 0) {
+            Glide.with(this)
+                .load(data.getImageUrl())
+                .into(object : SimpleTarget<Drawable>() {
+                    override fun onResourceReady(resource: Drawable,
+                                                 transition: Transition<in Drawable>?) {
+                        if (resource is BitmapDrawable) {
+                            Palette.from(resource.bitmap).generate {
+                                // Listener should update the database, which will trigger LiveData observers,
+                                // and the view should reload with the new background color.
+                                if (it != null) {
+                                    viewModel.updatePalette(it)
+                                }
+                            }
+                        }
+
+                        banner.setImageDrawable(resource)
+                    }
+                })
+        } else {
+            Glide.with(this)
+                .load(data.getImageUrl())
+                .into(banner)
+        }
 
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(this,
             LinearLayoutManager.HORIZONTAL,
             false)
 
+        achievementsAdapter.setAchievements(game.achievements)
+        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, game.achievements,
+            this)
+
         recyclerViewLatestAchievements.adapter = achievementsAdapter
 
-//        Glide.with(this)
-//            .load(game.getFullLogoUrl())
-//            .into(object : SimpleTarget<Drawable>() {
-//                /**
-//                 * The method that will be called when the resource load has finished.
-//                 *
-//                 * @param resource the loaded resource.
-//                 */
-//                override fun onResourceReady(resource: Drawable,
-//                                             transition: Transition<in Drawable>?) {
-//                    if (resource is BitmapDrawable) {
-//                        Palette.from(resource.bitmap).generate {
-//                            it?.let { it1 -> viewModel.updatePalette(it1) }
-//                            banner.setImageDrawable(resource)
-//                        }
-//                    }
-//                }
-//            })
 
-        collapsingToolbarLayout.title = game.getName()
+        if (game.getPrimaryColor() == 0) {
+            updateBackgroundColorFromBanner(binding.root.context, data.getImageUrl(), game.getAppId())
+        } else {
+            binding.scrollView.setBackgroundColor(game.getPrimaryColor())
+        }
+
+        collapsingToolbar.title = game.getName()
         title = game.getName()
 
         setCollapsingToolbarColors(game.getPrimaryColor())
     }
 
-    private fun setAchievements(achievements: List<Achievement>) {
-        achievementsAdapter.setAchievements(achievements)
+    private fun updateBackgroundColorFromBanner(context: Context, url: String, appId: String) {
+        Glide.with(context)
+            .load(url)
+            .priority(Priority.LOW)
+            .into(object : SimpleTarget<Drawable>() {
+                override fun onResourceReady(resource: Drawable,
+                                             transition: Transition<in Drawable>?) {
+                    if (resource is BitmapDrawable) {
+                        Palette.from(resource.bitmap).generate {
+                            val vibrantRgb = it?.darkVibrantSwatch?.rgb
+                            val mutedRgb = it?.darkMutedSwatch?.rgb
+                            val defaultBackgroundColor = ContextCompat.getColor(context,
+                                R.color.colorGameViewHolderTitleBackground)
 
-        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, achievements,
-            this)
+                            val rgb = when {
+                                mutedRgb != null -> mutedRgb
+                                vibrantRgb != null -> vibrantRgb
+                                else -> defaultBackgroundColor
+                            }
+
+                            // Listener should update the database, which will trigger LiveData observers,
+                            // and the view should reload with the new background color.
+                            binding.scrollView.setBackgroundColor(rgb)
+                        }
+                    }
+                }
+            })
     }
 
     /**
      * GraphView was clicked
      */
     override fun onDateTapped(date: Date) {
-//        val achievements = viewModel.finalAchievements.value?.data?.filter {
-//            it.achieved
-//        }
+        //        val achievements = viewModel.finalAchievements.value?.data?.filter {
+        //            it.achieved
+        //        }
 
-//        if (achievements != null) {
-//            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
-//
-//            val calTapped = Calendar.getInstance()
-//            calTapped.time = date
-//            achievements.forEachIndexed { index, achievement ->
-//                val calAchievement = Calendar.getInstance()
-//                calAchievement.time = achievement.unlockTime
-//
-//                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
-//                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
-//                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
-//                        Calendar.DAY_OF_MONTH)) {
-//                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
-//                        - index)
-//                }
-//            }
-//        }
+        //        if (achievements != null) {
+        //            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
+        //
+        //            val calTapped = Calendar.getInstance()
+        //            calTapped.time = date
+        //            achievements.forEachIndexed { index, achievement ->
+        //                val calAchievement = Calendar.getInstance()
+        //                calAchievement.time = achievement.unlockTime
+        //
+        //                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
+        //                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
+        //                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
+        //                        Calendar.DAY_OF_MONTH)) {
+        //                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
+        //                        - index)
+        //                }
+        //            }
+        //        }
     }
 
     private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {
@@ -197,8 +237,8 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
     private fun setCollapsingToolbarColors(@ColorInt color: Int) {
         setTranslucentStatusBar()
 
-        collapsingToolbarLayout.setContentScrimColor(color)
-        collapsingToolbarLayout.setStatusBarScrimColor(color)
+        collapsingToolbar.setContentScrimColor(color)
+        collapsingToolbar.setStatusBarScrimColor(color)
     }
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context,

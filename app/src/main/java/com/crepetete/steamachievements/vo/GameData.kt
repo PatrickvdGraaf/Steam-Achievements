@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.vo
 
-import android.content.Context
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import com.crepetete.steamachievements.util.extensions.toHours
@@ -40,18 +39,21 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      *
      * @return A base text representation of the total playtime.
      */
-    fun getTotalPlayTimeString(context: Context? = null) = game.getPlaytime().toHours(context)
+    @Bindable
+    fun getTotalPlayTimeString() = game.getPlaytime().toHours()
 
     /**
      * Formats recent play tim Long into readable text using [toHours].
      *
      * @return A base text representation of the recent playtime.
      */
-    fun getRecentPlaytimeString(context: Context? = null) = game.getRecentPlaytime().toHours(context)
+    @Bindable
+    fun getRecentPlaytimeString() = game.getRecentPlaytime().toHours()
 
     /**
      * @return a float representing a percentage (achieved achievements over total achievements).
      */
+    @Bindable
     fun getPercentageCompleted(): Float {
         val achievedSize = getCompletedAchievements().size.toFloat()
         val totalSize = game.achievements.size.toFloat()

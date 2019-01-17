@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,11 +19,12 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.activity.game.startGameActivity
+import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
 import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
 import com.crepetete.steamachievements.util.autoCleared
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Status
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
@@ -64,14 +67,13 @@ class LibraryFragment : Fragment(), Injectable,
         arguments?.let {
             userId = it.getString(KEY_PLAYER_ID) ?: ""
             if (userId.isBlank()) {
-                context?.startActivity(LoginActivity.getInstance(requireContext()))
+                requireContext().startActivity(LoginActivity.getInstance(requireContext()))
                 return
             }
         }
 
         // Provide ViewModel.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(LibraryViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
         viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchResponse ->
             when (gameWithAchResponse.status) {
@@ -130,9 +132,18 @@ class LibraryFragment : Fragment(), Injectable,
 
     /**
      * Invoked when a game item in the RecyclerView is clicked.
+     *
+     * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(appId: String, imageView: ImageView) {
-        activity?.startGameActivity(appId, imageView)
+    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            requireActivity(),
+            Pair.create(background, "background"),
+            Pair.create(imageView as View, "banner"),
+            Pair.create(title, "title")
+        )
+
+        startActivity(GameActivity.getInstance(requireContext(), game), options.toBundle())
     }
 
     /**

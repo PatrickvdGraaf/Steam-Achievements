@@ -7,6 +7,7 @@ import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.testing.OpenForTesting
+import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -56,6 +57,29 @@ class GameRepository @Inject constructor(
         }.asLiveData()
     }
 
+    fun getGame(appId: String): LiveData<Resource<GameWithAchievements>> {
+        return object : NetworkBoundResource<GameWithAchievements, BaseGameResponse>(appExecutors) {
+
+            override fun saveCallResult(item: BaseGameResponse) {
+                Timber.d("Saving Games in DB")
+
+                val games = item.response.games
+                games.forEach { game ->
+                    game.userId = appId
+                }
+
+                dao.insert(games)
+            }
+
+            // At the moment, Steam offers no call to retrieve one game at the time.
+            override fun shouldFetch(data: GameWithAchievements?) = false
+
+            override fun loadFromDb(): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
+
+            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
+        }.asLiveData()
+    }
+
     /**
      * Inserts a single Game in the database.
      */
@@ -77,8 +101,6 @@ class GameRepository @Inject constructor(
      * @return LiveData object with the requested [Game]
      */
     fun getGameFromDb(appId: String): LiveData<Game> = dao.getGameAsLiveData(appId)
-
-    fun getGameWithAchFromDb(appId: String): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
 
     fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 

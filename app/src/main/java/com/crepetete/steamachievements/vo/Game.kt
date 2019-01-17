@@ -1,10 +1,17 @@
 package com.crepetete.steamachievements.vo
 
+import android.os.Parcelable
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import com.squareup.moshi.Json
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
+/**
+ * Uses experimental feature [Parcelize], which removes boilerplate code.
+ * More info;
+ * @see <a href="https://proandroiddev.com/parcelable-in-kotlin-here-comes-parcelize-b998d5a5fcac">this link</a>.
+ */
 @Entity(tableName = "games",
     indices =[Index("appId")],
     foreignKeys = [(ForeignKey(
@@ -12,6 +19,7 @@ import java.util.*
         parentColumns = ["steamId"],
         childColumns = ["userId"],
         onDelete = CASCADE))])
+@Parcelize
 data class Game(
     @PrimaryKey
     @Json(name = "appid")
@@ -31,4 +39,4 @@ data class Game(
     // Custom variables.
     var colorPrimaryDark: Int = 0, // Color extracted from overall banner image color Used to set colors in views.
     var lastUpdated: Long = Calendar.getInstance().time.time // Timer on updates which can be used to determine refreshes.
-)
+): Parcelable
