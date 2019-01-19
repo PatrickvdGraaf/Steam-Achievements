@@ -40,7 +40,7 @@
 
         <!-- PAGER -->
         <activity
-            android:name=".ui.activity.pager.TransparentPagerActivity"
+            android:name="com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity"
             android:theme="@style/AppTheme.Transparent" />
     </application>
 </manifest>

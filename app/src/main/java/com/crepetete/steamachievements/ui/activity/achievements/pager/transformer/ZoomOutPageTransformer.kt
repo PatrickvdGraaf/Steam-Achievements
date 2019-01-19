@@ -1,8 +1,7 @@
-package com.crepetete.steamachievements.ui.activity.pager.transformer
+package com.crepetete.steamachievements.ui.activity.achievements.pager.transformer
 
-import androidx.viewpager.widget.ViewPager
 import android.view.View
-
+import androidx.viewpager.widget.ViewPager
 
 class ZoomOutPageTransformer : ViewPager.PageTransformer {
 

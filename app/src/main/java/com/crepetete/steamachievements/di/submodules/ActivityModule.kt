@@ -1,12 +1,11 @@
 package com.crepetete.steamachievements.di.submodules
 
 import com.crepetete.steamachievements.di.MainActivityModule
+import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
+import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivityModule
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
-import com.crepetete.steamachievements.ui.activity.main.MainFragmentProvider
-import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerActivity
-import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerActivityModule
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.TransparentPagerActivityFragmentProvider
 import dagger.Module
 import dagger.android.ContributesAndroidInjector

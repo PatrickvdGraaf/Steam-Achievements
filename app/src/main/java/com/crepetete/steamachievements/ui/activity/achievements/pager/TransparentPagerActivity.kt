@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.activity.pager
+package com.crepetete.steamachievements.ui.activity.achievements.pager
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.activity.pager.transformer.ZoomOutPageTransformer
+import com.crepetete.steamachievements.ui.activity.achievements.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
 import com.crepetete.steamachievements.util.extensions.bind
 import dagger.android.AndroidInjector

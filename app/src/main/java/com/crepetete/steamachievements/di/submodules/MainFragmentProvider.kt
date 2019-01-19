@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.activity.main
+package com.crepetete.steamachievements.di.submodules
 
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
