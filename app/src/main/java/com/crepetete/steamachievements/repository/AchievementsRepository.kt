@@ -9,9 +9,9 @@ import com.crepetete.steamachievements.api.response.achievement.AchievedAchievem
 import com.crepetete.steamachievements.api.response.achievement.GlobalAchievResponse
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.db.dao.AchievementsDao
+import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
-import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Resource
 import io.reactivex.Single

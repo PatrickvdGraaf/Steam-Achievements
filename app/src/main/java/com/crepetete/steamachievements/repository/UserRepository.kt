@@ -8,7 +8,7 @@ import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.user.UserResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
-import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Player
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject

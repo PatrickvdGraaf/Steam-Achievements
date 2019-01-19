@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.util
+package com.crepetete.steamachievements.repository.limiter
 
 import android.os.SystemClock
 import androidx.collection.ArrayMap

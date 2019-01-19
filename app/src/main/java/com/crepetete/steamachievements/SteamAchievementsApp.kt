@@ -2,9 +2,8 @@ package com.crepetete.steamachievements
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import com.crepetete.steamachievements.di.AppInjector
-import com.crepetete.steamachievements.util.SaCrashLibrary
+import com.crepetete.steamachievements.util.crashlytics.CrashlyticsTree
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import timber.log.Timber
@@ -19,13 +18,7 @@ open class SteamAchievementsApp : Application(), HasActivityInjector {
         super.onCreate()
 
         // Plant Timber logging Tree.
-        Timber.plant(if (BuildConfig.DEBUG) DebugTree() else object : Timber.Tree() {
-            override fun log(priority: Int, tag: String?, message: String, throwable: Throwable?) {
-                if (priority != Log.VERBOSE && priority != Log.DEBUG) {
-                    SaCrashLibrary.log(priority, tag ?: "", message, throwable ?: Exception(message))
-                }
-            }
-        })
+        Timber.plant(if (BuildConfig.DEBUG) DebugTree() else CrashlyticsTree())
 
         AppInjector.init(this)
     }

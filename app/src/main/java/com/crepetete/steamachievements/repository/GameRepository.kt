@@ -6,10 +6,10 @@ import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
-import com.crepetete.steamachievements.util.AbsentLiveData
-import com.crepetete.steamachievements.util.RateLimiter
+import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource

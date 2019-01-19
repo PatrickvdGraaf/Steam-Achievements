@@ -7,7 +7,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.testing.OpenForTesting
-import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Player
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject

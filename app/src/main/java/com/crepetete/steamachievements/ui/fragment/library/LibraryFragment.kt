@@ -23,7 +23,6 @@ import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.util.autoCleared
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Status
 import com.google.android.material.snackbar.Snackbar
@@ -40,9 +39,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    var adapter by autoCleared<GamesAdapter>()
+    var adapter = GamesAdapter()
 
-    var binding by autoCleared<FragmentLibraryBinding>()
+    lateinit var binding: FragmentLibraryBinding
 
     private var dataBindingComponent = FragmentDataBindingComponent()
 
