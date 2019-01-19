@@ -1,8 +1,6 @@
 package com.crepetete.steamachievements.di.submodules
 
-import com.crepetete.steamachievements.di.MainActivityModule
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
-import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivityModule
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
@@ -20,16 +18,13 @@ abstract class ActivityModule {
     @ContributesAndroidInjector
     abstract fun bindLoginActivity(): LoginActivity
 
-    @ContributesAndroidInjector(modules = [
-        (MainActivityModule::class),
-        (MainFragmentProvider::class)])
+    @ContributesAndroidInjector(modules = [MainFragmentProvider::class])
     abstract fun bindMainActivity(): MainActivity
 
     @ContributesAndroidInjector
     abstract fun bindGameActivity(): GameActivity
 
-    @ContributesAndroidInjector(modules = [(TransparentPagerActivityModule::class),
-        TransparentPagerActivityFragmentProvider::class])
+    @ContributesAndroidInjector(modules = [TransparentPagerActivityFragmentProvider::class])
     abstract fun bindTransparentPagerActivity(): TransparentPagerActivity
 
 }

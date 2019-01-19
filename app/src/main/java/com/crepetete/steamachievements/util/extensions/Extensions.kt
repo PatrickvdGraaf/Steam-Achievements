@@ -158,7 +158,7 @@ fun Int.toPercentage(from: Int): Long {
     return this * 100L / from
 }
 
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
+fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
     if (colorTo == null) {
         return
     }

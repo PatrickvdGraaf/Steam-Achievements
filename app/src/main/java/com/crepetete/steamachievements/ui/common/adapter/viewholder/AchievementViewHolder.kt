@@ -8,12 +8,12 @@ import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.vo.Achievement
 
-class AchievementViewHolder(private val view: View, private val funShowPager: (Int) -> Unit)
+class AchievementViewHolder(private val view: View, private val funShowPager: (Achievement) -> Unit)
     : RecyclerView.ViewHolder(view) {
     private lateinit var achievement: Achievement
 
-    private val imageViewIcon = view.findViewById<ImageButton>(R.id.icon)
-    private val textViewTitle = view.findViewById<TextView>(R.id.textView_title)
+    private val imageViewIcon = view.findViewById<ImageButton>(R.id.imageViewIcon)
+    private val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
 
     private var startingIndex = 0
 
@@ -29,23 +29,23 @@ class AchievementViewHolder(private val view: View, private val funShowPager: (I
             }
 
             Glide.with(context)
-                    .load(if (achievement.achieved) {
-                        achievement.iconUrl
-                    } else {
-                        achievement.iconGrayUrl
-                    })
-                    .into(imageViewIcon)
+                .load(if (achievement.achieved) {
+                    achievement.iconUrl
+                } else {
+                    achievement.iconGrayUrl
+                })
+                .into(imageViewIcon)
         }
     }
 
     private fun showAchievementPager() {
-        funShowPager(startingIndex)
+        funShowPager(achievement)
     }
 
     private fun getDescription(achievement: Achievement): String {
         return if (achievement.description != null) {
             "Global achievement rate: ${achievement.percentage}%\n\n" +
-                    "${achievement.description}"
+                "${achievement.description}"
         } else {
             "\"Global achievement rate: ${achievement.percentage}%"
         }

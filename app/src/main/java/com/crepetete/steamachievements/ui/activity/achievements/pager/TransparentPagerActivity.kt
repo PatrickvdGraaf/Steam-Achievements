@@ -1,5 +1,7 @@
 package com.crepetete.steamachievements.ui.activity.achievements.pager
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +15,7 @@ import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.achievements.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
 import com.crepetete.steamachievements.util.extensions.bind
+import com.crepetete.steamachievements.vo.Achievement
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -27,6 +30,18 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
         const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
         const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"
         const val INTENT_KEY_INDEX = "INTENT_KEY_INDEX"
+
+        fun getInstance(context: Context, index: Int, achievements: List<Achievement>): Intent {
+            val intent = Intent(context, TransparentPagerActivity::class.java)
+            intent.putExtra(TransparentPagerActivity.INTENT_KEY_INDEX, index)
+            intent.putExtra(TransparentPagerActivity.INTENT_KEY_APP_ID, ArrayList(achievements.map {
+                it.appId
+            }))
+            intent.putExtra(TransparentPagerActivity.INTENT_KEY_NAME, ArrayList(achievements.map {
+                it.name
+            }))
+            return intent
+        }
     }
 
     @Inject

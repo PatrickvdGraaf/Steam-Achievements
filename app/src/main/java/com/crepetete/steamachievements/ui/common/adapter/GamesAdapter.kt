@@ -102,7 +102,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>() {
 
     interface OnGameBindListener {
         fun onGameBoundInAdapter(appId: String)
-        fun onGameClicked(appId: String, imageView: ImageView)
+        fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View)
         fun onPrimaryGameColorCreated(appId: String, rgb: Int)
     }
 }
