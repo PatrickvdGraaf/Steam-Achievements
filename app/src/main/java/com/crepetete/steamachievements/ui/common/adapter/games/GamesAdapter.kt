@@ -50,6 +50,8 @@ class GamesAdapter(
             && oldGame.getPrimaryColor() == newGame.getPrimaryColor()
             && oldGame.getAmountOfAchievements() == newGame.getAmountOfAchievements()
             && oldGame.getAchievedAchievements() == newGame.getAchievedAchievements()
+        // TODO find a way to make this work.
+        //            && oldGame.getPrimaryColor() == newGame.getPrimaryColor()
     }
 ) {
 
@@ -71,7 +73,7 @@ class GamesAdapter(
         val dataItem = GameData(item)
         binding.gameData = dataItem
 
-        if (item.getPrimaryColor() == 0) {
+        if (item.getPrimaryColor() <= 0) {
             updateBackgroundColorFromBanner(binding.root.context, dataItem.getImageUrl(), item.getAppId())
         } else {
             binding.background.setBackgroundColorAnimated(
@@ -130,7 +132,7 @@ class GamesAdapter(
 
     interface OnGameBindListener {
         fun onGameBoundInAdapter(appId: String)
-        fun onGameClicked(appId: GameWithAchievements, imageView: ImageView, background: View, title: View)
+        fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View)
         fun onPrimaryGameColorCreated(appId: String, rgb: Int)
     }
 }

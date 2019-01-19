@@ -2,7 +2,7 @@ package com.crepetete.steamachievements.di.submodules
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.crepetete.steamachievements.di.helper.annotation.ViewModelKey
+import com.crepetete.steamachievements.di.annotation.ViewModelKey
 import com.crepetete.steamachievements.ui.activity.game.GameViewModel
 import com.crepetete.steamachievements.ui.activity.login.LoginViewModel
 import com.crepetete.steamachievements.ui.activity.pager.TransparentPagerViewModel

@@ -27,7 +27,8 @@ class GameRepository @Inject constructor(
     private val userRepository: UserRepository
 ) {
 
-    private val gameListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
+    // Refresh games every day
+    private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
 
     fun getGames(userId: String = userRepository.getCurrentPlayerId() ?: ""): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
@@ -40,7 +41,7 @@ class GameRepository @Inject constructor(
                     game.userId = userId
                 }
 
-                dao.insert(games)
+                dao.upsert(games)
             }
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
@@ -68,7 +69,7 @@ class GameRepository @Inject constructor(
                     game.userId = appId
                 }
 
-                dao.insert(games)
+                dao.upsert(games)
             }
 
             // At the moment, Steam offers no call to retrieve one game at the time.
@@ -78,20 +79,6 @@ class GameRepository @Inject constructor(
 
             override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
         }.asLiveData()
-    }
-
-    /**
-     * Inserts a single Game in the database.
-     */
-    fun insert(game: Game) {
-        dao.insert(game)
-    }
-
-    /**
-     * Inserts a list of Games into the database.
-     */
-    fun insert(games: List<Game>) {
-        dao.insert(games)
     }
 
     /**

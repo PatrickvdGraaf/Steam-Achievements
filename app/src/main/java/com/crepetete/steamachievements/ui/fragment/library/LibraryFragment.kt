@@ -30,11 +30,12 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable,
-    NavBarInteractionListener, GamesAdapter.OnGameBindListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: LibraryViewModel
 
     @Inject
     lateinit var appExecutors: AppExecutors
@@ -44,8 +45,6 @@ class LibraryFragment : Fragment(), Injectable,
     var binding by autoCleared<FragmentLibraryBinding>()
 
     private var dataBindingComponent = FragmentDataBindingComponent()
-
-    private lateinit var viewModel: LibraryViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
@@ -136,14 +135,15 @@ class LibraryFragment : Fragment(), Injectable,
      * Opens GameActivity and handles animation.
      */
     override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-            requireActivity(),
-            Pair.create(background, "background"),
-            Pair.create(imageView as View, "banner"),
-            Pair.create(title, "title")
+        startActivity(
+            GameActivity.getInstance(requireContext(), game),
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                Pair.create(background, "background"),
+                Pair.create(imageView as View, "banner"),
+                Pair.create(title, "title")
+            ).toBundle()
         )
-
-        startActivity(GameActivity.getInstance(requireContext(), game), options.toBundle())
     }
 
     /**
@@ -158,7 +158,6 @@ class LibraryFragment : Fragment(), Injectable,
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        // TODO fix Search
         //        gamesAdapter.updateSearchQuery(query)
     }
 

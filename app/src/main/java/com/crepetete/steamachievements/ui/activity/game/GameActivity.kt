@@ -1,15 +1,12 @@
 package com.crepetete.steamachievements.ui.activity.game
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.view.Window
 import android.view.WindowManager
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -19,7 +16,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.R
@@ -74,6 +70,10 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         // Inflate view and obtain an instance of the binding class.
         binding = DataBindingUtil.setContentView(this, R.layout.activity_game)
 
+        // Set status bar tint.
+        setTranslucentStatusBar()
+
+        // Prepare view.
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
@@ -100,105 +100,88 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         viewModel.vibrantColor.observe(this, Observer { swatch ->
             if (swatch != null) {
-                setCollapsingToolbarColors(swatch.rgb)
+                collapsingToolbar.setContentScrimColor(swatch.rgb)
+                collapsingToolbar.setStatusBarScrimColor(swatch.rgb)
             }
         })
 
         viewModel.mutedColor.observe(this, Observer { swatch ->
             if (swatch != null) {
-                playtime_header_textview.setTextColor(swatch.bodyTextColor)
                 scrollView.setBackgroundColor(swatch.rgb)
             }
         })
 
+        // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             setSortingMethod()
         }
     }
 
-    private fun updateSortMethodText(description: String) {
-        sortMethodDescription.text = "Sorted by: $description"
-    }
+    private fun setGameInfo(game: GameWithAchievements?) {
+        if (game == null) {
+            return
+        }
 
-    private fun setGameInfo(game: GameWithAchievements) {
+        // Move data into binding.
         val data = GameData(game)
         binding.gameData = data
 
-        if (game.getPrimaryColor() <= 0) {
-            Glide.with(this)
-                .load(data.getImageUrl())
-                .into(object : SimpleTarget<Drawable>() {
-                    override fun onResourceReady(resource: Drawable,
-                                                 transition: Transition<in Drawable>?) {
-                        if (resource is BitmapDrawable) {
-                            Palette.from(resource.bitmap).generate {
-                                // Listener should update the database, which will trigger LiveData observers,
-                                // and the view should reload with the new background color.
-                                if (it != null) {
-                                    viewModel.updatePalette(it)
-                                }
-                            }
-                        }
-
-                        banner.setImageDrawable(resource)
-                    }
-                })
-        } else {
-            Glide.with(this)
-                .load(data.getImageUrl())
-                .into(banner)
-        }
-
-        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(this,
-            LinearLayoutManager.HORIZONTAL,
-            false)
-
-        achievementsAdapter.setAchievements(game.achievements)
-        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, game.achievements,
-            this)
-
-        recyclerViewLatestAchievements.adapter = achievementsAdapter
-
-
-        if (game.getPrimaryColor() == 0) {
-            updateBackgroundColorFromBanner(binding.root.context, data.getImageUrl(), game.getAppId())
-        } else {
-            binding.scrollView.setBackgroundColor(game.getPrimaryColor())
-        }
-
+        // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
-        title = game.getName()
+        //        title = game.getName()
 
-        setCollapsingToolbarColors(game.getPrimaryColor())
-    }
+        // Set ScrollView background to game specific color.
+        binding.scrollView.setBackgroundColor(game.getPrimaryColor())
 
-    private fun updateBackgroundColorFromBanner(context: Context, url: String, appId: String) {
-        Glide.with(context)
-            .load(url)
-            .priority(Priority.LOW)
+        // Load Banner
+        Glide.with(this)
+            .load(data.getImageUrl())
             .into(object : SimpleTarget<Drawable>() {
-                override fun onResourceReady(resource: Drawable,
-                                             transition: Transition<in Drawable>?) {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?) {
+                    banner.setImageDrawable(resource)
+
                     if (resource is BitmapDrawable) {
-                        Palette.from(resource.bitmap).generate {
-                            val vibrantRgb = it?.darkVibrantSwatch?.rgb
-                            val mutedRgb = it?.darkMutedSwatch?.rgb
-                            val defaultBackgroundColor = ContextCompat.getColor(context,
-                                R.color.colorGameViewHolderTitleBackground)
-
-                            val rgb = when {
-                                mutedRgb != null -> mutedRgb
-                                vibrantRgb != null -> vibrantRgb
-                                else -> defaultBackgroundColor
+                        Palette.from(resource.bitmap).generate { palette ->
+                            if (palette != null) {
+                                viewModel.updatePalette(palette)
                             }
-
-                            // Listener should update the database, which will trigger LiveData observers,
-                            // and the view should reload with the new background color.
-                            binding.scrollView.setBackgroundColor(rgb)
                         }
                     }
                 }
             })
+
+        // Prepare Achievements RecyclerView.
+        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
+
+        // Set RecyclerView adapter.
+        recyclerViewLatestAchievements.adapter = achievementsAdapter
+
+        // Move achievements to adapter.
+        achievementsAdapter.setAchievements(game.achievements)
+
+        // Init Graph.
+        AchievementsGraphViewUtil.setAchievementsOverTime(
+            achievementsOverTimeGraph,
+            game.achievements,
+            this)
+    }
+
+    private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {
+        sortMethodDescription.text = String.format("Sorted by: %", achievementsAdapter.updateSortingMethod(sortingMethod))
+    }
+
+    private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
+        val sdkInt = Build.VERSION.SDK_INT
+        if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = color
+        } else if (sdkInt >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
     }
 
     /**
@@ -227,38 +210,5 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         //                }
         //            }
         //        }
-    }
-
-    private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {
-        val desc = achievementsAdapter.updateSortingMethod(sortingMethod)
-        updateSortMethodText(desc)
-    }
-
-    private fun setCollapsingToolbarColors(@ColorInt color: Int) {
-        setTranslucentStatusBar()
-
-        collapsingToolbar.setContentScrimColor(color)
-        collapsingToolbar.setStatusBarScrimColor(color)
-    }
-
-    private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context,
-        R.color.statusbar_translucent)) {
-        val sdkInt = Build.VERSION.SDK_INT
-        if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
-            setTranslucentStatusBarLollipop(color)
-        } else if (sdkInt >= Build.VERSION_CODES.KITKAT) {
-            setTranslucentStatusBarKiKat(window)
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun setTranslucentStatusBarLollipop(color: Int = ContextCompat.getColor(window.context,
-        R.color.statusbar_translucent)) {
-        window.statusBarColor = color
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private fun setTranslucentStatusBarKiKat(window: Window) {
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     }
 }

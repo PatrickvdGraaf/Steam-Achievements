@@ -31,10 +31,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
+                android:transitionName="title"
                 app:contentScrim="@color/colorPrimary"
                 app:expandedTitleMarginEnd="@dimen/default_margin"
                 app:expandedTitleMarginStart="@dimen/default_margin"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:title="@{gameData.getName()}">
 
                 <ImageView
                     android:id="@+id/banner"
@@ -56,8 +58,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
-                    android:transitionName="title"
-                    app:title="Game title"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
@@ -80,6 +80,7 @@
                     style="@style/AppTheme.Text.Header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:paddingStart="@dimen/default_margin"
                     android:paddingEnd="@dimen/default_margin"
                     android:text="@string/header_playtime"/>

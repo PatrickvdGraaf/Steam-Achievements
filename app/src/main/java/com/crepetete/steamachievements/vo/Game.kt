@@ -13,7 +13,7 @@ import java.util.*
  * @see <a href="https://proandroiddev.com/parcelable-in-kotlin-here-comes-parcelize-b998d5a5fcac">this link</a>.
  */
 @Entity(tableName = "games",
-    indices =[Index("appId")],
+    indices = [Index("appId"), Index("userId")],
     foreignKeys = [(ForeignKey(
         entity = Player::class,
         parentColumns = ["steamId"],
@@ -22,9 +22,10 @@ import java.util.*
 @Parcelize
 data class Game(
     @PrimaryKey
+    @ColumnInfo(name = "appId")
     @Json(name = "appid")
     val appId: String,
-    // TODO remove userId property, let a user have a list of game Ids instead.
+    // TODO maybe remove userId property, let a user have a list of game Ids instead.
     @ColumnInfo(name = "userId")
     var userId: String,
     val name: String,
@@ -39,4 +40,4 @@ data class Game(
     // Custom variables.
     var colorPrimaryDark: Int = 0, // Color extracted from overall banner image color Used to set colors in views.
     var lastUpdated: Long = Calendar.getInstance().time.time // Timer on updates which can be used to determine refreshes.
-): Parcelable
+) : Parcelable
