@@ -69,7 +69,7 @@
                 android:layout_marginTop="@dimen/default_margin_halved"
                 android:text="Description on how to achieve this achievement." />
 
-            <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+            <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
                 android:id="@+id/label_global_stats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

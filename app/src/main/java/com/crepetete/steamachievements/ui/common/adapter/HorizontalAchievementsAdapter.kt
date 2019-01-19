@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.view.achievement.adapter
+package com.crepetete.steamachievements.ui.common.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
+import com.crepetete.steamachievements.ui.common.adapter.viewholder.AchievementViewHolder
+import com.crepetete.steamachievements.ui.common.enums.AchievSortingMethod
 import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
 import com.crepetete.steamachievements.util.extensions.sortByNotAchieved
 import com.crepetete.steamachievements.util.extensions.sortByRarity

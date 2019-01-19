@@ -77,7 +77,7 @@ class LibraryFragment : Fragment(), Injectable,
             when (gameWithAchResponse.status) {
                 Status.SUCCESS -> {
                     progressBar.visibility = View.GONE
-                    adapter.setGames(gameWithAchResponse.data)
+                    adapter.updateGames(gameWithAchResponse.data)
                 }
                 Status.ERROR -> {
                     progressBar.visibility = View.GONE
@@ -102,10 +102,7 @@ class LibraryFragment : Fragment(), Injectable,
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
 
-        adapter = GamesAdapter(
-            appExecutors = appExecutors,
-            dataBindingComponent = dataBindingComponent
-        )
+        adapter = GamesAdapter()
 
         adapter.listener = this
         list_games.adapter = adapter

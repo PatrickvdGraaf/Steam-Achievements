@@ -80,8 +80,7 @@
                     android:paddingStart="@dimen/default_margin"
                     android:text="@string/header_playtime" />
 
-
-                <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
                     android:id="@+id/recently_played_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -92,7 +91,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
                     app:value="" />
 
-                <com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
                     android:id="@+id/total_played_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

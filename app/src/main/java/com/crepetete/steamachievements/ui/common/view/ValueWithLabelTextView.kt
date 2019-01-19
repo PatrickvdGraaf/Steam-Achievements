@@ -1,11 +1,11 @@
-package com.crepetete.steamachievements.ui.view.component
+package com.crepetete.steamachievements.ui.common.view
 
 import android.content.Context
-import androidx.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import com.crepetete.steamachievements.R
 import kotlinx.android.synthetic.main.component_text_value.view.*
 

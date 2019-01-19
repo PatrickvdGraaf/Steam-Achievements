@@ -60,7 +60,7 @@
 
         </LinearLayout>
 
-        <com.crepetete.steamachievements.ui.view.CircularProgressBar
+        <com.crepetete.steamachievements.ui.common.view.CircularProgressBar
             android:id="@+id/custom_progressBar"
             android:layout_width="@dimen/progressBar_dimen"
             android:layout_height="@dimen/progressBar_dimen"

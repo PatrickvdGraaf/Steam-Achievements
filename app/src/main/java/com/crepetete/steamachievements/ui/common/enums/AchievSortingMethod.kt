@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.view.achievement.adapter
+package com.crepetete.steamachievements.ui.common.enums
 
 /**
  *

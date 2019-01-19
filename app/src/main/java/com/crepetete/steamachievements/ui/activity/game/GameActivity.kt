@@ -25,11 +25,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.common.enums.AchievSortingMethod
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
-import com.crepetete.steamachievements.ui.view.achievement.adapter.AchievSortingMethod
-import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
-import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.google.android.material.appbar.CollapsingToolbarLayout

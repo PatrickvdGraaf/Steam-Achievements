@@ -1,9 +1,9 @@
-package com.crepetete.steamachievements.ui.view.achievement.adapter
+package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.vo.Achievement

@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.view
+package com.crepetete.steamachievements.ui.common.view
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -6,12 +6,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
-
 
 class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context, attrs) {
     /**
