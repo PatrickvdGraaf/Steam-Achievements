@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment

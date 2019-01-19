@@ -19,8 +19,8 @@ import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.game.startGameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
-import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
+import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.autoCleared
 import com.crepetete.steamachievements.vo.Status
 import com.google.android.material.snackbar.Snackbar

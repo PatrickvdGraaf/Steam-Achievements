@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.common.adapter.games
+package com.crepetete.steamachievements.ui.common.adapter
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
@@ -19,7 +19,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
-import com.crepetete.steamachievements.ui.common.adapter.DataBoundListAdapter
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements

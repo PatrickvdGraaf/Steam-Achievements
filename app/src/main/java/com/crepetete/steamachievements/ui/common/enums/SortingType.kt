@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.common.adapter.games
+package com.crepetete.steamachievements.ui.common.enums
 
 /**
  * Annotation for Game sorting type.

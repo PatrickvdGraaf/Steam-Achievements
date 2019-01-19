@@ -1,12 +1,12 @@
 package com.crepetete.steamachievements.ui.common.adapter
 
+import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.AsyncDifferConfig
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.ui.common.DataBoundViewHolder
+import com.crepetete.steamachievements.ui.common.adapter.viewholder.base.DataBoundViewHolder
 
 /**
  * A generic RecyclerView adapter that uses Data Binding & DiffUtil.

@@ -2,18 +2,17 @@ package com.crepetete.steamachievements.ui.common.graph
 
 import android.graphics.DashPathEffect
 import android.graphics.Paint
-import androidx.core.content.ContextCompat
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
+import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.LineGraphSeries
 import java.util.*
-
 
 /**
  * A Class for setting info on a [GraphView].
