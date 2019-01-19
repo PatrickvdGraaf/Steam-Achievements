@@ -10,6 +10,7 @@ import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
@@ -22,11 +23,10 @@ class GameViewModel @Inject constructor(
     val appId: LiveData<AppId>
         get() = _appId
 
-    val game: LiveData<GameWithAchievements> = Transformations
+    val game: LiveData<Resource<GameWithAchievements>> = Transformations
         .switchMap(_appId) { id ->
-            id.ifExists {
-                achievementsRepo.updateAchievementsForGame(it)
-                gameRepo.getGameWithAchFromDb(it)
+            id.ifExists { appId ->
+                gameRepo.getGame(appId)
             }
         }
 
@@ -53,14 +53,39 @@ class GameViewModel @Inject constructor(
             vibrantColor.postValue(lightVibrantSwatch)
             mutedColor.postValue(darkVibrantSwatch)
         }
+
+        val vibrantRgb = palette.darkVibrantSwatch?.rgb
+        val mutedRgb = palette.darkMutedSwatch?.rgb
+
+        //        when {
+        //            mutedRgb != null -> mutedRgb
+        //            else -> vibrantRgb
+        //        }?.let {rgb ->
+        //            game.value?.data?.getAppId()?.let { appId ->
+        //                gameRepo.getGameFromDbAsSingle(appId)
+        //                    .subscribeOn(Schedulers.io())
+        //                    .observeOn(Schedulers.io())
+        //                    .subscribe({ game ->
+        //                        game.colorPrimaryDark = rgb
+        //                        gameRepo.update(game)
+        //                    }, { error ->
+        //                        Timber.e(error)
+        //                    })
+        //            }
+    }
+
+    fun updateAchievements() {
+        game.value?.data?.getAppId()?.let { appId ->
+            achievementsRepo.updateAchievementsForGame(appId)
+        }
     }
 
     fun setAppId(appId: String) {
-        val update = AppId(appId)
-        if (_appId.value == update) {
-            return
-        }
-        _appId.value = update
+        _appId.value = AppId(appId)
+    }
+
+    fun setGame(newGame: GameWithAchievements) {
+        _appId.value = AppId(newGame.getAppId())
     }
 
     data class AppId(val id: String) {

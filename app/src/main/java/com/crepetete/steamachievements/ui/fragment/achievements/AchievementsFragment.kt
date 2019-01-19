@@ -10,10 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
-import com.crepetete.steamachievements.ui.view.CircularProgressBar
-import com.crepetete.steamachievements.ui.view.achievement.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.common.view.CircularProgressBar
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import java.text.DecimalFormat
@@ -68,7 +68,7 @@ class AchievementsFragment : Fragment(){
             updatePercentageText(it.animatedValue as Float)
         })
 
-        recyclerViewLatestAchievements = view.findViewById(R.id.latest_achievements_recyclerview)
+        recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewLatestAchievements)
         recyclerViewLatestAchievements.adapter = achievementsAdapter
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
                 LinearLayoutManager.HORIZONTAL, false)

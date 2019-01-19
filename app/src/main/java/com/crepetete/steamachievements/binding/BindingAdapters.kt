@@ -24,7 +24,7 @@ object BindingAdapters {
     /**
      * Let's an image accept an url in xml which will be loaded in using [Glide].
      */
-    @BindingAdapter("android:src")
+    @BindingAdapter("imageUrl")
     fun setImageUrl(view: ImageView, url: String) {
         Glide.with(view.context)
             .load(url)

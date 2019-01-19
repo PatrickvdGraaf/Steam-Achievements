@@ -17,6 +17,7 @@ class RoomModule {
     @Singleton
     internal fun providePlayerDatabase(application: Application) = Room
         .databaseBuilder(application, SteamDatabase::class.java, BuildConfig.DB_NAME)
+        // TODO remove this before releasing.
         .fallbackToDestructiveMigration()
         .build()
 
@@ -30,6 +31,5 @@ class RoomModule {
 
     @Provides
     @Singleton
-    internal fun provideAchievementsDao(database: SteamDatabase): AchievementsDao =
-        database.achievementsDao()
+    internal fun provideAchievementsDao(database: SteamDatabase): AchievementsDao = database.achievementsDao()
 }

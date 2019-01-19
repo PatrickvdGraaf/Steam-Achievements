@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/icon"
+            android:id="@+id/imageViewIcon"
             style="@style/AppTheme.Achievements.ListItem.Icon"
             android:layout_width="@dimen/list_achievement_image_size"
             android:layout_height="@dimen/list_achievement_image_size"
@@ -28,10 +28,9 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/textView_title"
+        android:id="@+id/textViewTitle"
         style="@style/AppTheme.Achievements.ListItem.Text.Title"
         android:layout_width="0dp"
-
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/default_margin_quarter"
         app:layout_constraintBottom_toBottomOf="parent"

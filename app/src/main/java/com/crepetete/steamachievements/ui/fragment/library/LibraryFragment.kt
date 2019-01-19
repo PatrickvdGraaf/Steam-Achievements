@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,21 +19,23 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.activity.game.startGameActivity
+import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.common.adapter.games.GamesAdapter
-import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
+import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.autoCleared
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Status
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable,
-    NavBarInteractionListener, GamesAdapter.OnGameBindListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: LibraryViewModel
 
     @Inject
     lateinit var appExecutors: AppExecutors
@@ -41,8 +45,6 @@ class LibraryFragment : Fragment(), Injectable,
     var binding by autoCleared<FragmentLibraryBinding>()
 
     private var dataBindingComponent = FragmentDataBindingComponent()
-
-    private lateinit var viewModel: LibraryViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
@@ -64,20 +66,19 @@ class LibraryFragment : Fragment(), Injectable,
         arguments?.let {
             userId = it.getString(KEY_PLAYER_ID) ?: ""
             if (userId.isBlank()) {
-                context?.startActivity(LoginActivity.getInstance(requireContext()))
+                requireContext().startActivity(LoginActivity.getInstance(requireContext()))
                 return
             }
         }
 
         // Provide ViewModel.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(LibraryViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
         viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchResponse ->
             when (gameWithAchResponse.status) {
                 Status.SUCCESS -> {
                     progressBar.visibility = View.GONE
-                    adapter.setGames(gameWithAchResponse.data)
+                    adapter.updateGames(gameWithAchResponse.data)
                 }
                 Status.ERROR -> {
                     progressBar.visibility = View.GONE
@@ -102,10 +103,7 @@ class LibraryFragment : Fragment(), Injectable,
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
 
-        adapter = GamesAdapter(
-            appExecutors = appExecutors,
-            dataBindingComponent = dataBindingComponent
-        )
+        adapter = GamesAdapter()
 
         adapter.listener = this
         list_games.adapter = adapter
@@ -130,24 +128,33 @@ class LibraryFragment : Fragment(), Injectable,
 
     /**
      * Invoked when a game item in the RecyclerView is clicked.
+     *
+     * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(appId: String, imageView: ImageView) {
-        activity?.startGameActivity(appId, imageView)
+    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
+        startActivity(
+            GameActivity.getInstance(requireContext(), game),
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                Pair.create(background, "background"),
+                Pair.create(imageView as View, "banner"),
+                Pair.create(title, "title")
+            ).toBundle()
+        )
     }
 
     /**
      * Invoked when the Adapter has created a primary rgb color for the games thumbnail.
      * Calls the ViewModel so it can update this property in the Database.
      */
-    override fun onPrimaryGameColorCreated(appId: String, rgb: Int) {
-        viewModel.updatePrimaryColorForGame(appId, rgb)
+    override fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int) {
+        viewModel.updatePrimaryColorForGame(game, rgb)
     }
 
     /**
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        // TODO fix Search
         //        gamesAdapter.updateSearchQuery(query)
     }
 

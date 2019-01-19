@@ -60,7 +60,7 @@
 
         </LinearLayout>
 
-        <com.crepetete.steamachievements.ui.view.CircularProgressBar
+        <com.crepetete.steamachievements.ui.common.view.CircularProgressBar
             android:id="@+id/custom_progressBar"
             android:layout_width="@dimen/progressBar_dimen"
             android:layout_height="@dimen/progressBar_dimen"
@@ -73,7 +73,7 @@
 
         <!-- ACHIEVEMENTS LIST -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/latest_achievements_recyclerview"
+            android:id="@+id/recyclerViewLatestAchievements"
             style="@style/AppTheme.Achievements.RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/latest_achievements_recyclerview">
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewLatestAchievements">
 
             <TextView
                 android:layout_width="match_parent"

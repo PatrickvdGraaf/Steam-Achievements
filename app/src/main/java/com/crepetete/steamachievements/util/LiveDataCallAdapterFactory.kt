@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.util
 
 import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.api.ApiResponse
+import com.crepetete.steamachievements.api.response.ApiResponse
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
 import retrofit2.Retrofit

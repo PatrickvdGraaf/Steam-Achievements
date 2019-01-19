@@ -25,7 +25,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.view.component.ValueWithLabelTextView
+import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.GlideApp
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.Achievement

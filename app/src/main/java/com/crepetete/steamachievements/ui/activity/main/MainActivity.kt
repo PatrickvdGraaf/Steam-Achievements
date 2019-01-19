@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
-import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         userId = if (restoredId.isNullOrBlank()) {
             intent.getStringExtra(INTENT_USER_ID)
         } else {
-            restoredId!!
+            restoredId
         }
 
         if (userId.isBlank()) {
@@ -78,12 +78,14 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         navigation.selectedItemId = R.id.menu_library
         navigation.setOnNavigationItemSelectedListener(this)
 
-        val fragment: LibraryFragment = LibraryFragment.getInstance(userId)
-        fragmentManager.beginTransaction()
-            .replace(containerId, fragment, LibraryFragment.TAG)
-            .addToBackStack(null)
-            .commit()
-        navBarListener = fragment
+        navigation.selectedItemId = R.id.menu_library
+
+        //        val fragment: LibraryFragment = LibraryFragment.getInstance(userId)
+        //        fragmentManager.beginTransaction()
+        //            .replace(containerId, fragment, LibraryFragment.TAG)
+        //            .addToBackStack(null)
+        //            .commit()
+        //        navBarListener = fragment
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -185,6 +187,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
                 if (fragment == null) {
                     fragment = LibraryFragment.getInstance(userId)
                 }
+                navBarListener = fragment as LibraryFragment
             }
             R.id.menu_achievements -> {
                 currentTag = AchievementsFragment.TAG

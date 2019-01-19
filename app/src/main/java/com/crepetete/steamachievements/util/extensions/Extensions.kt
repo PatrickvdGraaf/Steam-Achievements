@@ -9,15 +9,11 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.IdRes
-import androidx.annotation.Size
 import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.ui.common.adapter.games.SortingType
+import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import java.util.*
@@ -162,7 +158,7 @@ fun Int.toPercentage(from: Int): Long {
     return this * 100L / from
 }
 
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
+fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
     if (colorTo == null) {
         return
     }

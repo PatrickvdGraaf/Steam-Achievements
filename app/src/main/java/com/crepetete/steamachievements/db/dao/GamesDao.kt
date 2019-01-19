@@ -14,11 +14,19 @@ import io.reactivex.Single
 @Dao
 @OpenForTesting
 abstract class GamesDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(vararg games: Game)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(games: List<Game>)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    abstract fun update(games: List<Game>)
+
+    fun upsert(games: List<Game>) {
+        insert(games)
+        update(games)
+    }
 
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGame(appId: String): Single<Game>
@@ -28,9 +36,6 @@ abstract class GamesDao {
 
     @Update(onConflict = REPLACE)
     abstract fun update(game: Game)
-
-    @Update(onConflict = REPLACE)
-    abstract fun update(games: List<Game>)
 
     @Delete
     abstract fun delete(vararg games: Game)

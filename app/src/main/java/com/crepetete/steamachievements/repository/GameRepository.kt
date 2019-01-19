@@ -2,11 +2,13 @@ package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.api.ApiResponse
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
+import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -26,7 +28,8 @@ class GameRepository @Inject constructor(
     private val userRepository: UserRepository
 ) {
 
-    private val gameListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
+    // Refresh games every day
+    private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
 
     fun getGames(userId: String = userRepository.getCurrentPlayerId() ?: ""): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
@@ -39,7 +42,7 @@ class GameRepository @Inject constructor(
                     game.userId = userId
                 }
 
-                dao.insert(games)
+                dao.upsert(games)
             }
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
@@ -56,18 +59,27 @@ class GameRepository @Inject constructor(
         }.asLiveData()
     }
 
-    /**
-     * Inserts a single Game in the database.
-     */
-    fun insert(game: Game) {
-        dao.insert(game)
-    }
+    fun getGame(appId: String): LiveData<Resource<GameWithAchievements>> {
+        return object : NetworkBoundResource<GameWithAchievements, BaseGameResponse>(appExecutors) {
 
-    /**
-     * Inserts a list of Games into the database.
-     */
-    fun insert(games: List<Game>) {
-        dao.insert(games)
+            override fun saveCallResult(item: BaseGameResponse) {
+                Timber.d("Saving Games in DB")
+
+                val games = item.response.games
+                games.forEach { game ->
+                    game.userId = appId
+                }
+
+                dao.upsert(games)
+            }
+
+            // At the moment, Steam offers no call to retrieve one game at the time.
+            override fun shouldFetch(data: GameWithAchievements?) = false
+
+            override fun loadFromDb(): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
+
+            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
+        }.asLiveData()
     }
 
     /**
@@ -78,13 +90,16 @@ class GameRepository @Inject constructor(
      */
     fun getGameFromDb(appId: String): LiveData<Game> = dao.getGameAsLiveData(appId)
 
-    fun getGameWithAchFromDb(appId: String): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
-
     fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 
     fun update(item: Game) {
-        appExecutors.diskIO().execute {
-            dao.update(item)
+        dao.update(item)
+    }
+
+    fun update(item: GameWithAchievements) {
+        val game = item.game
+        if (game != null) {
+            dao.update(game)
         }
     }
 }
