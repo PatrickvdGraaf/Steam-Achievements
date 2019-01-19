@@ -8,8 +8,6 @@ import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import io.reactivex.Single
 
-
-
 /**
  * Interface for database access on [Game] related operations.
  */
@@ -22,7 +20,7 @@ abstract class GamesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(games: List<Game>)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(games: List<Game>)
 
     fun upsert(games: List<Game>) {

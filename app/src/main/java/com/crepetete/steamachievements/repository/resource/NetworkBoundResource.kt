@@ -1,14 +1,14 @@
-package com.crepetete.steamachievements.repository
+package com.crepetete.steamachievements.repository.resource
 
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.api.ApiEmptyResponse
-import com.crepetete.steamachievements.api.ApiErrorResponse
-import com.crepetete.steamachievements.api.ApiResponse
-import com.crepetete.steamachievements.api.ApiSuccessResponse
+import com.crepetete.steamachievements.api.response.ApiEmptyResponse
+import com.crepetete.steamachievements.api.response.ApiErrorResponse
+import com.crepetete.steamachievements.api.response.ApiResponse
+import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.vo.Resource
 
 /**

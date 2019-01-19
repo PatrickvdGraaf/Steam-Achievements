@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+import com.crepetete.steamachievements.vo.GameWithAchievements
 import javax.inject.Inject
 
 class LibraryViewModel @Inject constructor(
@@ -38,15 +37,12 @@ class LibraryViewModel @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    fun updatePrimaryColorForGame(appId: String, rgb: Int) {
-        gameRepo.getGameFromDbAsSingle(appId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe({ game ->
-                game.colorPrimaryDark = rgb
-                gameRepo.update(game)
-            }, { error ->
-                Timber.e(error)
-            })
+    fun updatePrimaryColorForGame(game: GameWithAchievements, rgb: Int) {
+        game.setPrimaryColor(rgb)
+
+        val gameData = game.game
+        if (gameData != null) {
+            gameRepo.update(gameData)
+        }
     }
 }

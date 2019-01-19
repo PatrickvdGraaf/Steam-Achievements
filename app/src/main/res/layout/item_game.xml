@@ -34,7 +34,6 @@
                 android:id="@+id/game_banner"
                 android:layout_width="184dp"
                 android:layout_height="0dp"
-                android:src="@{gameData.getImageUrl()}"
                 android:transitionName="banner"
                 app:layout_constraintDimensionRatio="184:69"
                 app:layout_constraintStart_toStartOf="parent"
@@ -52,6 +51,7 @@
                 android:paddingStart="@dimen/default_margin"
                 android:paddingTop="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
+                android:text="@{gameData.getTotalPlayTimeString()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_label_small"
                 app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
@@ -97,7 +97,6 @@
 
             <TextView
                 android:id="@+id/achievements_textView"
-                completionFlagVisibility="@{gameData.completed}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
@@ -121,7 +120,6 @@
                 <ProgressBar
                     android:id="@+id/progressBar"
                     style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                    progressAnimated="@{gameData.getPercentageCompleted()}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"

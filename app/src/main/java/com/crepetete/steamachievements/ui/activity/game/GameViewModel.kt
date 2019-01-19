@@ -57,21 +57,21 @@ class GameViewModel @Inject constructor(
         val vibrantRgb = palette.darkVibrantSwatch?.rgb
         val mutedRgb = palette.darkMutedSwatch?.rgb
 
-//        when {
-//            mutedRgb != null -> mutedRgb
-//            else -> vibrantRgb
-//        }?.let {rgb ->
-//            game.value?.data?.getAppId()?.let { appId ->
-//                gameRepo.getGameFromDbAsSingle(appId)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(Schedulers.io())
-//                    .subscribe({ game ->
-//                        game.colorPrimaryDark = rgb
-//                        gameRepo.update(game)
-//                    }, { error ->
-//                        Timber.e(error)
-//                    })
-//            }
+        //        when {
+        //            mutedRgb != null -> mutedRgb
+        //            else -> vibrantRgb
+        //        }?.let {rgb ->
+        //            game.value?.data?.getAppId()?.let { appId ->
+        //                gameRepo.getGameFromDbAsSingle(appId)
+        //                    .subscribeOn(Schedulers.io())
+        //                    .observeOn(Schedulers.io())
+        //                    .subscribe({ game ->
+        //                        game.colorPrimaryDark = rgb
+        //                        gameRepo.update(game)
+        //                    }, { error ->
+        //                        Timber.e(error)
+        //                    })
+        //            }
     }
 
     fun updateAchievements() {

@@ -32,7 +32,7 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      * @return Image URL for the games big banner image.
      */
     @Bindable
-    fun getImageUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/${game.getAppId()}/${game.getBannerUrl()}.jpg"
+    fun getImageUrl() = game.getBannerUrl()
 
     /**
      * Formats total play tim Long into readable text using [toHours].

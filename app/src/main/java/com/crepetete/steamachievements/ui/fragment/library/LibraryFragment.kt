@@ -147,8 +147,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Invoked when the Adapter has created a primary rgb color for the games thumbnail.
      * Calls the ViewModel so it can update this property in the Database.
      */
-    override fun onPrimaryGameColorCreated(appId: String, rgb: Int) {
-        viewModel.updatePrimaryColorForGame(appId, rgb)
+    override fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int) {
+        viewModel.updatePrimaryColorForGame(game, rgb)
     }
 
     /**

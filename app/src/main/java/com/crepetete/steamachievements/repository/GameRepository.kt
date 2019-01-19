@@ -2,10 +2,11 @@ package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.api.ApiResponse
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.util.RateLimiter
@@ -92,8 +93,13 @@ class GameRepository @Inject constructor(
     fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 
     fun update(item: Game) {
-        appExecutors.diskIO().execute {
-            dao.update(item)
+        dao.update(item)
+    }
+
+    fun update(item: GameWithAchievements) {
+        val game = item.game
+        if (game != null) {
+            dao.update(game)
         }
     }
 }

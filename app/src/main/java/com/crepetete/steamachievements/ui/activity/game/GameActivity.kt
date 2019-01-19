@@ -26,10 +26,7 @@ import com.crepetete.steamachievements.ui.common.enums.AchievSortingMethod
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.GameData
-import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.jjoe64.graphview.GraphView
 import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*

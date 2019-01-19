@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.api
+package com.crepetete.steamachievements.api.response
 
 import retrofit2.Response
 import java.util.regex.Pattern

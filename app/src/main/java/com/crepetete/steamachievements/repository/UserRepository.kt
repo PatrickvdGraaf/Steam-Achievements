@@ -3,10 +3,11 @@ package com.crepetete.steamachievements.repository
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.api.ApiResponse
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.user.UserResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
+import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.util.AbsentLiveData
 import com.crepetete.steamachievements.vo.Player
 import com.crepetete.steamachievements.vo.Resource

@@ -3,12 +3,13 @@ package com.crepetete.steamachievements.repository
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
-import com.crepetete.steamachievements.api.ApiResponse
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.achievement.AchievedAchievementResponse
 import com.crepetete.steamachievements.api.response.achievement.GlobalAchievResponse
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.db.dao.AchievementsDao
+import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.util.RateLimiter
 import com.crepetete.steamachievements.vo.Achievement

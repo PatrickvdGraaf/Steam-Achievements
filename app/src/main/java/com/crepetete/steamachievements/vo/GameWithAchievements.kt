@@ -19,7 +19,15 @@ class GameWithAchievements(
 
     @Relation(parentColumn = "appId", entityColumn = "appId", entity = Achievement::class)
     var achievements: List<Achievement> = listOf()
-): Parcelable {
+) : Parcelable {
+
+    companion object {
+        const val INVALID_COLOR = 0
+    }
+
+    fun setPrimaryColor(color: Int) {
+        game?.colorPrimaryDark = color
+    }
 
     fun getPercentageCompleted(): Float {
         val achievedSize = achievements.filter { it.achieved }.size.toFloat()
@@ -30,11 +38,12 @@ class GameWithAchievements(
     fun getAmountOfAchievements() = achievements.size
     fun getAchievedAchievements() = achievements.filter { achievement -> achievement.achieved }
     fun getRecentPlaytime() = game?.recentPlayTime ?: 0
-    fun getPrimaryColor() = game?.colorPrimaryDark ?: 0
+    fun getPrimaryColor() = game?.colorPrimaryDark ?: INVALID_COLOR
     fun getAppId() = game?.appId ?: ""
     fun getName() = game?.name ?: ""
     fun getPlaytime() = game?.playTime ?: 0L
     fun getIconUrl() = game?.iconUrl ?: ""
-    fun getBannerUrl() = game?.logoUrl ?: ""
+    fun getBannerUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/${game?.appId ?: "0"}/${game?.logoUrl
+        ?: ""}.jpg"
 
 }

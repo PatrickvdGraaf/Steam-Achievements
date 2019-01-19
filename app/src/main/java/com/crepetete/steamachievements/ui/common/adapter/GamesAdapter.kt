@@ -1,20 +1,11 @@
 package com.crepetete.steamachievements.ui.common.adapter
 
-import android.content.Context
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
-import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
@@ -38,7 +29,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>() {
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
-            listener?.onGameClicked(items[viewHolder.adapterPosition].getAppId(), binding.gameBanner)
+            listener?.onGameClicked(items[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner)
         }
 
         return viewHolder
@@ -53,40 +44,8 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>() {
     override fun onBindViewHolder(holder: GameViewHolder, position: Int, payLoads: List<Any>) {
         val game = items[position]
         holder.bind(items[position])
-        if (game.getPrimaryColor() == 0) {
-            updateBackgroundColorFromBanner(holder.itemView.context, game.getBannerUrl(), game.getAppId())
-        }
 
         listener?.onGameBoundInAdapter(game.getAppId())
-    }
-
-    private fun updateBackgroundColorFromBanner(context: Context, url: String, appId: String) {
-        Glide.with(context)
-            .load(url)
-            .priority(Priority.LOW)
-            .into(object : SimpleTarget<Drawable>() {
-                override fun onResourceReady(resource: Drawable,
-                                             transition: Transition<in Drawable>?) {
-                    if (resource is BitmapDrawable) {
-                        Palette.from(resource.bitmap).generate {
-                            val vibrantRgb = it?.darkVibrantSwatch?.rgb
-                            val mutedRgb = it?.darkMutedSwatch?.rgb
-                            val defaultBackgroundColor = ContextCompat.getColor(context,
-                                R.color.colorGameViewHolderTitleBackground)
-
-                            val rgb = when {
-                                mutedRgb != null -> mutedRgb
-                                vibrantRgb != null -> vibrantRgb
-                                else -> defaultBackgroundColor
-                            }
-
-                            // Listener should update the database, which will trigger LiveData observers,
-                            // and the view should reload with the new background color.
-                            listener?.onPrimaryGameColorCreated(appId, rgb)
-                        }
-                    }
-                }
-            })
     }
 
     /**
@@ -103,6 +62,6 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>() {
     interface OnGameBindListener {
         fun onGameBoundInAdapter(appId: String)
         fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View)
-        fun onPrimaryGameColorCreated(appId: String, rgb: Int)
+        fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int)
     }
 }
