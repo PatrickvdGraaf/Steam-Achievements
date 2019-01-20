@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.vo.Achievement
 
-class AchievementViewHolder(private val view: View, private val funShowPager: (Achievement) -> Unit)
+class AchievementViewHolder(private val view: View)
     : RecyclerView.ViewHolder(view) {
     private lateinit var achievement: Achievement
 
@@ -24,10 +24,6 @@ class AchievementViewHolder(private val view: View, private val funShowPager: (A
 
         val context = view.context
         if (context != null) {
-            imageViewIcon.setOnClickListener {
-                showAchievementPager()
-            }
-
             Glide.with(context)
                 .load(if (achievement.achieved) {
                     achievement.iconUrl
@@ -36,10 +32,6 @@ class AchievementViewHolder(private val view: View, private val funShowPager: (A
                 })
                 .into(imageViewIcon)
         }
-    }
-
-    private fun showAchievementPager() {
-        funShowPager(achievement)
     }
 
     private fun getDescription(achievement: Achievement): String {

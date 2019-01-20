@@ -1,11 +1,13 @@
 package com.crepetete.steamachievements.ui.common.adapter
 
-import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
+import com.crepetete.steamachievements.ui.common.adapter.diffutil.AchievementDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.AchievementViewHolder
 import com.crepetete.steamachievements.ui.common.enums.AchievSortingMethod
 import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
@@ -14,29 +16,19 @@ import com.crepetete.steamachievements.util.extensions.sortByRarity
 import com.crepetete.steamachievements.vo.Achievement
 
 class HorizontalAchievementsAdapter(
-        private var sortingMethod: AchievSortingMethod = AchievSortingMethod.ACHIEVED)
-    : RecyclerView.Adapter<AchievementViewHolder>() {
+    private var sortingMethod: AchievSortingMethod = AchievSortingMethod.ACHIEVED
+) : RecyclerView.Adapter<AchievementViewHolder>() {
 
-    private val achievements = mutableListOf<Achievement>()
+    private var achievements = listOf<Achievement>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.list_achievement, parent, false)
-        return AchievementViewHolder(view) { index ->
-            val context = parent.context
-            if (context != null) {
-                val intent = Intent(context, TransparentPagerActivity::class.java)
-                intent.putExtra(TransparentPagerActivity.INTENT_KEY_INDEX, index)
-                intent.putExtra(TransparentPagerActivity.INTENT_KEY_APP_ID, ArrayList(achievements.map {
-                    it.appId
-                }))
-                intent.putExtra(TransparentPagerActivity.INTENT_KEY_NAME, ArrayList(achievements.map {
-                    it.name
-                }))
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_achievement, parent, false)
+        val viewHolder = AchievementViewHolder(view)
 
-                context.startActivity(intent)
-            }
+        view.findViewById<View>(R.id.imageViewIcon).setOnClickListener { v ->
+            v.context.startActivity(TransparentPagerActivity.getInstance(parent.context, viewHolder.adapterPosition, achievements))
         }
+        return viewHolder
     }
 
     override fun getItemCount() = achievements.size
@@ -46,10 +38,10 @@ class HorizontalAchievementsAdapter(
     }
 
     fun setAchievements(achievements: List<Achievement>) {
-        this.achievements.clear()
-        this.achievements.addAll(achievements)
-        notifyDataSetChanged()
-        // TODO Diff
+        val diffResult = DiffUtil.calculateDiff(AchievementDiffCallback(achievements, this.achievements))
+        diffResult.dispatchUpdatesTo(this)
+
+        this.achievements = achievements
     }
 
     fun updateSortingMethod(specificMethod: AchievSortingMethod? = null): String {
