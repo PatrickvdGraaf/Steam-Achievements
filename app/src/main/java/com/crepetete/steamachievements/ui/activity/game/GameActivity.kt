@@ -39,16 +39,18 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, appId: String): Intent {
-            return Intent(context, GameActivity::class.java).apply {
-                putExtra(INTENT_GAME_ID, appId)
-            }
+        fun getInstance(context: Context, appId: String) = Intent(
+            context,
+            GameActivity::class.java
+        ).apply {
+            putExtra(INTENT_GAME_ID, appId)
         }
 
-        fun getInstance(context: Context, game: GameWithAchievements): Intent {
-            return Intent(context, GameActivity::class.java).apply {
-                putExtra(INTENT_GAME, game)
-            }
+        fun getInstance(context: Context, game: GameWithAchievements) = Intent(
+            context,
+            GameActivity::class.java
+        ).apply {
+            putExtra(INTENT_GAME, game)
         }
     }
 

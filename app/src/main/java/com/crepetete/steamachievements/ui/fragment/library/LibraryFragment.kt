@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -131,15 +129,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Opens GameActivity and handles animation.
      */
     override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
-        startActivity(
-            GameActivity.getInstance(requireContext(), game),
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                requireActivity(),
-                Pair.create(background, "background"),
-                Pair.create(imageView as View, "banner"),
-                Pair.create(title, "title")
-            ).toBundle()
-        )
+        //        startActivity(
+        //            GameActivity.getInstance(requireContext(), game),
+        //            ActivityOptions.makeSceneTransitionAnimation(
+        //                requireActivity(),
+        //                Pair.create(background, "background"),
+        //                Pair.create(imageView as View, "banner"),
+        //                Pair.create(title, "title")
+        //            ).toBundle()
+        //        )
+
+        val intent = GameActivity.getInstance(requireContext(), game)
+        startActivity(intent)
+        //        activity?.overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.slide_out_from_top)
     }
 
     /**

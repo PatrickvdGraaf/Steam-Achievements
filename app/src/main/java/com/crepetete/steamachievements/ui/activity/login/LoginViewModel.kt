@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
         if (!playerId.isNullOrBlank()) {
             // Save the new Id
             currentPlayerId.value = playerId
-            userRepository.putCurrentPlayerId(playerId!!)
+            userRepository.putCurrentPlayerId(playerId)
         }
     }
 

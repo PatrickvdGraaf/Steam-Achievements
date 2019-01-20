@@ -54,8 +54,8 @@ class GameViewModel @Inject constructor(
             mutedColor.postValue(darkVibrantSwatch)
         }
 
-        val vibrantRgb = palette.darkVibrantSwatch?.rgb
-        val mutedRgb = palette.darkMutedSwatch?.rgb
+        //        val vibrantRgb = palette.darkVibrantSwatch?.rgb
+        //        val mutedRgb = palette.darkMutedSwatch?.rgb
 
         //        when {
         //            mutedRgb != null -> mutedRgb
