@@ -1,10 +1,9 @@
 package com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.AchievementPagerFragment
+import com.crepetete.steamachievements.vo.Achievement
 
 /**
  * Adapter for Horizontal Achievements ViewPager.
@@ -12,21 +11,19 @@ import com.crepetete.steamachievements.ui.fragment.achievement.pager.Achievement
  * Creates [AchievementPagerFragment]s for each Achievement.
  */
 class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-    private var achievementData: List<Pair<String, String>> = listOf()
+    private var achievementData: List<Achievement> = listOf()
 
-    override fun getItem(position: Int): Fragment {
-        val fragment = AchievementPagerFragment()
-        val bundle = Bundle()
-        bundle.putString(AchievementPagerFragment.INTENT_KEY_NAME, achievementData[position].first)
-        bundle.putString(AchievementPagerFragment.INTENT_KEY_APP_ID, achievementData[position].second)
-        fragment.arguments = bundle
-        return fragment
-    }
+    override fun getItem(position: Int) = AchievementPagerFragment.getInstance(achievementData[position])
 
     override fun getCount() = achievementData.size
 
-    fun updateAchievements(data: List<Pair<String, String>>) {
-        achievementData = data
-        notifyDataSetChanged()
+    fun updateAchievements(data: List<Achievement>?) {
+        //        val diffResult = DiffUtil.calculateDiff(AchievementDiffCallback(achievementData, data))
+        //        diffResult.dispatchUpdatesTo(this)
+
+        if (data != null) {
+            achievementData = data
+            notifyDataSetChanged()
+        }
     }
 }

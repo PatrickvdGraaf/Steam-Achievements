@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.achievement.pager
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
@@ -29,12 +28,26 @@ import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * ViewPager Fragment that shows a Dialog-like view for an [Achievement].
  */
 class AchievementPagerFragment : Fragment(), Injectable {
+
+    companion object {
+        private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"
+
+        fun getInstance(achievement: Achievement): AchievementPagerFragment {
+            val fragment = AchievementPagerFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(INTENT_KEY_ACHIEVEMENT, achievement)
+            fragment.arguments = bundle
+            return fragment
+        }
+    }
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -53,8 +66,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievement_pager, container,
-            false)
+        val view = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
         iconView = view.findViewById(R.id.achievement_icon_imageview)
         cardView = view.findViewById(R.id.achievement_cardview)
         nameView = view.findViewById(R.id.achievement_name_textview)
@@ -78,19 +90,15 @@ class AchievementPagerFragment : Fragment(), Injectable {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(PagerFragmentViewModel::class.java)
 
-        val achievementName = arguments?.getString(INTENT_KEY_NAME)
-        val achievementAppId = arguments?.getString(INTENT_KEY_APP_ID)
-        if (achievementName != null && achievementAppId != null) {
-            viewModel.setAchievementInfo(achievementName, achievementAppId)
-        }
-
-        viewModel.achievements.observe(this, Observer {
-            if (it != null) {
-                val achievement = it[0]
+        viewModel.getAchievement().observe(this, Observer { achievement ->
+            if (achievement != null) {
                 setAchievementInfo(achievement)
-                setIconAndColors(achievement.iconUrl)
             }
         })
+
+        arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
+            viewModel.setAchievementInfo(achievement)
+        }
     }
 
     private fun setAchievementInfo(achievement: Achievement) {
@@ -105,9 +113,11 @@ class AchievementPagerFragment : Fragment(), Injectable {
             descView.visibility = View.VISIBLE
         }
 
-        if (achievement.percentage > 0.0) {
+        if (achievement.percentage > 0f) {
             globalStatsLabel.setText("${achievement.percentage}%")
         }
+
+        setIconAndColors(achievement.iconUrl)
     }
 
     fun getDateStringNoBreak(achievement: Achievement): String {
@@ -130,24 +140,25 @@ class AchievementPagerFragment : Fragment(), Injectable {
         val context = context
         if (context != null) {
             GlideApp.with(context)
+                .asBitmap()
                 .load(iconUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Drawable> {
+                .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?,
                                               model: Any?,
-                                              target: Target<Drawable>?,
+                                              target: Target<Bitmap>?,
                                               isFirstResource: Boolean): Boolean {
-                        // TODO
+                        Timber.w(e, "Error while loading image from url: $iconUrl.")
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable?,
+                    override fun onResourceReady(resource: Bitmap?,
                                                  model: Any?,
-                                                 target: Target<Drawable>?,
+                                                 target: Target<Bitmap>?,
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
-                        if (resource != null && resource is BitmapDrawable) {
-                            Palette.from(resource.bitmap).generate {
+                        if (resource != null) {
+                            Palette.from(resource).generate {
                                 val darkVibrantSwatch = it?.darkVibrantSwatch
                                 val darkMutedSwatch = it?.darkMutedSwatch
 
@@ -170,10 +181,5 @@ class AchievementPagerFragment : Fragment(), Injectable {
                     }
                 }).into(iconView)
         }
-    }
-
-    companion object {
-        const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
-        const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"
     }
 }

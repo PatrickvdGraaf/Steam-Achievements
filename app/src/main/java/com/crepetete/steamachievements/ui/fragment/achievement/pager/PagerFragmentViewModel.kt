@@ -11,15 +11,14 @@ import javax.inject.Inject
  * ViewModel for an [AchievementPagerFragment]. Holds an Achievement object for the view to present.
  */
 class PagerFragmentViewModel @Inject constructor(
-        private val achievementRepository: AchievementsRepository) : ViewModel() {
+    private val achievementsRepo: AchievementsRepository
+) : ViewModel() {
 
-    var achievements: LiveData<List<Achievement>> = MutableLiveData<List<Achievement>>()
+    private val achievement = MutableLiveData<Achievement>()
 
-    private val _achievement = MutableLiveData<Achievement>()
-    val achievement: LiveData<Achievement>
-        get() = _achievement
-
-    fun setAchievementInfo(name: String, appId: String) {
-        achievements = achievementRepository.getAchievement(name, appId)
+    fun setAchievementInfo(newAchievement: Achievement) {
+        achievement.value = newAchievement
     }
+
+    fun getAchievement(): LiveData<Achievement> = achievement
 }
