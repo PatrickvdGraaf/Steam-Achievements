@@ -162,6 +162,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         // Set RecyclerView adapter.
         recyclerViewLatestAchievements.adapter = achievementsAdapter
+        recyclerViewLatestAchievements.setHasFixedSize(true)
 
         // Move achievements to adapter.
         achievementsAdapter.setAchievements(game.achievements)
