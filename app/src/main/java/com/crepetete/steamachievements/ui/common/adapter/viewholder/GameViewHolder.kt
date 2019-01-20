@@ -8,9 +8,11 @@ import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.vo.GameData
@@ -40,28 +42,37 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             Glide.with(binding.root.context)
                 .asBitmap()
                 .load(dataItem.getImageUrl())
-                .priority(Priority.LOW)
-                .into(object : SimpleTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                        binding.gameBanner.setImageBitmap(resource)
-
-                        Palette.from(resource).generate {
-                            val vibrantRgb = it?.darkVibrantSwatch?.rgb
-                            val mutedRgb = it?.darkMutedSwatch?.rgb
-                            val defaultBackgroundColor = ContextCompat.getColor(binding.root.context,
-                                R.color.colorGameViewHolderTitleBackground)
-
-                            // Listener should update the database, which will trigger LiveData observers,
-                            // and the view should reload with the new background color.
-                            binding.background.setBackgroundColor(when {
-                                mutedRgb != null -> mutedRgb
-                                vibrantRgb != null -> vibrantRgb
-                                else -> defaultBackgroundColor
-                            })
-                        }
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                        return false
                     }
+
+                    override fun onResourceReady(resource: Bitmap?,
+                                                 model: Any?,
+                                                 target: Target<Bitmap>?,
+                                                 dataSource: DataSource?,
+                                                 isFirstResource: Boolean): Boolean {
+                        if (resource != null) {
+                            Palette.from(resource).generate {
+                                val vibrantRgb = it?.darkVibrantSwatch?.rgb
+                                val mutedRgb = it?.darkMutedSwatch?.rgb
+
+                                // Listener should update the database, which will trigger LiveData observers,
+                                // and the view should reload with the new background color.
+                                binding.background.setBackgroundColor(when {
+                                    mutedRgb != null -> mutedRgb
+                                    vibrantRgb != null -> vibrantRgb
+                                    else -> ContextCompat.getColor(binding.root.context,
+                                        R.color.colorGameViewHolderTitleBackground)
+                                })
+                            }
+                        }
+                        return false
+                    }
+
                 })
+                .into(binding.gameBanner)
         }
     }
 

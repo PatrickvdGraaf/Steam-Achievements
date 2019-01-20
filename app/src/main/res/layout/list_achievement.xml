@@ -33,7 +33,7 @@
         style="@style/AppTheme.Achievements.ListItem.Text.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:lines="2"
+        android:lines="3"
         android:paddingBottom="@dimen/default_margin_quarter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/icon_container"
