@@ -13,7 +13,6 @@ import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
-import io.reactivex.Single
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -81,16 +80,6 @@ class GameRepository @Inject constructor(
             override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
         }.asLiveData()
     }
-
-    /**
-     * Returns a specific [Game] from the database.]
-     *
-     * @param appId ID of the requested Game.
-     * @return LiveData object with the requested [Game]
-     */
-    fun getGameFromDb(appId: String): LiveData<Game> = dao.getGameAsLiveData(appId)
-
-    fun getGameFromDbAsSingle(appId: String): Single<Game> = dao.getGame(appId)
 
     fun update(item: Game) {
         dao.update(item)

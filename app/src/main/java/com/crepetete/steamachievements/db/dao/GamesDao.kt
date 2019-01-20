@@ -1,8 +1,10 @@
 package com.crepetete.steamachievements.db.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
-import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Transaction
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -13,29 +15,13 @@ import io.reactivex.Single
  */
 @Dao
 @OpenForTesting
-abstract class GamesDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(vararg games: Game)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(games: List<Game>)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(games: List<Game>)
-
-    fun upsert(games: List<Game>) {
-        insert(games)
-        update(games)
-    }
+abstract class GamesDao : BaseDao<Game>() {
 
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGame(appId: String): Single<Game>
 
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGameAsLiveData(appId: String): LiveData<Game>
-
-    @Update(onConflict = REPLACE)
-    abstract fun update(game: Game)
 
     @Delete
     abstract fun delete(vararg games: Game)

@@ -48,7 +48,7 @@ class AchievementsRepository @Inject constructor(
                     achievements.forEach {
                         it.appId = appId
                     }
-                    dao.insert(achievements)
+                    dao.upsert(achievements)
                 }
             }
 
@@ -87,7 +87,7 @@ class AchievementsRepository @Inject constructor(
 
     private fun insertAchievementsList(achievements: List<Achievement>) {
         Single.create<Void> {
-            dao.insert(achievements)
+            dao.upsert(achievements)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
