@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,7 +21,6 @@ import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.util.autoCleared
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Status
 import com.google.android.material.snackbar.Snackbar
@@ -40,9 +37,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     @Inject
     lateinit var appExecutors: AppExecutors
 
-    var adapter by autoCleared<GamesAdapter>()
+    var adapter = GamesAdapter()
 
-    var binding by autoCleared<FragmentLibraryBinding>()
+    lateinit var binding: FragmentLibraryBinding
 
     private var dataBindingComponent = FragmentDataBindingComponent()
 
@@ -102,6 +99,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
+        list_games.setHasFixedSize(true)
 
         adapter = GamesAdapter()
 
@@ -132,15 +130,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Opens GameActivity and handles animation.
      */
     override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
-        startActivity(
-            GameActivity.getInstance(requireContext(), game),
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                requireActivity(),
-                Pair.create(background, "background"),
-                Pair.create(imageView as View, "banner"),
-                Pair.create(title, "title")
-            ).toBundle()
-        )
+        //        startActivity(
+        //            GameActivity.getInstance(requireContext(), game),
+        //            ActivityOptions.makeSceneTransitionAnimation(
+        //                requireActivity(),
+        //                Pair.create(background, "background"),
+        //                Pair.create(imageView as View, "banner"),
+        //                Pair.create(title, "title")
+        //            ).toBundle()
+        //        )
+
+        val intent = GameActivity.getInstance(requireContext(), game)
+        startActivity(intent)
+        //        activity?.overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.slide_out_from_top)
     }
 
     /**

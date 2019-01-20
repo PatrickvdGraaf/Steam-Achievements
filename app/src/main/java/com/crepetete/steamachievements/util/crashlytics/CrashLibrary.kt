@@ -1,8 +1,8 @@
-package com.crepetete.steamachievements.util
+package com.crepetete.steamachievements.util.crashlytics
 
 import com.crashlytics.android.Crashlytics
 
-object SaCrashLibrary {
+object CrashLibrary {
     private const val CRASHLYTICS_KEY_PRIORITY = "priority"
     private const val CRASHLYTICS_KEY_TAG = "tag"
     private const val CRASHLYTICS_KEY_MESSAGE = "message"

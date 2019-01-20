@@ -3,7 +3,7 @@ package com.crepetete.steamachievements.di.submodules
 import android.content.Context
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
-import com.crepetete.steamachievements.util.LiveDataCallAdapterFactory
+import com.crepetete.steamachievements.util.livedata.LiveDataCallAdapterFactory
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson

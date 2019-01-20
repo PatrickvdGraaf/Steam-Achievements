@@ -1,7 +1,8 @@
 package com.crepetete.steamachievements.db.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Query
 import com.crepetete.steamachievements.testing.OpenForTesting
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.AchievementKeys
@@ -11,13 +12,7 @@ import com.crepetete.steamachievements.vo.AchievementKeys
  */
 @Dao
 @OpenForTesting
-abstract class AchievementsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(list: List<Achievement>)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(achievements: List<Achievement>)
-
+abstract class AchievementsDao : BaseDao<Achievement>() {
     @Query("SELECT * FROM achievements")
     abstract fun getAchievements(): LiveData<List<Achievement>>
 

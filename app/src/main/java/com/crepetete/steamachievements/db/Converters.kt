@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.util
+package com.crepetete.steamachievements.db
 
 import androidx.room.TypeConverter
 import java.util.*

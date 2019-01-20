@@ -8,7 +8,7 @@ import androidx.lifecycle.Transformations
 import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
-import com.crepetete.steamachievements.util.AbsentLiveData
+import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
@@ -54,8 +54,8 @@ class GameViewModel @Inject constructor(
             mutedColor.postValue(darkVibrantSwatch)
         }
 
-        val vibrantRgb = palette.darkVibrantSwatch?.rgb
-        val mutedRgb = palette.darkMutedSwatch?.rgb
+        //        val vibrantRgb = palette.darkVibrantSwatch?.rgb
+        //        val mutedRgb = palette.darkMutedSwatch?.rgb
 
         //        when {
         //            mutedRgb != null -> mutedRgb
