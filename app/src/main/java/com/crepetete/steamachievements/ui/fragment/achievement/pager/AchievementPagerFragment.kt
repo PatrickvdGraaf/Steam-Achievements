@@ -29,6 +29,7 @@ import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimate
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -87,6 +88,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Get ViewModel and set observers.
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(PagerFragmentViewModel::class.java)
 
@@ -96,14 +98,18 @@ class AchievementPagerFragment : Fragment(), Injectable {
             }
         })
 
+        // Retrieve Achievement for this Fragment through
         arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
             viewModel.setAchievementInfo(achievement)
         }
     }
 
+    /**
+     * Update View Text labels and load icon with a listener that handles the background color of the cardview.
+     */
     private fun setAchievementInfo(achievement: Achievement) {
         nameView.text = achievement.displayName
-        dateView.text = getDateStringNoBreak(achievement)
+        dateView.text = getDateString(achievement)
 
         val desc = achievement.description
         if (desc.isNullOrBlank()) {
@@ -117,38 +123,18 @@ class AchievementPagerFragment : Fragment(), Injectable {
             globalStatsLabel.setText("${achievement.percentage}%")
         }
 
-        setIconAndColors(achievement.iconUrl)
-    }
-
-    fun getDateStringNoBreak(achievement: Achievement): String {
-        return getDateString(achievement).replace("\n", " - ")
-    }
-
-    fun getDateStringNoTime(achievement: Achievement): String {
-        return DateFormat.format("dd-MM-yyyy", achievement.unlockTime).toString()
-    }
-
-    private fun getDateString(achievement: Achievement): String {
-        return if (achievement.unlockTime != null) {
-            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString()
-        } else {
-            "Locked"
-        }
-    }
-
-    private fun setIconAndColors(iconUrl: String) {
         val context = context
         if (context != null) {
             GlideApp.with(context)
                 .asBitmap()
-                .load(iconUrl)
+                .load(achievement.iconUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?,
                                               model: Any?,
                                               target: Target<Bitmap>?,
                                               isFirstResource: Boolean): Boolean {
-                        Timber.w(e, "Error while loading image from url: $iconUrl.")
+                        Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
                         return false
                     }
 
@@ -158,28 +144,31 @@ class AchievementPagerFragment : Fragment(), Injectable {
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
                         if (resource != null) {
-                            Palette.from(resource).generate {
-                                val darkVibrantSwatch = it?.darkVibrantSwatch
-                                val darkMutedSwatch = it?.darkMutedSwatch
-
-                                if (darkMutedSwatch != null) {
-                                    cardView.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                    iconContent.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                    dateView.setTextColor(darkMutedSwatch.bodyTextColor)
-                                } else if (darkVibrantSwatch != null) {
-                                    cardView.setBackgroundColorAnimated(
-                                        ContextCompat.getColor(context, R.color.colorPrimary),
-                                        darkVibrantSwatch.rgb, 300)
-                                    iconContent.setBackgroundColorAnimated(
-                                        ContextCompat.getColor(context,
-                                            R.color.colorPrimaryDark),
-                                        darkVibrantSwatch.rgb)
-                                }
+                            Palette.from(resource).generate { palette ->
+                                cardView.setBackgroundColorAnimated(
+                                    ContextCompat.getColor(context, R.color.colorPrimary),
+                                    palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
                             }
+
+                            // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
+                            iconContent.setCardBackgroundColor(null)
                         }
                         return false
                     }
                 }).into(iconView)
+        }
+    }
+
+    private fun getDateString(achievement: Achievement): String {
+        val cal = Calendar.getInstance()
+        cal.time = achievement.unlockTime
+
+        // Non achieved achievements will have an empty date object as their unlocktime, which results in the date being in 1970.
+        // Check if the unlock time was after the year in which the development of the Steam platform was started.
+        return if (cal.get(Calendar.YEAR) > 2002) {
+            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString().replace("\n", " - ")
+        } else {
+            "Locked"
         }
     }
 }

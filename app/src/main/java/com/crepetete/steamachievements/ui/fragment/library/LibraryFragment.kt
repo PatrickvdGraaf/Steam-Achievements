@@ -81,9 +81,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                     progressBar.visibility = View.GONE
                     Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
                 }
-                Status.LOADING -> {
-                    progressBar.visibility = View.VISIBLE
-                }
+                Status.LOADING -> progressBar.visibility = View.VISIBLE
             }
         })
 
