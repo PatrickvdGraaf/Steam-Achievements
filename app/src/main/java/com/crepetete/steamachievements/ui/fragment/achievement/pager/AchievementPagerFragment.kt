@@ -112,14 +112,13 @@ class AchievementPagerFragment : Fragment(), Injectable {
         dateView.text = getDateString(achievement)
 
         val desc = achievement.description
-        if (desc.isNullOrBlank()) {
-            descView.visibility = View.GONE
+        descView.text = if (desc.isNullOrBlank()) {
+            "Hidden"
         } else {
-            descView.text = achievement.description
-            descView.visibility = View.VISIBLE
+            desc
         }
 
-        if (achievement.percentage > 0f) {
+        if (achievement.percentage >= 0f) {
             globalStatsLabel.setText("${achievement.percentage}%")
         }
 
@@ -129,6 +128,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
                 .asBitmap()
                 .load(achievement.iconUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_image_placeholder)
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?,
                                               model: Any?,
