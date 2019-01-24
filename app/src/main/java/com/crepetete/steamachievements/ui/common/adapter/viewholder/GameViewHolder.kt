@@ -55,16 +55,16 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                 val vibrantRgb = it?.darkVibrantSwatch?.rgb
                                 val mutedRgb = it?.darkMutedSwatch?.rgb
 
-                                // Listener should update the database, which will trigger LiveData observers,
+                                // Listener should update the database, which will trigger Liv=[Data observers,
                                 // and the view should reload with the new background color.
                                 val defaultBg = ContextCompat.getColor(binding.root.context,
                                     R.color.colorGameViewHolderTitleBackground)
 
-                                binding.background.setBackgroundColorAnimated(when {
+                                binding.background.setBackgroundColorAnimated(defaultBg, when {
                                     mutedRgb != null -> mutedRgb
                                     vibrantRgb != null -> vibrantRgb
                                     else -> defaultBg
-                                }, defaultBg, 400)
+                                }, 400)
                             }
                         }
                         return false

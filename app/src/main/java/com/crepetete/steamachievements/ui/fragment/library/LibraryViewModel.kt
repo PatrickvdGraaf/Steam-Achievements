@@ -18,10 +18,8 @@ class LibraryViewModel @Inject constructor(
     private var achievementsRepository: AchievementsRepository
 ) : ViewModel() {
 
-    private val _query = MutableLiveData<String>().apply {
-        value = ""
-    }
-    val query: LiveData<String> = _query
+    private val _query = MutableLiveData<String>()
+    val query: LiveData<String?> = _query
 
     val gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = Transformations
         .switchMap(_query) { search ->
