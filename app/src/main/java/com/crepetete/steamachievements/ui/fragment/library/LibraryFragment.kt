@@ -155,7 +155,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        //        gamesAdapter.updateSearchQuery(query)
+        viewModel.setQuery(query)
     }
 
     /**

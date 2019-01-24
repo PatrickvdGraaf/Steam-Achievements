@@ -54,12 +54,20 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pager)
 
+        // Set adapter first.
+        pager.adapter = pagerAdapter
+
+        // Set ViewPager settings.
+        pager.setPageTransformer(true, ZoomOutPageTransformer())
+
         // Get ViewModel and observe.
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(TransparentPagerViewModel::class.java)
 
         // Use Handler because of https://stackoverflow.com/a/33493282/10074409.
-        viewModel.index.observe(this, Observer {
+        viewModel.index.observe(this, Observer { index ->
+            Handler().postDelayed({ pager.setCurrentItem(index, false) }, 100)
+
         })
         viewModel.achievementData.observe(this, Observer {
             pagerAdapter.updateAchievements(it)
@@ -68,16 +76,8 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
         // Get data from intent.
         if (intent != null) {
             viewModel.setAchievementData(intent.getParcelableArrayListExtra(INTENT_KEY_ACHIEVEMENT))
-
-            val index = intent.getIntExtra(INTENT_KEY_INDEX, 0)
-            Handler().postDelayed({ pager.setCurrentItem(index, false) }, 100)
+            viewModel.setIndex(intent.getIntExtra(INTENT_KEY_INDEX, 0))
         }
-
-        // Set adapter first.
-        pager.adapter = pagerAdapter
-
-        // Set ViewPager settings.
-        pager.setPageTransformer(true, ZoomOutPageTransformer())
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector

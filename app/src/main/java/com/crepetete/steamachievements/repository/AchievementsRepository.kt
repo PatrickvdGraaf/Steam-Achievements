@@ -39,7 +39,7 @@ class AchievementsRepository @Inject constructor(
     fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
             override fun saveCallResult(item: SchemaResponse) {
-                Timber.d("steamachievements; Saving Achievements in DB for getAppId: $appId")
+                Timber.d("Saving Achievements in DB for getAppId: $appId")
 
                 val achievements = item.game.availableGameStats?.achievements
                 if (achievements != null) {

@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 
@@ -30,11 +31,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             with(binding.achievementsTextView) {
                 compoundDrawablePadding = 16
                 setCompoundDrawablesWithIntrinsicBounds(
-                    if (dataItem.isCompleted()) {
-                        R.drawable.ic_completed_24dp
-                    } else {
-                        0
-                    }, 0, 0, 0)
+                    if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
             }
 
             setProgressAnimated(binding.progressBar, dataItem.getPercentageCompleted())
@@ -60,12 +57,14 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
                                 // Listener should update the database, which will trigger LiveData observers,
                                 // and the view should reload with the new background color.
-                                binding.background.setBackgroundColor(when {
+                                val defaultBg = ContextCompat.getColor(binding.root.context,
+                                    R.color.colorGameViewHolderTitleBackground)
+
+                                binding.background.setBackgroundColorAnimated(when {
                                     mutedRgb != null -> mutedRgb
                                     vibrantRgb != null -> vibrantRgb
-                                    else -> ContextCompat.getColor(binding.root.context,
-                                        R.color.colorGameViewHolderTitleBackground)
-                                })
+                                    else -> defaultBg
+                                }, defaultBg, 400)
                             }
                         }
                         return false

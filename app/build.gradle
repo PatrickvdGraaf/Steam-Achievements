@@ -121,6 +121,9 @@ dependencies {
 
     //Rx
     implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    /* RxAndroid adds android specific bindings for RxJava,
+       Specifically AndroidSchedulers.mainThread() which provides a Scheduler that schedules
+       on main thread and can be used to switch between threads in Android. */
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Room
