@@ -26,14 +26,13 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor(
     private val appExecutors: AppExecutors,
     private val dao: GamesDao,
-    private val api: SteamApiService,
-    private val userRepository: UserRepository
+    private val api: SteamApiService
 ) {
 
     // Refresh games every day
     private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
 
-    fun getGames(userId: String = userRepository.getCurrentPlayerId() ?: ""): LiveData<Resource<List<GameWithAchievements>>> {
+    fun getGames(userId: String): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
 
             override fun saveCallResult(item: BaseGameResponse) {
@@ -95,27 +94,35 @@ class GameRepository @Inject constructor(
         }
     }
 
-    fun search(query: String?, sortingType: SortingType): LiveData<Resource<List<GameWithAchievements>>> {
+    /**
+     * @param query name of the game.
+     * @param sortingType order in which the returned list should be sorted.
+     * @return a list of suggested games for the given [query].
+     */
+    fun search(query: String?, userId: String, sortingType: SortingType): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
-
             override fun saveCallResult(item: BaseGameResponse) {
                 val games = item.response.games
                 games.forEach { game ->
-                    game.userId = userRepository.getCurrentPlayerId() ?: ""
+                    game.userId = userId
                 }
 
                 dao.upsert(games)
             }
 
-            // Only search in database.
-            override fun shouldFetch(data: List<GameWithAchievements>?) = false
+            override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
+                || data.isEmpty()
+                || gameListRateLimit.shouldFetch("getGamesForUser$userId")
 
-            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = Transformations.map(dao.search(query)) { games ->
-                games?.sort(sortingType)
-                games ?: listOf()
-            }
+            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = Transformations
+                .map(dao.search("%$query%")) { games ->
+                    games.sort(sortingType)
+                    games
+                }
 
-            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
+            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
+
+
         }.asLiveData()
     }
 }
