@@ -91,7 +91,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private fun initScrollFab() {
         fab.setOnClickListener {
-            list_games.smoothScrollToPosition(0)
+            list_games.scrollToPosition(0)
         }
     }
 
