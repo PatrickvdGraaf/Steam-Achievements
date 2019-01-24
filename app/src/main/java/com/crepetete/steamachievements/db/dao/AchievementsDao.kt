@@ -19,11 +19,8 @@ abstract class AchievementsDao : BaseDao<Achievement>() {
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     abstract fun getAchievements(appId: String): LiveData<List<Achievement>>
 
-    @Query("SELECT * FROM achievements WHERE appId=:appId AND appId=:name")
-    abstract fun getAchievements(appId: String, name: String?): LiveData<List<Achievement>>
-
-    @Query("SELECT * FROM achievements WHERE name=:name AND appId=:appId")
-    abstract fun getAchievement(name: String, appId: String): LiveData<List<Achievement>>
+    @Query("SELECT * FROM achievements WHERE appId=:appId AND name=:name LIMIT 1")
+    abstract fun getAchievements(appId: String, name: String?): LiveData<Achievement>
 
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     abstract fun getAchievementsForGame(appId: String): LiveData<List<Achievement>>

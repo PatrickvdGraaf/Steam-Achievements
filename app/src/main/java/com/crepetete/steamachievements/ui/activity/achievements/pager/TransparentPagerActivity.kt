@@ -27,20 +27,14 @@ import javax.inject.Inject
 class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFragmentInjector {
 
     companion object {
-        const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
-        const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"
-        const val INTENT_KEY_INDEX = "INTENT_KEY_INDEX"
+        private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"
+        private const val INTENT_KEY_INDEX = "INTENT_KEY_INDEX"
 
         fun getInstance(context: Context, index: Int, achievements: List<Achievement>): Intent {
-            val intent = Intent(context, TransparentPagerActivity::class.java)
-            intent.putExtra(TransparentPagerActivity.INTENT_KEY_INDEX, index)
-            intent.putExtra(TransparentPagerActivity.INTENT_KEY_APP_ID, ArrayList(achievements.map {
-                it.appId
-            }))
-            intent.putExtra(TransparentPagerActivity.INTENT_KEY_NAME, ArrayList(achievements.map {
-                it.name
-            }))
-            return intent
+            return Intent(context, TransparentPagerActivity::class.java).apply {
+                putExtra(INTENT_KEY_INDEX, index)
+                putParcelableArrayListExtra(INTENT_KEY_ACHIEVEMENT, ArrayList(achievements))
+            }
         }
     }
 
@@ -59,37 +53,31 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pager)
-        // Get ViewModel and observe.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(TransparentPagerViewModel::class.java)
-
-        // Use Handler because of https://stackoverflow.com/a/33493282/10074409.
-        viewModel.index.observe(this, Observer {
-            it?.let { it1 ->
-                Handler().postDelayed({ pager.currentItem = it1 }, 100)
-            }
-        })
-        viewModel.achievementData.observe(this, Observer {
-            it?.let { it1 -> pagerAdapter.updateAchievements(it1) }
-        })
-
-        // Get data from intent.
-        if (intent != null) {
-            val index = intent?.getIntExtra(INTENT_KEY_INDEX, 0) ?: 0
-            viewModel.setIndex(index)
-
-            val names = intent?.getStringArrayListExtra(INTENT_KEY_NAME)
-            val appIds = intent?.getStringArrayListExtra(INTENT_KEY_APP_ID)
-            if (names != null && appIds != null) {
-                viewModel.setAchievementData(names, appIds)
-            }
-        }
 
         // Set adapter first.
         pager.adapter = pagerAdapter
 
         // Set ViewPager settings.
         pager.setPageTransformer(true, ZoomOutPageTransformer())
+
+        // Get ViewModel and observe.
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(TransparentPagerViewModel::class.java)
+
+        // Use Handler because of https://stackoverflow.com/a/33493282/10074409.
+        viewModel.index.observe(this, Observer { index ->
+            Handler().postDelayed({ pager.setCurrentItem(index, false) }, 100)
+
+        })
+        viewModel.achievementData.observe(this, Observer {
+            pagerAdapter.updateAchievements(it)
+        })
+
+        // Get data from intent.
+        if (intent != null) {
+            viewModel.setAchievementData(intent.getParcelableArrayListExtra(INTENT_KEY_ACHIEVEMENT))
+            viewModel.setIndex(intent.getIntExtra(INTENT_KEY_INDEX, 0))
+        }
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector

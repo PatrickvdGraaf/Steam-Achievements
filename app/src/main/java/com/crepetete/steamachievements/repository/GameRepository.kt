@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiResponse
@@ -9,6 +10,8 @@ import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
+import com.crepetete.steamachievements.ui.common.enums.SortingType
+import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -90,5 +93,29 @@ class GameRepository @Inject constructor(
         if (game != null) {
             dao.update(game)
         }
+    }
+
+    fun search(query: String?, sortingType: SortingType): LiveData<Resource<List<GameWithAchievements>>> {
+        return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
+
+            override fun saveCallResult(item: BaseGameResponse) {
+                val games = item.response.games
+                games.forEach { game ->
+                    game.userId = userRepository.getCurrentPlayerId() ?: ""
+                }
+
+                dao.upsert(games)
+            }
+
+            // Only search in database.
+            override fun shouldFetch(data: List<GameWithAchievements>?) = false
+
+            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = Transformations.map(dao.search(query)) { games ->
+                games?.sort(sortingType)
+                games ?: listOf()
+            }
+
+            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
+        }.asLiveData()
     }
 }

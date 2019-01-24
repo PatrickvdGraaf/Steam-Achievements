@@ -1,10 +1,10 @@
 package com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.viewpager.widget.PagerAdapter
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.AchievementPagerFragment
+import com.crepetete.steamachievements.vo.Achievement
 
 /**
  * Adapter for Horizontal Achievements ViewPager.
@@ -12,21 +12,34 @@ import com.crepetete.steamachievements.ui.fragment.achievement.pager.Achievement
  * Creates [AchievementPagerFragment]s for each Achievement.
  */
 class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-    private var achievementData: List<Pair<String, String>> = listOf()
+    private var achievementData: List<Achievement> = listOf()
 
-    override fun getItem(position: Int): Fragment {
-        val fragment = AchievementPagerFragment()
-        val bundle = Bundle()
-        bundle.putString(AchievementPagerFragment.INTENT_KEY_NAME, achievementData[position].first)
-        bundle.putString(AchievementPagerFragment.INTENT_KEY_APP_ID, achievementData[position].second)
-        fragment.arguments = bundle
-        return fragment
+    /**
+     * Called when the host view is attempting to determine if an item’s position has changed.
+     * Returns [PagerAdapter.POSITION_UNCHANGED] if the position of the given item has not changed
+     * or [PagerAdapter.POSITION_NONE] if the item is no longer present in the adapter.
+     * The default implementation assumes that items will never change position and always
+     * returns POSITION_UNCHANGED.
+     *
+     * Always returning POSITION_NONE is memory and performance inefficient.
+     * It will always detach the current visible fragments and recreate them even if their position in the dataset hasn’t changed.
+     */
+    override fun getItemPosition(`object`: Any): Int {
+        return if (achievementData.contains(`object`)) {
+            achievementData.indexOf(`object`)
+        } else {
+            PagerAdapter.POSITION_NONE
+        }
+    }
+
+    override fun getItem(position: Int): AchievementPagerFragment {
+        return AchievementPagerFragment.getInstance(achievementData[position])
     }
 
     override fun getCount() = achievementData.size
 
-    fun updateAchievements(data: List<Pair<String, String>>) {
-        achievementData = data
+    fun updateAchievements(list: List<Achievement>?) {
+        achievementData = list ?: listOf()
         notifyDataSetChanged()
     }
 }

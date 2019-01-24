@@ -35,6 +35,9 @@ abstract class GamesDao : BaseDao<Game>() {
     @Query("SELECT appId FROM games")
     abstract fun getGameIds(): Single<List<String>>
 
+    @Query("SELECT * FROM games WHERE name = :query")
+    abstract fun search(query: String?): LiveData<List<GameWithAchievements>>
+
     @Transaction
     @Query("SELECT * FROM games")
     abstract fun getGamesWithAchievementsAsLiveData(): LiveData<List<GameWithAchievements>>

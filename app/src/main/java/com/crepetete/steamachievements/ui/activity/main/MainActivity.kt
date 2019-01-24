@@ -79,13 +79,6 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         navigation.setOnNavigationItemSelectedListener(this)
 
         navigation.selectedItemId = R.id.menu_library
-
-        //        val fragment: LibraryFragment = LibraryFragment.getInstance(userId)
-        //        fragmentManager.beginTransaction()
-        //            .replace(containerId, fragment, LibraryFragment.TAG)
-        //            .addToBackStack(null)
-        //            .commit()
-        //        navBarListener = fragment
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

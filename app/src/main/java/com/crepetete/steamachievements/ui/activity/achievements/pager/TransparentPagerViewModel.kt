@@ -3,19 +3,19 @@ package com.crepetete.steamachievements.ui.activity.achievements.pager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.crepetete.steamachievements.vo.Achievement
 import javax.inject.Inject
 
 /**
- * ViewModel for [TransparentPagerActivity], responsible for holding the AchievementsPager data in
- * Pairs (getName, getAppId).
+ * ViewModel for [TransparentPagerActivity], responsible for holding the AchievementsPager data.
  */
 class TransparentPagerViewModel @Inject constructor() : ViewModel() {
     private val _index = MutableLiveData<Int>()
     val index: LiveData<Int>
         get() = _index
 
-    private val _achievementData = MutableLiveData<List<Pair<String, String>>>()
-    val achievementData: LiveData<List<Pair<String, String>>>
+    private val _achievementData = MutableLiveData<List<Achievement>>()
+    val achievementData: LiveData<List<Achievement>>
         get() = _achievementData
 
     fun setIndex(index: Int) {
@@ -25,9 +25,7 @@ class TransparentPagerViewModel @Inject constructor() : ViewModel() {
         _index.value = index
     }
 
-    fun setAchievementData(names: List<String>, appIds: List<String>) {
-        _achievementData.value = names.mapIndexed { index, s ->
-            Pair(s, appIds[index])
-        }
+    fun setAchievementData(achievements: List<Achievement>?) {
+        _achievementData.value = achievements
     }
 }

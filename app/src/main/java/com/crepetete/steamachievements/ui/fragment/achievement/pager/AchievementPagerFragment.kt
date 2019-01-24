@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.achievement.pager
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
@@ -29,12 +28,27 @@ import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
+import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 /**
  * ViewPager Fragment that shows a Dialog-like view for an [Achievement].
  */
 class AchievementPagerFragment : Fragment(), Injectable {
+
+    companion object {
+        private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"
+
+        fun getInstance(achievement: Achievement): AchievementPagerFragment {
+            val fragment = AchievementPagerFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(INTENT_KEY_ACHIEVEMENT, achievement)
+            fragment.arguments = bundle
+            return fragment
+        }
+    }
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -53,8 +67,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievement_pager, container,
-            false)
+        val view = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
         iconView = view.findViewById(R.id.achievement_icon_imageview)
         cardView = view.findViewById(R.id.achievement_cardview)
         nameView = view.findViewById(R.id.achievement_name_textview)
@@ -75,96 +88,70 @@ class AchievementPagerFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Get ViewModel and set observers.
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(PagerFragmentViewModel::class.java)
 
-        val achievementName = arguments?.getString(INTENT_KEY_NAME)
-        val achievementAppId = arguments?.getString(INTENT_KEY_APP_ID)
-        if (achievementName != null && achievementAppId != null) {
-            viewModel.setAchievementInfo(achievementName, achievementAppId)
-        }
-
-        viewModel.achievements.observe(this, Observer {
-            if (it != null) {
-                val achievement = it[0]
+        viewModel.getAchievement().observe(this, Observer { achievement ->
+            if (achievement != null) {
                 setAchievementInfo(achievement)
-                setIconAndColors(achievement.iconUrl)
             }
         })
+
+        // Retrieve Achievement for this Fragment through
+        arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
+            viewModel.setAchievementInfo(achievement)
+        }
     }
 
+    /**
+     * Update View Text labels and load icon with a listener that handles the background color of the cardview.
+     */
     private fun setAchievementInfo(achievement: Achievement) {
         nameView.text = achievement.displayName
-        dateView.text = getDateStringNoBreak(achievement)
+        dateView.text = getDateString(achievement)
 
         val desc = achievement.description
-        if (desc.isNullOrBlank()) {
-            descView.visibility = View.GONE
+        descView.text = if (desc.isNullOrBlank()) {
+            "Hidden"
         } else {
-            descView.text = achievement.description
-            descView.visibility = View.VISIBLE
+            desc
         }
 
-        if (achievement.percentage > 0.0) {
+        if (achievement.percentage >= 0f) {
             globalStatsLabel.setText("${achievement.percentage}%")
         }
-    }
 
-    fun getDateStringNoBreak(achievement: Achievement): String {
-        return getDateString(achievement).replace("\n", " - ")
-    }
-
-    fun getDateStringNoTime(achievement: Achievement): String {
-        return DateFormat.format("dd-MM-yyyy", achievement.unlockTime).toString()
-    }
-
-    private fun getDateString(achievement: Achievement): String {
-        return if (achievement.unlockTime != null) {
-            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString()
-        } else {
-            "Locked"
-        }
-    }
-
-    private fun setIconAndColors(iconUrl: String) {
         val context = context
         if (context != null) {
             GlideApp.with(context)
-                .load(iconUrl)
+                .asBitmap()
+                .load(achievement.iconUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Drawable> {
+                .placeholder(R.drawable.ic_image_placeholder)
+                .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?,
                                               model: Any?,
-                                              target: Target<Drawable>?,
+                                              target: Target<Bitmap>?,
                                               isFirstResource: Boolean): Boolean {
-                        // TODO
+                        Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable?,
+                    override fun onResourceReady(resource: Bitmap?,
                                                  model: Any?,
-                                                 target: Target<Drawable>?,
+                                                 target: Target<Bitmap>?,
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
-                        if (resource != null && resource is BitmapDrawable) {
-                            Palette.from(resource.bitmap).generate {
-                                val darkVibrantSwatch = it?.darkVibrantSwatch
-                                val darkMutedSwatch = it?.darkMutedSwatch
-
-                                if (darkMutedSwatch != null) {
-                                    cardView.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                    iconContent.setCardBackgroundColor(darkMutedSwatch.rgb)
-                                    dateView.setTextColor(darkMutedSwatch.bodyTextColor)
-                                } else if (darkVibrantSwatch != null) {
-                                    cardView.setBackgroundColorAnimated(
-                                        ContextCompat.getColor(context, R.color.colorPrimary),
-                                        darkVibrantSwatch.rgb, 300)
-                                    iconContent.setBackgroundColorAnimated(
-                                        ContextCompat.getColor(context,
-                                            R.color.colorPrimaryDark),
-                                        darkVibrantSwatch.rgb)
-                                }
+                        if (resource != null) {
+                            Palette.from(resource).generate { palette ->
+                                cardView.setBackgroundColorAnimated(
+                                    ContextCompat.getColor(context, R.color.colorPrimary),
+                                    palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
                             }
+
+                            // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
+                            iconContent.setCardBackgroundColor(null)
                         }
                         return false
                     }
@@ -172,8 +159,16 @@ class AchievementPagerFragment : Fragment(), Injectable {
         }
     }
 
-    companion object {
-        const val INTENT_KEY_NAME = "INTENT_KEY_NAME"
-        const val INTENT_KEY_APP_ID = "INTENT_KEY_APP_ID"
+    private fun getDateString(achievement: Achievement): String {
+        val cal = Calendar.getInstance()
+        cal.time = achievement.unlockTime
+
+        // Non achieved achievements will have an empty date object as their unlocktime, which results in the date being in 1970.
+        // Check if the unlock time was after the year in which the development of the Steam platform was started.
+        return if (cal.get(Calendar.YEAR) > 2002) {
+            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString().replace("\n", " - ")
+        } else {
+            "Locked"
+        }
     }
 }

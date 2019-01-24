@@ -11,15 +11,17 @@ android {
     androidExtensions {
         experimental = true
     }
+    buildToolsVersion '28.0.3'
     buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+            debuggable true
+            testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-        debug {
-            debuggable true
-            testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
         }
     }
     compileSdkVersion 28
@@ -41,14 +43,43 @@ android {
         buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
         buildConfigField STRING, DB_NAME, '"players.db"'
     }
+    // Specifies one flavor dimension.
+    flavorDimensions "version"
     lintOptions {
         lintConfig rootProject.file('lint.xml')
+    }
+    productFlavors {
+        // When building a variant that uses this flavor, the following configurations
+        // override those in the defaultConfig block.
+        dev {
+            applicationIdSuffix '.dev'
+            versionNameSuffix "-dev"
+
+            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
+            ext.alwaysUpdateBuildId = false
+
+            // Assigns this product flavor to the "version" flavor dimension.
+            // This property is optional if you are using only one dimension.
+            dimension "version"
+
+            // The following configuration limits the "dev" flavor to using
+            // English string resources and xxhdpi screen-density resources.
+            resConfigs "en", "xxhdpi"
+        }
+
+        prod {
+            // If you've configured the defaultConfig block for the release version of
+            // your app, you can leave this block empty and Gradle uses configurations in
+            // the defaultConfig block instead. You still need to create this flavor.
+            // Otherwise, all variants use the "dev" flavor configurations.
+
+            dimension "version"
+        }
     }
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
         test.java.srcDirs += "src/test-common/java"
     }
-    buildToolsVersion '28.0.3'
 }
 
 dependencies {
@@ -89,7 +120,10 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     //Rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    /* RxAndroid adds android specific bindings for RxJava,
+       Specifically AndroidSchedulers.mainThread() which provides a Scheduler that schedules
+       on main thread and can be used to switch between threads in Android. */
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Room
