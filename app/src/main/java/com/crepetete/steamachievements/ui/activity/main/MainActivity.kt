@@ -25,6 +25,9 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
+/**
+ *
+ */
 class MainActivity : AppCompatActivity(), LoadingIndicator,
     BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
     companion object {
