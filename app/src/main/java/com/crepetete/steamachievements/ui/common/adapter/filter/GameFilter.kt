@@ -11,15 +11,20 @@ class GameFilter(
     private val listener: GameFilterListener
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
-        val filterString = constraint.toString().toLowerCase()
+        val filterString = constraint?.toString()?.toLowerCase()
 
         val results = Filter.FilterResults()
 
-        games.filter { game ->
-            game.getName().toLowerCase().contains(filterString)
-        }.let { filteredList ->
-            results.values = filteredList
-            results.count = filteredList.size
+        if (filterString.isNullOrBlank()) {
+            results.values = games
+            results.count = games.size
+        } else {
+            games.filter { game ->
+                game.getName().toLowerCase().contains(filterString)
+            }.let { filteredList ->
+                results.values = filteredList
+                results.count = filteredList.size
+            }
         }
 
         return results

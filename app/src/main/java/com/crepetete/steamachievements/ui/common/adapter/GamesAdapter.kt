@@ -29,7 +29,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
 
     var listener: OnGameBindListener? = null
 
-    private var query = ""
+    private var query: String? = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
         val binding = ItemGameBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -64,18 +64,14 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
         filter.updateGames(items)
 
         // If we're not currently showing a search result, update the view.
-        if (query.isBlank()) {
+        if (query.isNullOrBlank()) {
             resetFilteredItems()
         }
     }
 
     fun setQuery(query: String?) {
-        if (query.isNullOrBlank()) {
-            resetFilteredItems()
-        } else {
-            this.query = query
-            filter.filter(query)
-        }
+        this.query = query
+        filter.filter(query)
     }
 
     override fun updateFilteredData(data: List<GameWithAchievements>) {
