@@ -23,8 +23,8 @@ abstract class GamesDao : BaseDao<Game>() {
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGameAsLiveData(appId: String): LiveData<Game>
 
-    @Delete
-    abstract fun delete(vararg games: Game)
+    @Query("SELECT * FROM games WHERE appId IN (:ids)")
+    abstract fun queryObjects(ids: List<String>): LiveData<List<GameWithAchievements>>
 
     @Query("SELECT * FROM games")
     abstract fun getGamesForUser(): Single<List<Game>>
@@ -35,7 +35,7 @@ abstract class GamesDao : BaseDao<Game>() {
     @Query("SELECT appId FROM games")
     abstract fun getGameIds(): Single<List<String>>
 
-    @Query("SELECT * FROM games WHERE name = :query")
+    @Query("SELECT * FROM games WHERE name LIKE :query")
     abstract fun search(query: String?): LiveData<List<GameWithAchievements>>
 
     @Transaction
@@ -45,4 +45,7 @@ abstract class GamesDao : BaseDao<Game>() {
     @Transaction
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGamesWithAchievementsAsLiveData(appId: String): LiveData<GameWithAchievements>
+
+    @Delete
+    abstract fun delete(vararg games: Game)
 }

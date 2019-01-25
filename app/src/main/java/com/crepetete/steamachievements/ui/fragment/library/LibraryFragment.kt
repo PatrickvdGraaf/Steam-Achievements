@@ -91,7 +91,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private fun initScrollFab() {
         fab.setOnClickListener {
-            list_games.smoothScrollToPosition(0)
+            list_games.scrollToPosition(0)
         }
     }
 
@@ -155,7 +155,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        viewModel.setQuery(query)
+        adapter.setQuery(query)
     }
 
     /**

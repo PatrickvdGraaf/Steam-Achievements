@@ -13,11 +13,13 @@
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_24dp"
         android:title="@string/action_search"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
         android:icon="@drawable/ic_sort_24dp"
         android:title="@string/action_sort"
+        android:visible="false"
         app:showAsAction="ifRoom">
         <menu>
             <item

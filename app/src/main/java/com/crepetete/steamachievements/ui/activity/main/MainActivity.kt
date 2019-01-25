@@ -25,6 +25,9 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
+/**
+ *
+ */
 class MainActivity : AppCompatActivity(), LoadingIndicator,
     BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
     companion object {
@@ -131,7 +134,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
             override fun onQueryTextSubmit(query: String): Boolean {
                 navBarListener?.onSearchQueryUpdate(query)
                 searchView.clearFocus()
-                return false
+                return true
             }
         })
 
@@ -153,7 +156,7 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         }
         R.id.action_refresh -> {
             // TODO fix refresh
-//            presenter.onRefreshClicked()
+            //            presenter.onRefreshClicked()
             true
         }
         else -> {
