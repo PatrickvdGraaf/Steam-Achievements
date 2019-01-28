@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -23,8 +24,8 @@ import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
-import com.crepetete.steamachievements.ui.common.enums.AchievSortingMethod
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.GameData
@@ -35,7 +36,8 @@ import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener {
+class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener, HorizontalAchievementsAdapter.OnAchievementClickListener {
+
     companion object {
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
@@ -64,7 +66,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
     private lateinit var viewModel: GameViewModel
 
-    private val achievementsAdapter by lazy { HorizontalAchievementsAdapter() }
+    private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
     // Achievements over Time Graph
     private val achievementsOverTimeGraph by lazy { findViewById<GraphView>(R.id.graph) }
@@ -103,6 +105,15 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
             }
         })
 
+        /* Update the achievement adapter sorting method.*/
+        viewModel.getAchievementSortingMethod().observe(this, Observer { method ->
+            /* Update label. */
+            sortMethodDescription.text = String.format("Sorted by: %s", method.getName(resources))
+
+            /* Sort achievements in adapter. */
+            achievementsAdapter.updateSortingMethod(method)
+        })
+
         viewModel.vibrantColor.observe(this, Observer { swatch ->
             if (swatch != null) {
                 collapsingToolbar.setContentScrimColor(swatch.rgb)
@@ -118,7 +129,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
 
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
-            setSortingMethod()
+            viewModel.setAchievementSortingMethod()
         }
     }
 
@@ -168,14 +179,14 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
             .into(banner)
 
         // Prepare Achievements RecyclerView.
-        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(
+        recyclerViewAchievements.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.HORIZONTAL,
             false)
 
         // Set RecyclerView adapter.
-        recyclerViewLatestAchievements.adapter = achievementsAdapter
-        recyclerViewLatestAchievements.setHasFixedSize(true)
+        recyclerViewAchievements.adapter = achievementsAdapter
+        recyclerViewAchievements.setHasFixedSize(true)
 
         // Move achievements to adapter.
         achievementsAdapter.setAchievements(game.achievements)
@@ -185,10 +196,6 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
             achievementsOverTimeGraph,
             game.achievements,
             this)
-    }
-
-    private fun setSortingMethod(sortingMethod: AchievSortingMethod? = null) {
-        sortMethodDescription.text = String.format("Sorted by: %", achievementsAdapter.updateSortingMethod(sortingMethod))
     }
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
@@ -226,5 +233,14 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener 
         //                }
         //            }
         //        }
+    }
+
+    override fun onAchievementClick(index: Int) {
+        if (index != RecyclerView.NO_POSITION) {
+            startActivity(TransparentPagerActivity.getInstance(
+                this,
+                index,
+                viewModel.game.value?.data?.achievements ?: listOf()))
+        }
     }
 }

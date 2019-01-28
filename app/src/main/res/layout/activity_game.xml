@@ -140,7 +140,7 @@
                     app:layout_constraintTop_toTopOf="@+id/container_achievements_header"/>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewLatestAchievements"
+                    android:id="@+id/recyclerViewAchievements"
                     style="@style/AppTheme.Achievements.RecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
                     android:paddingStart="@dimen/default_margin"
                     android:paddingEnd="@dimen/default_margin"
                     android:text="@string/header_achievements_over_time"
-                    app:layout_constraintTop_toBottomOf="@+id/recyclerViewLatestAchievements"/>
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerViewAchievements"/>
 
                 <com.jjoe64.graphview.GraphView
                     android:id="@+id/graph"

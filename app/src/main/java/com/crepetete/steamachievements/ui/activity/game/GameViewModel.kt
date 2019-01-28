@@ -8,7 +8,10 @@ import androidx.lifecycle.Transformations
 import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
+import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSortedListImpl
+import com.crepetete.steamachievements.ui.common.enums.Order
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
@@ -30,8 +33,41 @@ class GameViewModel @Inject constructor(
             }
         }
 
+    private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
+
+    private var index = 0
+
+    private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
+        0 to Order.AchievedOrder(),
+        1 to Order.RarityOrder(),
+        2 to Order.NotAchievedOrder())
+
+    /* Colors */
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
     val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+
+    /**
+     * Update current sorting method for the achievements list.
+     */
+    fun setAchievementSortingMethod() {
+        sortingComparator.value = getNextSortingMethod()
+    }
+
+    /**
+     * Increases current [index] or goes back to 0 is the index in the same
+     * as the [sortingMethods] size.
+     *
+     * @return next sorting method based on the newly increased [index].
+     */
+    private fun getNextSortingMethod(): Order.BaseComparator<Achievement> {
+        if (index == sortingMethods.keys.size) index = 0 else index++
+        return sortingMethods[index] ?: AchievementSortedListImpl.DEFAULT_ORDER
+    }
+
+    /**
+     * Getter for [sortingComparator] for observers.
+     */
+    fun getAchievementSortingMethod() = sortingComparator
 
     fun updatePalette(palette: Palette) {
         val lightMutedSwatch = palette.lightMutedSwatch
