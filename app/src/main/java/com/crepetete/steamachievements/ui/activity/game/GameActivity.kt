@@ -133,6 +133,15 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         }
     }
 
+    override fun onAchievementClick(index: Int) {
+        if (index != RecyclerView.NO_POSITION) {
+            startActivity(TransparentPagerActivity.getInstance(
+                this,
+                index,
+                viewModel.game.value?.data?.achievements ?: listOf()))
+        }
+    }
+
     private fun setGameInfo(game: GameWithAchievements?) {
         if (game == null) {
             return
@@ -233,14 +242,5 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         //                }
         //            }
         //        }
-    }
-
-    override fun onAchievementClick(index: Int) {
-        if (index != RecyclerView.NO_POSITION) {
-            startActivity(TransparentPagerActivity.getInstance(
-                this,
-                index,
-                viewModel.game.value?.data?.achievements ?: listOf()))
-        }
     }
 }
