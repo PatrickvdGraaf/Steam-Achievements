@@ -33,7 +33,7 @@
     <string name="value_placeholder">Value placeholder</string>
     <string name="textview_label_contentDesc">Label for the below defined value.</string>
     <string name="label_global_achievement_rate">Global achievement rate</string>
-    <string name="sorting_order_achieved_name">Achieved</string>
-    <string name="sorting_order_not_achieved">Not Achieved</string>
+    <string name="sorting_order_achieved_name">Latest</string>
+    <string name="sorting_order_not_achieved">Chronological</string>
     <string name="sorting_order_rarity">Rarity</string>
 </resources>
