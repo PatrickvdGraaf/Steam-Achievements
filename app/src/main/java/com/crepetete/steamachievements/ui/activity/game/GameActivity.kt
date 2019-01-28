@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -28,6 +27,7 @@ import com.crepetete.steamachievements.ui.activity.achievements.pager.Transparen
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.jjoe64.graphview.GraphView
@@ -133,13 +133,8 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         }
     }
 
-    override fun onAchievementClick(index: Int) {
-        if (index != RecyclerView.NO_POSITION) {
-            startActivity(TransparentPagerActivity.getInstance(
-                this,
-                index,
-                viewModel.game.value?.data?.achievements ?: listOf()))
-        }
+    override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
+        startActivity(TransparentPagerActivity.getInstance(this, index, sortedList))
     }
 
     private fun setGameInfo(game: GameWithAchievements?) {

@@ -20,7 +20,7 @@ import java.text.DecimalFormat
 
 class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchievementClickListener {
     // TODO decide whether to implement this or make the adapter accept null as listener.
-    override fun onAchievementClick(index: Int) {
+    override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
         // No implementation yet.
     }
 
