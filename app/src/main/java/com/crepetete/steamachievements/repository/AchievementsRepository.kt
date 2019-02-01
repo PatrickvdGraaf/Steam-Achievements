@@ -1,22 +1,19 @@
 package com.crepetete.steamachievements.repository
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiResponse
+import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
+import com.crepetete.steamachievements.util.livedata.zip3
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Resource
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,12 +29,10 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
-    /**
-     * Fetch all emptyAchievements for a specific game without their global completion rate and achieved
-     * info.
-     */
-    fun loadAchievementsForGame(appId: String): LiveData<Resource<List<Achievement>>> {
+    // TODO Merge all individual getAchievements method so it can accept a list of appIds.
+    fun getAchievements(appId: String): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
+
             override fun saveCallResult(item: SchemaResponse) {
                 Timber.d("Saving Achievements in DB for getAppId: $appId")
 
@@ -50,103 +45,56 @@ class AchievementsRepository @Inject constructor(
                 }
             }
 
-            override fun shouldFetch(data: List<Achievement>?) = data == null
-                || data.isEmpty()
-                || achievementsListRateLimit.shouldFetch("ACHIEVEMENTS_$appId")
+            override fun shouldFetch(data: List<Achievement>?) = achievementsListRateLimit.shouldFetch("ACHIEVEMENTS_$appId")
 
-            override fun loadFromDb(): LiveData<List<Achievement>> {
-                Timber.i("steamachievements; Getting achievements from database for game $appId")
-                return dao.getAchievements(appId)
-            }
+            override fun loadFromDb(): LiveData<List<Achievement>> = dao.getAchievements(appId)
 
-            override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = api.getSchemaForGame(appId)
+            override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = zip3(
+                api.getSchemaForGame(appId),
+                api.getAchievementsForPlayer(appId, userRepository.getCurrentPlayerId() ?: "-1"),
+                api.getGlobalAchievementStats(appId)
+            ) { baseResponse, achievedResponse, globalResponse ->
 
-        }.asLiveData()
-    }
+                /* Check if the base achievement call response was successful. */
+                if (baseResponse is ApiSuccessResponse) {
+                    /* Reference to base achievements list. */
+                    val responseAchievements = baseResponse.body.game.availableGameStats?.achievements ?: mutableListOf()
 
-    @SuppressLint("CheckResult")
-    fun updateAchievementsForGame(appId: String) {
-        api.getSchemaForGameAsSingle(appId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                val data = it.game.availableGameStats?.achievements
-                if (data != null) {
-                    data.forEach { achievement ->
-                        achievement.appId = appId
-                    }
-
-                    getStatsPerAchievements(appId, data)
-                }
-            }, {
-                Timber.e(it)
-            })
-    }
-
-    private fun insertAchievementsList(achievements: List<Achievement>) {
-        Single.create<Void> {
-            dao.upsert(achievements)
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe()
-    }
-
-    @SuppressLint("CheckResult")
-    private fun getStatsPerAchievements(appId: String, allAchievements: List<Achievement>) {
-        Timber.d("Getting Personal achievement stats for game: $appId")
-        api.getAchievementsForPlayerAsSingle(appId, userRepository.getCurrentPlayerId() ?: "-1")
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ response ->
-                val achievements = mutableListOf<Achievement>()
-                response.playerStats.achievements
-                    .asSequence()
-                    .filter { it.achieved != 0 }
-                    .map { ownedAchievement ->
-                        allAchievements.filter {
-                            it.name == ownedAchievement.apiName
-                        }.forEach { it ->
-                            it.unlockTime = ownedAchievement.getUnlockDate()
-                            it.achieved = ownedAchievement.achieved != 0
-                            if (ownedAchievement.description != null) {
-                                it.description = ownedAchievement.description
-                            }
-                            achievements.add(it)
+                    /* Zip Achieved Stats into the base achievements list if the request was successful. */
+                    if (achievedResponse is ApiSuccessResponse) {
+                        achievedResponse.body.playerStats.achievements.forEach { achievedAchievement ->
+                            /* Iterate over all object in the response. For each one, find the corresponding achievement in
+                             * the responseAchievements list and update the information. */
+                            responseAchievements.filter { achievement -> achievement.name == achievedAchievement.apiName }
+                                .forEach { resultAchievement ->
+                                    resultAchievement.unlockTime = achievedAchievement.getUnlockDate()
+                                    resultAchievement.achieved = achievedAchievement.achieved != 0
+                                    if (achievedAchievement.description != null) {
+                                        resultAchievement.description = achievedAchievement.description
+                                    }
+                                }
                         }
                     }
-                    .toList()
-                getGlobalStats(appId, allAchievements)
-            }, {
-                Timber.e(it)
-                insertAchievementsList(allAchievements)
-            })
-    }
 
-    @SuppressLint("CheckResult")
-    private fun getGlobalStats(appId: String, allAchievements: List<Achievement>) {
-        Timber.d("Getting Global achievement stats for game: $appId")
-        api.getGlobalAchievementStatsAsSingle(appId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ item ->
-                item.achievementpercentages.achievements.forEach { response ->
-                    allAchievements.filter {
-                        it.name == response.name
-                    }.forEach {
-                        it.percentage = response.percent
+                    /* Check if the global achievement stats call response was successful. */
+                    if (globalResponse is ApiSuccessResponse) {
+                        globalResponse.body.achievementpercentages.achievements.forEach { r ->
+                            responseAchievements.filter { it.name == r.name }
+                                .forEach { it.percentage = r.percent }
+                        }
                     }
-                    insertAchievementsList(allAchievements)
+
+                    if (appId == "292030") {
+                        Timber.d("breakpoint")
+                    }
                 }
-            }, {
-                Timber.e(it)
-                insertAchievementsList(allAchievements)
-            })
+                return@zip3 baseResponse
+            }
 
-    }
-
-    fun getAchievement(name: String, appId: String): LiveData<Achievement> {
-        return dao.getAchievements(appId, name)
+            override fun onFetchFailed() {
+                achievementsListRateLimit.reset(appId)
+            }
+        }.asLiveData()
     }
 
     //    fun getBestAchievementsDay(): Single<Pair<String, Int>> {
@@ -184,26 +132,14 @@ class AchievementsRepository @Inject constructor(
     //            }
     //    }
 
-    private fun isNewDate(existingDate: Date, otherDate: Date): Boolean {
-        val existingCalendat = Calendar.getInstance()
-        existingCalendat.time = existingDate
-
-        val otherCalendar = Calendar.getInstance()
-        otherCalendar.time = otherDate
-        return existingCalendat.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)
-            || existingCalendat.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)
-            || existingCalendat.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)
-    }
-
-    //    private fun getGlobalStats(getAppId: String, achievements: List<Achievement>): Single<List<Achievement>> {
-    //        return api.getGlobalAchievementStats(getAppId).map { globalAchievResponse ->
-    //            globalAchievResponse.achievementpercentages.achievements.map { response ->
-    //                achievements.filter { it.getName == response.getName }.forEach { achievement ->
-    //                    achievement.percentage = response.percent
-    //                }
-    //            }
+    //    private fun isNewDate(existingDate: Date, otherDate: Date): Boolean {
+    //        val existingCalendat = Calendar.getInstance()
+    //        existingCalendat.time = existingDate
     //
-    //            achievements
-    //        }
+    //        val otherCalendar = Calendar.getInstance()
+    //        otherCalendar.time = otherDate
+    //        return existingCalendat.get(Calendar.DAY_OF_MONTH) != otherCalendar.get(Calendar.DAY_OF_MONTH)
+    //            || existingCalendat.get(Calendar.MONTH) != otherCalendar.get(Calendar.MONTH)
+    //            || existingCalendat.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)
     //    }
 }

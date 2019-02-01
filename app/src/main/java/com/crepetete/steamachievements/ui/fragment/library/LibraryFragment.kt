@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
@@ -33,9 +32,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: LibraryViewModel
-
-    @Inject
-    lateinit var appExecutors: AppExecutors
 
     var adapter = GamesAdapter()
 
@@ -76,12 +72,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 Status.SUCCESS -> {
                     progressBar.visibility = View.GONE
                     adapter.updateGames(gameWithAchResponse.data)
+                    gameWithAchResponse.data?.map { game -> game.getAppId() }?.forEach { id ->
+                        viewModel.updateAchievements(id).observe(this, Observer {
+                            // Just observe, otherwise the NetworkBoundResource won't
+                        })
+                    }
                 }
                 Status.ERROR -> {
                     progressBar.visibility = View.GONE
                     Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
                 }
-                Status.LOADING -> progressBar.visibility = View.VISIBLE
+                Status.LOADING -> {
+                    progressBar.visibility = View.VISIBLE
+                }
             }
         })
 
@@ -119,7 +122,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Updates the achievements for a specific game when it is shown in the RecyclerView.
      */
     override fun onGameBoundInAdapter(appId: String) {
-        viewModel.updateAchievementsFor(appId)
+        //        viewModel.updateAchievementsFor(appId)
     }
 
     /**

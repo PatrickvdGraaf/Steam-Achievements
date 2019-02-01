@@ -14,7 +14,6 @@ abstract class BaseDao<T> {
      * Fails on conflict so [upsert] can catch the exception.
      *
      * @param obj the object to be inserted.
-     * @return the SQL row id.
      */
     @Insert(onConflict = OnConflictStrategy.FAIL)
     abstract fun insert(vararg obj: T)
@@ -24,11 +23,10 @@ abstract class BaseDao<T> {
      *
      * Fails on conflict so [upsert] can catch the exception.
      *
-     * @param obj the objects to be inserted.
-     * @return the SQL row ids.
+     * @param objList the objects to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.FAIL)
-    abstract fun insert(obj: List<T>)
+    abstract fun insert(objList: List<T>)
 
     /**
      * Update an object from the database.
@@ -41,10 +39,10 @@ abstract class BaseDao<T> {
     /**
      * Update an array of objects from the database.
      *
-     * @param obj the object to be updated.
+     * @param objList the object to be updated.
      */
     @Update
-    abstract fun update(obj: List<T>)
+    abstract fun update(objList: List<T>)
 
     /**
      * Delete an object from the database.
@@ -54,6 +52,11 @@ abstract class BaseDao<T> {
     @Delete
     abstract fun delete(obj: T)
 
+    /**
+     * Update an object from the database if it exists, otherwise insert it.
+     *
+     * @param obj the object to be 'up-serted'.
+     */
     @Transaction
     open fun upsert(obj: T) {
         try {
@@ -63,6 +66,11 @@ abstract class BaseDao<T> {
         }
     }
 
+    /**
+     * Update an array of objects from the database if it exists, otherwise insert it.
+     *
+     * @param objList the object to be 'up-serted'.
+     */
     @Transaction
     open fun upsert(objList: List<T>) {
         try {

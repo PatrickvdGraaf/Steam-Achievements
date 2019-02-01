@@ -21,16 +21,16 @@ class Order {
 
     class AchievedOrder : BaseComparator<Achievement> {
         override fun compare(o1: Achievement, o2: Achievement) = try {
-            if (o1.unlockTime != null && o2.unlockTime != null) {
-                when {
-                    o1.unlockTime == o2.unlockTime -> 0
-                    o1.unlockTime!!.after(o2.unlockTime) -> -1
-                    else -> 1
+            if (o1.achieved && o2.achieved) {
+                if (o1.unlockTime == null && o2.unlockTime != null) {
+                    1
+                } else if (o1.unlockTime == null && o2.unlockTime == null) {
+                    0
+                } else {
+                    -1
                 }
-            } else if (o1.unlockTime == null && o2.unlockTime != null) {
+            } else if (o1.achieved && o2.achieved) {
                 1
-            } else if (o1.unlockTime == null && o2.unlockTime == null) {
-                0
             } else {
                 -1
             }
@@ -44,8 +44,10 @@ class Order {
 
     class NotAchievedOrder : BaseComparator<Achievement> {
         override fun compare(o1: Achievement?, o2: Achievement?) = try {
-            if (o1?.unlockTime != null && o2?.unlockTime != null) {
+            if (o1 != null && o2 != null) {
                 when {
+                    o1.achieved && !o2.achieved -> 1
+                    !o1.achieved && o2.achieved -> -1
                     o1.unlockTime == o2.unlockTime -> 0
                     o1.unlockTime!!.after(o2.unlockTime) -> 1
                     else -> -1

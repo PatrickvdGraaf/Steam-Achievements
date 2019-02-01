@@ -9,4 +9,4 @@ data class GameResponse(
         val gameVersion: String?,
         val availableGameStats: Stats?)
 
-data class Stats(val achievements: List<Achievement>)
+data class Stats(val achievements: MutableList<Achievement>)

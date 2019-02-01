@@ -30,7 +30,7 @@ class GameRepository @Inject constructor(
 ) {
 
     // Refresh games every day
-    private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
+    private val gameListRateLimit = RateLimiter<String>(1440, TimeUnit.MINUTES)
 
     fun getGames(userId: String): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {

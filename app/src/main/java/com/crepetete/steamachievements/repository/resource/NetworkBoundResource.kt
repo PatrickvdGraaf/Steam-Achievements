@@ -41,15 +41,15 @@ abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constru
     private val result = MediatorLiveData<Resource<ResultType>>()
 
     init {
-        // Send loading state to UI
+        /* Send loading state to UI */
         result.value = Resource.loading()
         val dbSource = this.loadFromDb()
 
-        // If the data in the original source changes, this observer gets notified
+        /* If the data in the original source changes, this observer gets notified */
         result.addSource(dbSource) { data ->
-            // When we receive data, remove the original source and handle the data.
+            /* When we receive data, remove the original source and handle the data. */
             result.removeSource(dbSource)
-            // Check if the data should be refreshed with an API call.
+            /* Check if the data should be refreshed with an API call. */
             if (shouldFetch(data)) {
                 fetchFromNetwork(dbSource)
             } else {
@@ -66,7 +66,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constru
      */
     private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
         val apiResponse = createCall()
-        // we re-attach dbSource as a new source, it will dispatch its latest value quickly
+        /* We re-attach dbSource as a new source, it will dispatch its latest value quickly */
         result.addSource(dbSource) { setValue(Resource.loading()) }
         result.addSource(apiResponse) { response ->
             result.removeSource(apiResponse)
@@ -80,16 +80,16 @@ abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constru
                             saveCallResult(requestType)
                         }
                         appExecutors.mainThread().execute {
-                            // we specially request a new live data,
-                            // otherwise we will get immediately last cached value,
-                            // which may not be updated with latest results received from network.
+                            /* We specially request a new live data,
+                               otherwise we will get immediately last cached value,
+                               which may not be updated with latest results received from network. */
                             result.addSource(loadFromDb()) { newData -> setValue(Resource.success(newData)) }
                         }
                     }
                 }
                 is ApiEmptyResponse -> {
                     appExecutors.mainThread().execute {
-                        // reload from disk whatever we had
+                        /* Reload from disk whatever we had. */
                         result.addSource(loadFromDb()) { newData ->
                             setValue(Resource.success(newData))
                         }
@@ -119,12 +119,11 @@ abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constru
     @WorkerThread
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>): RequestType? = response.body
 
-    // Called to save the result of the API response into the database
+    /* Called to save the result of the API response into the database. */
     @WorkerThread
     abstract fun saveCallResult(item: RequestType)
 
-    // Called with the data in the database to decide whether it should be
-    // fetched from the network
+    /* Called with the data in the database to decide whether it should be fetched from the network. */
     @MainThread
     abstract fun shouldFetch(data: ResultType?): Boolean
 

@@ -1,12 +1,10 @@
 package com.crepetete.steamachievements.ui.activity.game
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import androidx.palette.graphics.Palette
-import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSortedListImpl
 import com.crepetete.steamachievements.ui.common.enums.Order
@@ -17,10 +15,8 @@ import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
-    application: Application,
-    private val gameRepo: GameRepository,
-    private val achievementsRepo: AchievementsRepository
-) : AndroidViewModel(application) {
+    private val gameRepo: GameRepository
+) : ViewModel() {
 
     private val _appId = MutableLiveData<AppId>()
     val appId: LiveData<AppId>
@@ -108,12 +104,6 @@ class GameViewModel @Inject constructor(
         //                        Timber.e(error)
         //                    })
         //            }
-    }
-
-    fun updateAchievements() {
-        game.value?.data?.getAppId()?.let { appId ->
-            achievementsRepo.updateAchievementsForGame(appId)
-        }
     }
 
     fun setAppId(appId: String) {
