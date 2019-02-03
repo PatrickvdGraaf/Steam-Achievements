@@ -18,6 +18,7 @@ import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
+import timber.log.Timber
 
 /**
  * Created at 19 January, 2019.
@@ -42,6 +43,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                        Timber.w(e, "Error while loading image from url: ${dataItem.getImageUrl()}.")
                         return false
                     }
 

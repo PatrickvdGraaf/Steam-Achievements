@@ -45,6 +45,7 @@ class GameViewModel @Inject constructor(
     init {
         setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)
     }
+
     /**
      * Update current sorting method for the achievements list.
      */
@@ -69,44 +70,23 @@ class GameViewModel @Inject constructor(
     fun getAchievementSortingMethod() = sortingComparator
 
     fun updatePalette(palette: Palette) {
-        val lightMutedSwatch = palette.lightMutedSwatch
-        val lightVibrantSwatch = palette.lightVibrantSwatch
-        val darkVibrantSwatch = palette.darkVibrantSwatch
-        val darkMutedSwatch = palette.darkMutedSwatch
-
-        if (darkVibrantSwatch != null) {
-            vibrantColor.postValue(darkVibrantSwatch)
-        } else if (lightVibrantSwatch != null) {
-            vibrantColor.postValue(lightVibrantSwatch)
+        if (palette.darkMutedSwatch != null && palette.darkVibrantSwatch != null) {
+            mutedColor.postValue(palette.darkMutedSwatch)
+            vibrantColor.postValue(palette.darkVibrantSwatch)
+        } else if (palette.darkMutedSwatch != null && palette.mutedSwatch != null) {
+            mutedColor.postValue(palette.mutedSwatch)
+            vibrantColor.postValue(palette.darkMutedSwatch)
+        } else if (palette.darkVibrantSwatch != null && palette.mutedSwatch != null) {
+            mutedColor.postValue(palette.mutedSwatch)
+            vibrantColor.postValue(palette.darkVibrantSwatch)
+        } else if (palette.lightVibrantSwatch != null && palette.mutedSwatch != null) {
+            mutedColor.postValue(palette.mutedSwatch)
+            vibrantColor.postValue(palette.lightVibrantSwatch)
+        } else if (palette.lightVibrantSwatch != null && palette.lightMutedSwatch != null) {
+            mutedColor.postValue(palette.lightVibrantSwatch)
+            vibrantColor.postValue(palette.lightMutedSwatch)
         }
 
-        if (darkMutedSwatch != null) {
-            mutedColor.postValue(darkMutedSwatch)
-        } else if (lightMutedSwatch != null) {
-            mutedColor.postValue(lightMutedSwatch)
-        } else if (darkVibrantSwatch != null && lightVibrantSwatch != null) {
-            vibrantColor.postValue(lightVibrantSwatch)
-            mutedColor.postValue(darkVibrantSwatch)
-        }
-
-        //        val vibrantRgb = palette.darkVibrantSwatch?.rgb
-        //        val mutedRgb = palette.darkMutedSwatch?.rgb
-
-        //        when {
-        //            mutedRgb != null -> mutedRgb
-        //            else -> vibrantRgb
-        //        }?.let {rgb ->
-        //            game.value?.data?.getAppId()?.let { appId ->
-        //                gameRepo.getGameFromDbAsSingle(appId)
-        //                    .subscribeOn(Schedulers.io())
-        //                    .observeOn(Schedulers.io())
-        //                    .subscribe({ game ->
-        //                        game.colorPrimaryDark = rgb
-        //                        gameRepo.update(game)
-        //                    }, { error ->
-        //                        Timber.e(error)
-        //                    })
-        //            }
     }
 
     fun setAppId(appId: String) {
