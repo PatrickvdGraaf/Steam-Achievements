@@ -42,11 +42,14 @@ class GameViewModel @Inject constructor(
     val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
     val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
+    init {
+        setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)
+    }
     /**
      * Update current sorting method for the achievements list.
      */
-    fun setAchievementSortingMethod() {
-        sortingComparator.value = getNextSortingMethod()
+    fun setAchievementSortingMethod(method: Order.BaseComparator<Achievement>? = null) {
+        sortingComparator.value = method ?: getNextSortingMethod()
     }
 
     /**

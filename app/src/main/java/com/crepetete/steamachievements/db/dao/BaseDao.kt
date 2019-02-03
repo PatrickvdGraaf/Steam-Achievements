@@ -1,10 +1,13 @@
 package com.crepetete.steamachievements.db.dao
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 
 /**
- * Created at 20 January, 2019.
+ *
+ * TODO add class summary.
+ *
+ * @author: Patrick van de Graaf.
+ * @date: Fri 01 Feb, 2019; 17:13.
  */
 @Dao
 abstract class BaseDao<T> {
@@ -15,7 +18,7 @@ abstract class BaseDao<T> {
      *
      * @param obj the object to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(vararg obj: T)
 
     /**
@@ -25,7 +28,7 @@ abstract class BaseDao<T> {
      *
      * @param objList the objects to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(objList: List<T>)
 
     /**
@@ -59,11 +62,8 @@ abstract class BaseDao<T> {
      */
     @Transaction
     open fun upsert(obj: T) {
-        try {
-            insert(obj)
-        } catch (exception: SQLiteConstraintException) {
-            update(obj)
-        }
+        insert(obj)
+        update(obj)
     }
 
     /**
@@ -73,10 +73,7 @@ abstract class BaseDao<T> {
      */
     @Transaction
     open fun upsert(objList: List<T>) {
-        try {
-            insert(objList)
-        } catch (exception: SQLiteConstraintException) {
-            update(objList)
-        }
+        insert(objList)
+        update(objList)
     }
 }

@@ -16,6 +16,7 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
@@ -26,12 +27,14 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener, AchievementsRepository.PrivateProfileMessageListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: LibraryViewModel
+
+    private var hasShownPrivateProfileMessage = false
 
     var adapter = GamesAdapter()
 
@@ -73,8 +76,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                     progressBar.visibility = View.GONE
                     adapter.updateGames(gameWithAchResponse.data)
                     gameWithAchResponse.data?.map { game -> game.getAppId() }?.forEach { id ->
-                        viewModel.updateAchievements(id).observe(this, Observer {
-                            // Just observe, otherwise the NetworkBoundResource won't
+                        viewModel.updateAchievements(id, this).observe(this, Observer {
+                            // Just observe, otherwise the NetworkBoundResource won't fire and achievements wont be fetched.
                         })
                     }
                 }
@@ -116,6 +119,13 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 }
             }
         })
+    }
+
+    override fun onPrivateModelMessage() {
+        if (!hasShownPrivateProfileMessage) {
+            hasShownPrivateProfileMessage = true
+            Snackbar.make(list_games, "Could not get personal stats. Your profile is not public.", Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     /**

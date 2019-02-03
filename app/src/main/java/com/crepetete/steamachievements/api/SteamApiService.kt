@@ -7,7 +7,6 @@ import com.crepetete.steamachievements.api.response.achievement.GlobalAchievResp
 import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.api.response.user.UserResponse
-import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -32,12 +31,6 @@ interface SteamApiService {
         @Query("key") key: String = API_KEY
     ): LiveData<ApiResponse<SchemaResponse>>
 
-    @GET("/ISteamUserStats/GetSchemaForGame/v2/")
-    fun getSchemaForGameAsSingle(
-        @Query("appid") appId: String,
-        @Query("key") key: String = API_KEY
-    ): Single<SchemaResponse>
-
     @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
     fun getAchievementsForPlayer(
         @Query("appid") appId: String,
@@ -45,20 +38,8 @@ interface SteamApiService {
         @Query("key") key: String = API_KEY
     ): LiveData<ApiResponse<AchievedAchievementResponse>>
 
-    @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
-    fun getAchievementsForPlayerAsSingle(
-        @Query("appid") appId: String,
-        @Query("steamid") id: String,
-        @Query("key") key: String = API_KEY
-    ):Single<AchievedAchievementResponse>
-
     @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
     fun getGlobalAchievementStats(
         @Query("gameid") appId: String
     ): LiveData<ApiResponse<GlobalAchievResponse>>
-
-    @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
-    fun getGlobalAchievementStatsAsSingle(
-        @Query("gameid") appId: String
-    ): Single<GlobalAchievResponse>
 }

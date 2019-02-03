@@ -3,13 +3,14 @@ package com.crepetete.steamachievements.ui.common.adapter.sorting
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedListAdapterCallback
 
-abstract class SortedListComparatorWrapper<T>(adapter: RecyclerView.Adapter<*>,
-                                              private var comparator: Comparator<T>?) : SortedListAdapterCallback<T>(adapter) {
+abstract class SortedListComparatorWrapper<T>(
+    adapter: RecyclerView.Adapter<*>,
+    private var comparator: Comparator<T>?) : SortedListAdapterCallback<T>(adapter) {
+
     fun setComparator(comparator: Comparator<T>) {
         if (comparator == this.comparator) {
             return
         }
-
         this.comparator = comparator
     }
 

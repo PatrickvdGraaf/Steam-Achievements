@@ -26,10 +26,10 @@ class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
         return false
     }
 
-    private fun now() = SystemClock.uptimeMillis()
-
     @Synchronized
     fun reset(key: KEY) {
         timestamps.remove(key)
     }
+
+    private fun now() = SystemClock.uptimeMillis()
 }

@@ -26,7 +26,8 @@ class LibraryViewModel @Inject constructor(
         sortingType.value = SortingType.PLAYTIME
     }
 
-    fun updateAchievements(appId: String) = achievementsRepository.getAchievements(appId)
+    fun updateAchievements(appId: String,
+                           listener: AchievementsRepository.PrivateProfileMessageListener) = achievementsRepository.getAchievements(appId, listener)
 
     @SuppressLint("CheckResult")
     fun updatePrimaryColorForGame(game: GameWithAchievements, rgb: Int) {
