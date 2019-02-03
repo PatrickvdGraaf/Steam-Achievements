@@ -36,14 +36,14 @@ class LoginActivity : AppCompatActivity(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var viewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(LoginViewModel::class.java)
+            .get(AuthViewModel::class.java)
 
         // Set listeners
         viewModel.currentPlayer.observe(this, Observer {

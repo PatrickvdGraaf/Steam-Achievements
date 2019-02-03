@@ -49,11 +49,18 @@ class AchievementsRepository @Inject constructor(
 
             override fun loadFromDb(): LiveData<List<Achievement>> = dao.getAchievements(appId)
 
+            /**
+             * Zips the results of three separate api calls for Achievement data and merges them.
+             *
+             * [SteamApiService.getSchemaForGame] for the general / base data for the achievements.
+             * [SteamApiService.getAchievementsForPlayer] for the players achieved status for each achievement.
+             * [SteamApiService.getGlobalAchievementStats] for global stats for each achievement.
+             */
             override fun createCall(): LiveData<ApiResponse<SchemaResponse>> = zip3(
                 api.getSchemaForGame(appId),
                 api.getAchievementsForPlayer(
                     appId,
-                    userRepository.getCurrentPlayerId() ?: "-1"),
+                    userRepository.getCurrentPlayerId()),
                 api.getGlobalAchievementStats(appId)) { baseResponse, achievedResponse, globalResponse ->
 
                 /* Check if the base achievement call response was successful. */

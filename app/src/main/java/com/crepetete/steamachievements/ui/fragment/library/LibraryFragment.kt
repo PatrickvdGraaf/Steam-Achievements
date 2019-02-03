@@ -18,7 +18,6 @@ import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
-import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -27,7 +26,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener, AchievementsRepository.PrivateProfileMessageListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener,
+    AchievementsRepository.PrivateProfileMessageListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -56,16 +56,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        // Check if there is a userId property in the arguments.
-        var userId: String
-        arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID) ?: ""
-            if (userId.isBlank()) {
-                requireContext().startActivity(LoginActivity.getInstance(requireContext()))
-                return
-            }
-        }
 
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
@@ -121,6 +111,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         })
     }
 
+    // TODO make a nicer
     override fun onPrivateModelMessage() {
         if (!hasShownPrivateProfileMessage) {
             hasShownPrivateProfileMessage = true

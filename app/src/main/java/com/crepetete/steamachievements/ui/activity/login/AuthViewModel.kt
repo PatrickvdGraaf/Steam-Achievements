@@ -13,11 +13,13 @@ import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
 @OpenForTesting
-class LoginViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val currentPlayerId = MutableLiveData<String?>()
+    val invalidUserId = "-1"
+
+    val currentPlayerId = MutableLiveData<String?>()
 
     val currentPlayer: LiveData<Resource<Player>> = Transformations.switchMap(currentPlayerId) {
         if (it != null) {
@@ -28,7 +30,7 @@ class LoginViewModel @Inject constructor(
     }
 
     init {
-        currentPlayerId.value = userRepository.getCurrentPlayerId()
+        currentPlayerId.value = userRepository.getCurrentPlayerId(invalidUserId)
     }
 
     fun parseIdFromUri(uri: Uri?) {

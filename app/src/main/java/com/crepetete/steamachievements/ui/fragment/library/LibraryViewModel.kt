@@ -20,7 +20,7 @@ class LibraryViewModel @Inject constructor(
 
     private var sortingType = MutableLiveData<SortingType>()
 
-    val gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = gameRepo.getGames(userRepository.getCurrentPlayerId() ?: "")
+    val gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = gameRepo.getGames(userRepository.getCurrentPlayerId())
 
     init {
         sortingType.value = SortingType.PLAYTIME
