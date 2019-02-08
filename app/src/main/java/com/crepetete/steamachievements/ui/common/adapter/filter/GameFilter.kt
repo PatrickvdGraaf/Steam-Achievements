@@ -39,7 +39,3 @@ class GameFilter(
         games = newGames
     }
 }
-
-interface GameFilterListener {
-    fun updateFilteredData(data: List<GameWithAchievements>)
-}
