@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    xmlns:tools="http://schemas.android.com/tools"
     android:clipToPadding="false">
 
     <androidx.cardview.widget.CardView
@@ -33,7 +34,7 @@
                 style="@style/AppTheme.Text.Header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Achievement Title" />
+                tools:text="Achievement Title" />
 
             <TextView
                 android:id="@+id/achievement_date_textview"
@@ -41,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin_quarter"
-                android:text="11-01-1995" />
+                tools:text="11-01-1995" />
 
             <TextView
                 android:id="@+id/achievement_desc_textview"
@@ -49,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin_halved"
-                android:text="Description on how to achieve this achievement." />
+                tools:text="Description on how to achieve this achievement." />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
