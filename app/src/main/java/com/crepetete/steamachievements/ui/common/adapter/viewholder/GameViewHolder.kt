@@ -42,11 +42,6 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 .load(dataItem.getImageUrl())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                        Timber.w(e, "Error while loading image from url: ${dataItem.getImageUrl()}.")
-                        return false
-                    }
-
                     override fun onResourceReady(resource: Bitmap?,
                                                  model: Any?,
                                                  target: Target<Bitmap>?,
@@ -72,6 +67,10 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                         return false
                     }
 
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                        Timber.w(e, "Error while loading image from url: ${dataItem.getImageUrl()}.")
+                        return false
+                    }
                 })
                 .into(binding.gameBanner)
         }

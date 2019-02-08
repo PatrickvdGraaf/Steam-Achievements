@@ -16,11 +16,10 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      */
     @Bindable
     fun getAchievementsText() = when {
-        // Show a completion percentage
-        hasCompletedAchievements() -> "${getCompletedAchievements().size}/${game.achievements.size} (${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements."
-        // Only show total amount of achievements.
-        game.achievements.isNotEmpty() -> "${game.achievements.size} achievements."
-        else -> "No achievements"
+        hasCompletedAchievements() -> "${getCompletedAchievements().size}/${game.achievements.size} " +
+            "(${DecimalFormat("0.##").format(getPercentageCompleted())}%) achievements." // Show a completion percentage
+        game.achievements.isNotEmpty() -> "${game.achievements.size} achievements." // Only show total amount of achievements.
+        else -> "No achievements" // Simply show that there are no achievements.
     }
 
     /**

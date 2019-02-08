@@ -29,8 +29,10 @@ class Order {
                 } else {
                     -1
                 }
-            } else if (o1.achieved && o2.achieved) {
+            } else if (!o1.achieved && o2.achieved) {
                 1
+            } else if (!o1.achieved && !o2.achieved) {
+                0
             } else {
                 -1
             }

@@ -19,7 +19,7 @@ class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(f
      * Returns [PagerAdapter.POSITION_UNCHANGED] if the position of the given item has not changed
      * or [PagerAdapter.POSITION_NONE] if the item is no longer present in the adapter.
      * The default implementation assumes that items will never change position and always
-     * returns POSITION_UNCHANGED.
+     * returns [PagerAdapter.POSITION_NONE].
      *
      * Always returning POSITION_NONE is memory and performance inefficient.
      * It will always detach the current visible fragments and recreate them even if their position in the dataset hasn’t changed.
@@ -32,9 +32,7 @@ class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(f
         }
     }
 
-    override fun getItem(position: Int): AchievementPagerFragment {
-        return AchievementPagerFragment.getInstance(achievementData[position])
-    }
+    override fun getItem(position: Int) = AchievementPagerFragment.getInstance(achievementData[position])
 
     override fun getCount() = achievementData.size
 

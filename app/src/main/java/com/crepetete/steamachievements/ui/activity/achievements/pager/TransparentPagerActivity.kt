@@ -57,8 +57,7 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
         pager.setPageTransformer(true, ZoomOutPageTransformer())
 
         // Get ViewModel and observe.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(TransparentPagerViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(TransparentPagerViewModel::class.java)
 
         viewModel.achievementData.observe(this, Observer {
             pagerAdapter.updateAchievements(it)

@@ -5,30 +5,23 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.annotation.ColorInt
 import com.crepetete.steamachievements.R
 import kotlinx.android.synthetic.main.component_text_value.view.*
 
 class ValueWithLabelTextView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0,
-        defStyleRes: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0,
+    defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyle, defStyleRes) {
     init {
-        LayoutInflater.from(context)
-                .inflate(R.layout.component_text_value, this, true)
+        LayoutInflater.from(context).inflate(R.layout.component_text_value, this, true)
         orientation = VERTICAL
 
-        attrs?.let {
-            val typedArray = context.obtainStyledAttributes(it,
-                    R.styleable.ValueWithLabelTextView, 0, 0)
-            val label = resources.getText(typedArray
-                    .getResourceId(R.styleable.ValueWithLabelTextView_label,
-                            R.string.label_placeholder))
-            val value = resources.getText(typedArray
-                    .getResourceId(R.styleable.ValueWithLabelTextView_value,
-                            R.string.value_placeholder))
+        attrs?.let { attr ->
+            val typedArray = context.obtainStyledAttributes(attr, R.styleable.ValueWithLabelTextView, 0, 0)
+            val label = resources.getText(typedArray.getResourceId(R.styleable.ValueWithLabelTextView_label, R.string.label_placeholder))
+            val value = resources.getText(typedArray.getResourceId(R.styleable.ValueWithLabelTextView_valueText, R.string.value_placeholder))
 
             setValueText(value.toString())
             setLabel(label.toString())
@@ -64,9 +57,5 @@ class ValueWithLabelTextView @JvmOverloads constructor(
             textview_label.text = text
             textview_label.visibility = View.VISIBLE
         }
-    }
-
-    fun setTextColor(@ColorInt color: Int) {
-        textview_value.setTextColor(color)
     }
 }

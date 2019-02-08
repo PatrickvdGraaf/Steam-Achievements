@@ -17,7 +17,10 @@
         android:id="@+id/gameCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:clipToPadding="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@color/transparent"
         app:cardCornerRadius="4dp"
         app:cardElevation="@dimen/elevation_card_default"
@@ -89,10 +92,10 @@
                 android:paddingTop="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
                 android:paddingBottom="@dimen/default_margin_halved"
-                android:transitionName="title"
                 android:text="@{gameData.getName()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_header_five"
+                android:transitionName="title"
                 app:layout_constraintTop_toBottomOf="@+id/game_banner"
                 tools:text="Game name"/>
 

@@ -10,6 +10,6 @@
 
     <declare-styleable name="ValueWithLabelTextView">
         <attr name="label" format="string" />
-        <attr name="value" format="string" />
+        <attr name="valueText" format="string"/>
     </declare-styleable>
 </resources>

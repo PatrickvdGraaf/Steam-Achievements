@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/default_margin_halved"
                 app:label="@string/label_global_achievement_rate"
-                app:value="100%" />
+                app:valueText="100%"/>
         </LinearLayout>
 
         <androidx.cardview.widget.CardView

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -30,7 +31,6 @@ import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedLi
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.jjoe64.graphview.GraphView
 import kotlinx.android.synthetic.main.activity_game.*
 import timber.log.Timber
 import java.util.*
@@ -44,19 +44,11 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
 
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, appId: String) = Intent(
-            context,
-            GameActivity::class.java
-        ).apply {
-            putExtra(INTENT_GAME_ID, appId)
-        }
+        fun getInstance(context: Context, appId: String) = Intent(context, GameActivity::class.java)
+            .apply { putExtra(INTENT_GAME_ID, appId) }
 
-        fun getInstance(context: Context, game: GameWithAchievements) = Intent(
-            context,
-            GameActivity::class.java
-        ).apply {
-            putExtra(INTENT_GAME, game)
-        }
+        fun getInstance(context: Context, game: GameWithAchievements) = Intent(context, GameActivity::class.java)
+            .apply { putExtra(INTENT_GAME, game) }
     }
 
     @Inject
@@ -67,9 +59,6 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
     private lateinit var viewModel: GameViewModel
 
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
-
-    // Achievements over Time Graph
-    private val achievementsOverTimeGraph by lazy { findViewById<GraphView>(R.id.graph) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,6 +142,15 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         // Set ScrollView background to game specific color.
         binding.scrollView.setBackgroundColor(game.getPrimaryColor())
 
+        // TODO find a way to implement this inside xml with data binding.
+        if (data.getRecentPlaytimeString() != "0m") {
+            binding.recentlyPlayedTextView.setText(data.getRecentPlaytimeString())
+        } else {
+            binding.recentlyPlayedTextView.visibility = View.GONE
+        }
+
+        binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
+
         // Load Banner
         Glide.with(this)
             .asBitmap()
@@ -196,10 +194,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         achievementsAdapter.setAchievements(game.achievements)
 
         // Init Graph.
-        AchievementsGraphViewUtil.setAchievementsOverTime(
-            achievementsOverTimeGraph,
-            game.achievements,
-            this)
+        AchievementsGraphViewUtil.setAchievementsOverTime(graph, game.achievements, this)
     }
 
     private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
