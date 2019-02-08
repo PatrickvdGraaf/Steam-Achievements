@@ -9,16 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.viewpager.widget.ViewPager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.achievements.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
-import com.crepetete.steamachievements.util.extensions.bind
 import com.crepetete.steamachievements.vo.Achievement
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.android.synthetic.main.activity_pager.*
 import javax.inject.Inject
 
 /**
@@ -47,8 +46,6 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
     private lateinit var viewModel: TransparentPagerViewModel
 
     private val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-
-    private val pager by bind<ViewPager>(R.id.pager)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

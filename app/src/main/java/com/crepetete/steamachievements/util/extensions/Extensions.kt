@@ -2,15 +2,12 @@ package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.app.Activity
-import android.app.Dialog
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.enums.SortingType
@@ -24,18 +21,6 @@ import java.util.concurrent.TimeUnit
  * @return A list ordered according to the passed method param,
  * or an empty list if the method was invoked on a null object.
  */
-//fun List<Game>?.sort(method: SortingType): List<Game> {
-//    if (this == null) {
-//        return listOf()
-//    }
-//
-//    return when (method) {
-//        SortingType.PLAYTIME -> this.sortByPlaytime()
-//        SortingType.COMPLETION -> this.sortByCompletion()
-//        SortingType.NAME -> this.sortByName()
-//    }
-//}
-
 fun List<GameWithAchievements>?.sort(method: SortingType): List<GameWithAchievements> {
     if (this == null) {
         return listOf()
@@ -138,27 +123,10 @@ fun Date.getDaysFromNow(): Long {
     return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
 }
 
-fun <T : View> Activity.bind(@IdRes idRes: Int): Lazy<T> {
-    @Suppress("UNCHECKED_CAST")
-    return unsafeLazy { findViewById<T>(idRes) }
-}
-
-fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
-    @Suppress("UNCHECKED_CAST")
-    return unsafeLazy { findViewById<T>(idRes) }
-}
-
-fun <T : View> Dialog.bind(@IdRes idRes: Int): Lazy<T> {
-    @Suppress("UNCHECKED_CAST")
-    return unsafeLazy { findViewById<T>(idRes) }
-}
-
 /**
  * Appends all elements that are not `null` to the given [destination].
  */
-public fun <C : MutableCollection<in T>, T : Any> Iterable<T?>.filterNotNullTo(destination: C): C {
+fun <C : MutableCollection<in T>, T : Any> Iterable<T?>.filterNotNullTo(destination: C): C {
     for (element in this) if (element != null) destination.add(element)
     return destination
 }
-
-private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
