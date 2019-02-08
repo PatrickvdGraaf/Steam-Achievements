@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,9 +26,9 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun updateAchievements(appId: String,
-                           listener: AchievementsRepository.PrivateProfileMessageListener) = achievementsRepository.getAchievements(appId, listener)
+                           listener: AchievementsRepository.AchievementsErrorListener) = achievementsRepository
+        .getAchievements(appId, listener)
 
-    @SuppressLint("CheckResult")
     fun updatePrimaryColorForGame(game: GameWithAchievements, rgb: Int) {
         game.setPrimaryColor(rgb)
 

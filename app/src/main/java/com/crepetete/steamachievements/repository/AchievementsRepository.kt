@@ -30,7 +30,7 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(10, TimeUnit.MINUTES)
 
-    fun getAchievements(appId: String, listener: PrivateProfileMessageListener): LiveData<Resource<List<Achievement>>> {
+    fun getAchievements(appId: String, listener: AchievementsErrorListener): LiveData<Resource<List<Achievement>>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>(appExecutors) {
 
             override fun saveCallResult(item: SchemaResponse) {
@@ -72,7 +72,7 @@ class AchievementsRepository @Inject constructor(
                     if (achievedResponse is ApiSuccessResponse) {
 
                         /* Iterate over all object in the response.  */
-                        achievedResponse.body.playerStats.achievements.forEach { response ->
+                        achievedResponse.body.playerStats?.achievements?.forEach { response ->
 
                             /* For each one, find the corresponding achievement in the responseAchievements list
                              and update the information. */
@@ -88,7 +88,7 @@ class AchievementsRepository @Inject constructor(
                     } else if (achievedResponse is ApiErrorResponse) {
                         Timber.e(achievedResponse.errorMessage)
                         if (achievedResponse.errorMessage?.contains("Profile is not public") == true) {
-                            listener.onPrivateModelMessage()
+                            listener.onPrivateProfileErrorMessage()
                         }
                     }
 
@@ -209,7 +209,7 @@ class AchievementsRepository @Inject constructor(
     //            || existingCalendat.get(Calendar.YEAR) != otherCalendar.get(Calendar.YEAR)
     //    }
 
-    interface PrivateProfileMessageListener {
-        fun onPrivateModelMessage()
+    interface AchievementsErrorListener {
+        fun onPrivateProfileErrorMessage()
     }
 }

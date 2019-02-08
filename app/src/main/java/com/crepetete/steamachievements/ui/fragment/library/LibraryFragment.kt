@@ -26,8 +26,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener,
-    AchievementsRepository.PrivateProfileMessageListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener,
+    AchievementsRepository.AchievementsErrorListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -111,19 +111,16 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         })
     }
 
-    // TODO make a nicer
-    override fun onPrivateModelMessage() {
+    /**
+     *  Listener from the [AchievementsRepository.AchievementsErrorListener] which informs the activity of Errors in the process
+     *  of getting new Achievements data.
+     */
+    override fun onPrivateProfileErrorMessage() {
+        // Needs to be shown only once. Prevent refresh calls from showing multiple Snackbars.
         if (!hasShownPrivateProfileMessage) {
             hasShownPrivateProfileMessage = true
             Snackbar.make(list_games, "Could not get personal stats. Your profile is not public.", Snackbar.LENGTH_SHORT).show()
         }
-    }
-
-    /**
-     * Updates the achievements for a specific game when it is shown in the RecyclerView.
-     */
-    override fun onGameBoundInAdapter(appId: String) {
-        //        viewModel.updateAchievementsFor(appId)
     }
 
     /**
@@ -167,7 +164,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * new sorting method.
      */
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
-        // TODO fix sorting
         //        viewModel.rearrangeGames(sortingMethod)
     }
 

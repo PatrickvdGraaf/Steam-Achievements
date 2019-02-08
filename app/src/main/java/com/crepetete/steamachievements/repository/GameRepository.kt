@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiResponse
@@ -10,8 +9,6 @@ import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
-import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -30,7 +27,7 @@ class GameRepository @Inject constructor(
 ) {
 
     // Refresh games every day
-    private val gameListRateLimit = RateLimiter<String>(1440, TimeUnit.MINUTES)
+    private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
 
     fun getGames(userId: String): LiveData<Resource<List<GameWithAchievements>>> {
         return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
@@ -47,7 +44,6 @@ class GameRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
-                || data.isEmpty()
                 || gameListRateLimit.shouldFetch("getGamesForUser$userId")
 
             override fun loadFromDb(): LiveData<List<GameWithAchievements>> = dao.getGamesWithAchievementsAsLiveData()
@@ -56,6 +52,9 @@ class GameRepository @Inject constructor(
 
             override fun onFetchFailed() {
                 gameListRateLimit.reset(userId)
+                if (userId == "-1") {
+                    Timber.e("An invalid userId was passed to GameRepository.getGames(). Are the SP empty?")
+                }
             }
         }.asLiveData()
     }
@@ -84,45 +83,10 @@ class GameRepository @Inject constructor(
     }
 
     fun update(item: Game) {
-        dao.update(item)
+        dao.upsert(item)
     }
 
     fun update(item: GameWithAchievements) {
-        val game = item.game
-        if (game != null) {
-            dao.update(game)
-        }
-    }
-
-    /**
-     * @param query name of the game.
-     * @param sortingType order in which the returned list should be sorted.
-     * @return a list of suggested games for the given [query].
-     */
-    fun search(query: String?, userId: String, sortingType: SortingType): LiveData<Resource<List<GameWithAchievements>>> {
-        return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
-            override fun saveCallResult(item: BaseGameResponse) {
-                val games = item.response.games
-                games.forEach { game ->
-                    game.userId = userId
-                }
-
-                dao.upsert(games)
-            }
-
-            override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
-                || data.isEmpty()
-                || gameListRateLimit.shouldFetch("getGamesForUser$userId")
-
-            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = Transformations
-                .map(dao.search("%$query%")) { games ->
-                    games.sort(sortingType)
-                    games
-                }
-
-            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
-
-
-        }.asLiveData()
+        item.game?.let { game -> dao.upsert(game) }
     }
 }
