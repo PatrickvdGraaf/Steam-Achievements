@@ -96,7 +96,7 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     /**
      * Shows the total amount of emptyAchievements.
      */
-    fun setTotalAchievementsInfo(achievementCount: Int) {
+    private fun setTotalAchievementsInfo(achievementCount: Int) {
         textViewAllAchievements.text = "$achievementCount"
         this.achievementCount = achievementCount
     }
@@ -104,7 +104,7 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     /**
      * Shows total completion percentage.
      */
-    fun setCompletionPercentage(percentage: Double) {
+    private fun setCompletionPercentage(percentage: Double) {
         completionPercentage = percentage
         circularProgressBar.setProgressWithAnimation(percentage.toFloat())
     }
@@ -119,7 +119,7 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     /**
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
-    fun showLatestAchievements(achievements: List<Achievement>,
+    private fun showLatestAchievements(achievements: List<Achievement>,
                                allAchievements: List<Achievement>) {
         this.achievements = achievements
         this.allAchievements = allAchievements

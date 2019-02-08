@@ -10,7 +10,6 @@
     <color name="transparent">#00000000</color>
     <color name="transparent_overlay">#a5000000</color>
 
-    <color name="colorGameViewHolderBackground">@color/colorPrimaryDark</color>
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
     <color name="statusbar_translucent">#64000000</color>
 </resources>
