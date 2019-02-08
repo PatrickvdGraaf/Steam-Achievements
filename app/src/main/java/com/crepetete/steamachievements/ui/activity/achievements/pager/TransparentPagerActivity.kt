@@ -3,7 +3,6 @@ package com.crepetete.steamachievements.ui.activity.achievements.pager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -61,11 +60,6 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(TransparentPagerViewModel::class.java)
 
-        // Use Handler because of https://stackoverflow.com/a/33493282/10074409.
-        viewModel.index.observe(this, Observer { index ->
-            Handler().postDelayed({ pager.setCurrentItem(index, false) }, 100)
-
-        })
         viewModel.achievementData.observe(this, Observer {
             pagerAdapter.updateAchievements(it)
         })
@@ -75,6 +69,13 @@ class TransparentPagerActivity : AppCompatActivity(), Injectable, HasSupportFrag
             viewModel.setAchievementData(intent.getParcelableArrayListExtra(INTENT_KEY_ACHIEVEMENT))
             viewModel.setIndex(intent.getIntExtra(INTENT_KEY_INDEX, 0))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.index.observe(this, Observer { index ->
+            pager.setCurrentItem(index, false)
+        })
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
