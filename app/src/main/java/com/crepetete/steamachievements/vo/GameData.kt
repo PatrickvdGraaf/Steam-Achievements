@@ -1,8 +1,9 @@
 package com.crepetete.steamachievements.vo
 
+import android.content.Context
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
-import com.crepetete.steamachievements.util.extensions.toHours
+import com.crepetete.steamachievements.R
 import java.text.DecimalFormat
 
 class GameData(private val game: GameWithAchievements) : BaseObservable() {
@@ -34,7 +35,7 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      * @return A base text representation of the total playtime.
      */
     @Bindable
-    fun getTotalPlayTimeString() = game.getPlaytime().toHours()
+    fun getTotalPlayTimeString() = toHours(game.getPlaytime())
 
     /**
      * Formats recent play tim Long into readable text using [toHours].
@@ -42,7 +43,7 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      * @return A base text representation of the recent playtime.
      */
     @Bindable
-    fun getRecentPlaytimeString() = game.getRecentPlaytime().toHours()
+    fun getRecentPlaytimeString() = toHours(game.getRecentPlaytime())
 
     /**
      * @return a float representing a percentage (achieved achievements over total achievements).
@@ -72,4 +73,21 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
      * Quick shortcut to check if the player has any achieved achievement for this game.
      */
     private fun hasCompletedAchievements() = game.achievements.any { it.achieved }
+
+    private fun toHours(time: Long, context: Context? = null): String {
+        val hours = time / 60
+        val minutes = time % 60
+        var hoursAbbr = "h"
+        var minAbbr = "m"
+        if (context != null) {
+            hoursAbbr = context.getString(R.string.abbr_hours)
+            minAbbr = context.getString(R.string.abbr_minutes)
+        }
+
+        return if (hours <= 0) {
+            "$minutes$minAbbr"
+        } else {
+            "$hours$hoursAbbr, $minutes$minAbbr"
+        }
+    }
 }

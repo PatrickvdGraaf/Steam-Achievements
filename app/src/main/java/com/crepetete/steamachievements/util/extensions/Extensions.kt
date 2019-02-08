@@ -2,14 +2,12 @@ package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import java.util.*
@@ -60,30 +58,6 @@ fun List<GameWithAchievements>.sortByPlaytime(): List<GameWithAchievements> {
             else -> 1
         }
     })
-}
-
-fun Long.toHours(context: Context? = null): String {
-    val hours = this / 60
-    val minutes = this % 60
-    var hoursAbbr = "h"
-    var minAbbr = "m"
-    if (context != null) {
-        hoursAbbr = context.getString(R.string.abbr_hours)
-        minAbbr = context.getString(R.string.abbr_minutes)
-    }
-
-    return if (hours <= 0) {
-        "$minutes$minAbbr"
-    } else {
-        "$hours$hoursAbbr, $minutes$minAbbr"
-    }
-}
-
-fun Int.toPercentage(from: Int): Long {
-    if (from == 0) {
-        return 0L
-    }
-    return this * 100L / from
 }
 
 fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
