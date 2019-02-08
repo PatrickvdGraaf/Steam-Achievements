@@ -12,13 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.steamachievements.AppExecutors
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
-import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.GameWithAchievements
@@ -27,15 +26,15 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameBindListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener,
+    AchievementsRepository.AchievementsErrorListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: LibraryViewModel
 
-    @Inject
-    lateinit var appExecutors: AppExecutors
+    private var hasShownPrivateProfileMessage = false
 
     var adapter = GamesAdapter()
 
@@ -58,16 +57,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Check if there is a userId property in the arguments.
-        var userId: String
-        arguments?.let {
-            userId = it.getString(KEY_PLAYER_ID) ?: ""
-            if (userId.isBlank()) {
-                requireContext().startActivity(LoginActivity.getInstance(requireContext()))
-                return
-            }
-        }
-
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
@@ -76,12 +65,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 Status.SUCCESS -> {
                     progressBar.visibility = View.GONE
                     adapter.updateGames(gameWithAchResponse.data)
+                    gameWithAchResponse.data?.map { game -> game.getAppId() }?.forEach { id ->
+                        viewModel.updateAchievements(id, this).observe(this, Observer {
+                            // Just observe, otherwise the NetworkBoundResource won't fire and achievements wont be fetched.
+                        })
+                    }
                 }
                 Status.ERROR -> {
                     progressBar.visibility = View.GONE
                     Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
                 }
-                Status.LOADING -> progressBar.visibility = View.VISIBLE
+                Status.LOADING -> {
+                    progressBar.visibility = View.VISIBLE
+                }
             }
         })
 
@@ -116,10 +112,15 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     }
 
     /**
-     * Updates the achievements for a specific game when it is shown in the RecyclerView.
+     *  Listener from the [AchievementsRepository.AchievementsErrorListener] which informs the activity of Errors in the process
+     *  of getting new Achievements data.
      */
-    override fun onGameBoundInAdapter(appId: String) {
-        viewModel.updateAchievementsFor(appId)
+    override fun onPrivateProfileErrorMessage() {
+        // Needs to be shown only once. Prevent refresh calls from showing multiple Snackbars.
+        if (!hasShownPrivateProfileMessage) {
+            hasShownPrivateProfileMessage = true
+            Snackbar.make(list_games, "Could not get personal stats. Your profile is not public.", Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     /**
@@ -163,7 +164,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * new sorting method.
      */
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
-        // TODO fix sorting
         //        viewModel.rearrangeGames(sortingMethod)
     }
 

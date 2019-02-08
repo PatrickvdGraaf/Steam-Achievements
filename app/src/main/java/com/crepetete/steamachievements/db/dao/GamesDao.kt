@@ -23,6 +23,7 @@ abstract class GamesDao : BaseDao<Game>() {
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGameAsLiveData(appId: String): LiveData<Game>
 
+    @Transaction
     @Query("SELECT * FROM games WHERE appId IN (:ids)")
     abstract fun queryObjects(ids: List<String>): LiveData<List<GameWithAchievements>>
 
@@ -35,6 +36,7 @@ abstract class GamesDao : BaseDao<Game>() {
     @Query("SELECT appId FROM games")
     abstract fun getGameIds(): Single<List<String>>
 
+    @Transaction
     @Query("SELECT * FROM games WHERE name LIKE :query")
     abstract fun search(query: String?): LiveData<List<GameWithAchievements>>
 

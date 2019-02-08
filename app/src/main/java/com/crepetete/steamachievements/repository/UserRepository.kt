@@ -20,11 +20,12 @@ class UserRepository @Inject constructor(
     private val dao: PlayerDao
 ) {
     private val userIdKey = "userId"
+    private val invalidUserId = "-1"
 
     fun getCurrentPlayer(): LiveData<Resource<Player>> {
-        val playerId = getCurrentPlayerId()
+        val playerId = getCurrentPlayerId(invalidUserId)
 
-        if (playerId != null) {
+        if (playerId != invalidUserId) {
             return object : NetworkBoundResource<Player, UserResponse>(appExecutors) {
                 override fun saveCallResult(item: UserResponse) {
                     val user = item.response.players.firstOrNull()
@@ -64,7 +65,7 @@ class UserRepository @Inject constructor(
                 }
             }
 
-            override fun shouldFetch(data: Player?) = data == null
+            override fun shouldFetch(data: Player?) = data == null && playerId != invalidUserId
 
             override fun loadFromDb(): LiveData<Player> {
                 return dao.getPlayerById(playerId)
@@ -76,7 +77,7 @@ class UserRepository @Inject constructor(
         }.asLiveData()
     }
 
-    fun getCurrentPlayerId(): String? = sharedPreferences.getString(userIdKey, null)
+    fun getCurrentPlayerId(defValue: String = "-1") = sharedPreferences.getString(userIdKey, defValue)!!
 
     fun putCurrentPlayerId(userId: String) {
         sharedPreferences.edit().putString(userIdKey, userId).apply()

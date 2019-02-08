@@ -1,10 +1,13 @@
 package com.crepetete.steamachievements.db.dao
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.room.*
 
 /**
- * Created at 20 January, 2019.
+ *
+ * TODO add class summary.
+ *
+ * @author: Patrick van de Graaf.
+ * @date: Fri 01 Feb, 2019; 17:13.
  */
 @Dao
 abstract class BaseDao<T> {
@@ -14,9 +17,8 @@ abstract class BaseDao<T> {
      * Fails on conflict so [upsert] can catch the exception.
      *
      * @param obj the object to be inserted.
-     * @return the SQL row id.
      */
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insert(vararg obj: T)
 
     /**
@@ -24,11 +26,10 @@ abstract class BaseDao<T> {
      *
      * Fails on conflict so [upsert] can catch the exception.
      *
-     * @param obj the objects to be inserted.
-     * @return the SQL row ids.
+     * @param objList the objects to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.FAIL)
-    abstract fun insert(obj: List<T>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun insert(objList: List<T>)
 
     /**
      * Update an object from the database.
@@ -41,10 +42,10 @@ abstract class BaseDao<T> {
     /**
      * Update an array of objects from the database.
      *
-     * @param obj the object to be updated.
+     * @param objList the object to be updated.
      */
     @Update
-    abstract fun update(obj: List<T>)
+    abstract fun update(objList: List<T>)
 
     /**
      * Delete an object from the database.
@@ -54,21 +55,25 @@ abstract class BaseDao<T> {
     @Delete
     abstract fun delete(obj: T)
 
+    /**
+     * Update an object from the database if it exists, otherwise insert it.
+     *
+     * @param obj the object to be 'up-serted'.
+     */
     @Transaction
     open fun upsert(obj: T) {
-        try {
-            insert(obj)
-        } catch (exception: SQLiteConstraintException) {
-            update(obj)
-        }
+        insert(obj)
+        update(obj)
     }
 
+    /**
+     * Update an array of objects from the database if it exists, otherwise insert it.
+     *
+     * @param objList the object to be 'up-serted'.
+     */
     @Transaction
     open fun upsert(objList: List<T>) {
-        try {
-            insert(objList)
-        } catch (exception: SQLiteConstraintException) {
-            update(objList)
-        }
+        insert(objList)
+        update(objList)
     }
 }

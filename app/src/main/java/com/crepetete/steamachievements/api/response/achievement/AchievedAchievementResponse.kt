@@ -1,10 +1,9 @@
 package com.crepetete.steamachievements.api.response.achievement
 
 import com.squareup.moshi.Json
-import timber.log.Timber
 import java.util.*
 
-data class AchievedAchievementResponse(@Json(name = "playerstats") val playerStats: DataClass)
+data class AchievedAchievementResponse(@Json(name = "playerstats") val playerStats: DataClass?)
 
 data class DataClass(val steamID: String = "-1",
                      val gameName: String = "",

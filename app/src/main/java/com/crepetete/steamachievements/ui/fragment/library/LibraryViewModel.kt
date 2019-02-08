@@ -1,8 +1,6 @@
 package com.crepetete.steamachievements.ui.fragment.library
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.AchievementsRepository
@@ -21,48 +19,22 @@ class LibraryViewModel @Inject constructor(
 
     private var sortingType = MutableLiveData<SortingType>()
 
-    val gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = gameRepo.getGames(userRepository.getCurrentPlayerId() ?: "")
-
-    //    fun rearrangeGames(order: SortingType) = gamesWithAchievement.value?.data?.map { it.game }?.let {
-    //        val nonNullGames = mutableListOf<Game>()
-    //        it.forEach { game ->
-    //            if (game != null) {
-    //                nonNullGames.add(game)
-    //            }
-    //        }
-    //        gamesWithAchievement.value = nonNullGames.toList().sort(order)
-    //    }.also { sortingType = order }
+    val gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = gameRepo.getGames(userRepository.getCurrentPlayerId())
 
     init {
         sortingType.value = SortingType.PLAYTIME
     }
 
-    // TODO find out why the loadAchievementsForGame method doesn't call API.
-    fun updateAchievementsFor(appId: String) {
-        // This doesn't work for API calls for some reason
-        achievementsRepository.loadAchievementsForGame(appId)
+    fun updateAchievements(appId: String,
+                           listener: AchievementsRepository.AchievementsErrorListener) = achievementsRepository
+        .getAchievements(appId, listener)
 
-        // This does work, but not as nice as I'd like.
-        achievementsRepository.updateAchievementsForGame(appId)
-    }
-
-    @SuppressLint("CheckResult")
     fun updatePrimaryColorForGame(game: GameWithAchievements, rgb: Int) {
         game.setPrimaryColor(rgb)
 
         val gameData = game.game
         if (gameData != null) {
             gameRepo.update(gameData)
-        }
-    }
-
-    internal class DoubleLiveData(
-        firstLiveData: LiveData<String?>,
-        secondLiveData: LiveData<SortingType>) : MediatorLiveData<Pair<String, SortingType>>() {
-
-        init {
-            addSource(firstLiveData) { first -> value = Pair(first ?: "", secondLiveData.value ?: SortingType.PLAYTIME) }
-            addSource(secondLiveData) { second -> value = Pair(firstLiveData.value ?: "", second) }
         }
     }
 }

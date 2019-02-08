@@ -72,6 +72,7 @@
                 android:paddingTop="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
                 android:paddingBottom="@dimen/default_margin_halved"
+                android:text="@{gameData.getRecentPlaytimeString()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_label_small"
                 app:layout_constraintBottom_toTopOf="@+id/name_textView"

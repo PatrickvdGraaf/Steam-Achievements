@@ -4,7 +4,6 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
@@ -26,10 +25,10 @@ class AchievementsGraphHelper {
     fun setAchievementsOverTime(graphView: GraphView, achievements: List<Achievement>) {
         val context = graphView.context
         if (context != null) {
-            val sortedAchievements = achievements.sortByLastAchieved()
-                    .filter { it.unlockTime != null && it.unlockTime != Date() && it.unlockTime!!.after(steamReleaseDate) }
+            //            val sortedAchievements = achievements.sortByLastAchieved()
+            //                    .filter { it.unlockTime != null && it.unlockTime != Date() && it.unlockTime!!.after(steamReleaseDate) }
 
-            val pairs = sortedAchievements
+            val pairs = achievements
                     .map { achievement ->
                         val achievementsBeforeAchievement = achievements
                                 .filter(Achievement::achieved)

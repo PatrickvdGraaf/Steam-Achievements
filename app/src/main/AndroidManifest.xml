@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.crepetete.steamachievements">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -14,19 +15,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false"/>
-
-        <!-- LOGIN -->
-        <activity android:name="com.crepetete.steamachievements.ui.activity.login.LoginActivity">
+        <activity android:name=".ui.activity.splash.SplashScreenActivity"
+            android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <!-- MAIN -->
-        <activity android:name="com.crepetete.steamachievements.ui.activity.main.MainActivity">
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false"/> <!-- LOGIN -->
+        <activity android:name=".ui.activity.login.LoginActivity"/>
+        <activity android:name=".ui.activity.main.MainActivity">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_games"/>
@@ -34,16 +36,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
-        </activity>
-
-        <!-- GAME DETAIL -->
+        </activity> <!-- GAME DETAIL -->
         <activity
-            android:name="com.crepetete.steamachievements.ui.activity.game.GameActivity"
-            android:theme="@style/GameDetailTheme"/>
-
-        <!-- PAGER -->
+            android:name=".ui.activity.game.GameActivity"
+            android:theme="@style/GameDetailTheme"/> <!-- PAGER -->
         <activity
-            android:name="com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity"
+            android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
             android:theme="@style/AppTheme.Transparent"/>
     </application>
+
 </manifest>

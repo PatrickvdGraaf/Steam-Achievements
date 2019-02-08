@@ -8,12 +8,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.annotation.IdRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.ui.activity.login.LoginActivity
+import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
@@ -28,15 +27,12 @@ import javax.inject.Inject
 /**
  *
  */
-class MainActivity : AppCompatActivity(), LoadingIndicator,
+class MainActivity : BaseActivity(), LoadingIndicator,
     BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
-    companion object {
-        private const val INTENT_USER_ID = "user_id"
 
-        fun getInstance(context: Context, id: String): Intent {
-            return Intent(context, MainActivity::class.java).apply {
-                putExtra(INTENT_USER_ID, id)
-            }
+    companion object {
+        fun getInstance(context: Context, userId: String) = Intent(context, MainActivity::class.java).apply {
+            putExtra(INTENT_USER_ID, userId)
         }
     }
 
@@ -56,23 +52,9 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
 
     private lateinit var loadingIndicator: ProgressBar
 
-    private lateinit var userId: String
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val restoredId = savedInstanceState?.getString(INTENT_USER_ID)
-        userId = if (restoredId.isNullOrBlank()) {
-            intent.getStringExtra(INTENT_USER_ID)
-        } else {
-            restoredId
-        }
-
-        if (userId.isBlank()) {
-            openLoginActivity()
-            return
-        }
 
         loadingIndicator = findViewById(R.id.progressBar)
         handleIntent(intent)
@@ -82,14 +64,6 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
         navigation.setOnNavigationItemSelectedListener(this)
 
         navigation.selectedItemId = R.id.menu_library
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.run {
-            putString(INTENT_USER_ID, userId)
-        }
-        // call superclass to save any view hierarchy
-        super.onSaveInstanceState(outState)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -232,10 +206,6 @@ class MainActivity : AppCompatActivity(), LoadingIndicator,
      */
     override fun hideLoading() {
         //        loadingIndicator.visibility = View.GONE
-    }
-
-    private fun openLoginActivity() {
-        startActivity(LoginActivity.getInstance(this))
     }
 
     override fun supportFragmentInjector() = dispatchingAndroidInjector

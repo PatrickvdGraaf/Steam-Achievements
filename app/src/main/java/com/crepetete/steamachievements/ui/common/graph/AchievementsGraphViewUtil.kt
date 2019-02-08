@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
-import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
+//import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
@@ -30,7 +30,7 @@ class AchievementsGraphViewUtil {
                                     onTapListener: OnGraphDateTappedListener? = null) {
             val context = graphView.context
             if (context != null) {
-                val pairs = achievements.sortByLastAchieved()
+                val pairs = achievements
                         .filter {
                             it.achieved && it.unlockTime != null && it.unlockTime != Date()
                                     && it.unlockTime!!.after(steamReleaseDate)

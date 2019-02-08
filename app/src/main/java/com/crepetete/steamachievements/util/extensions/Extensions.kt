@@ -14,7 +14,6 @@ import androidx.annotation.IdRes
 import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -74,62 +73,6 @@ fun List<GameWithAchievements>.sortByPlaytime(): List<GameWithAchievements> {
             o1.getPlaytime() == o2.getPlaytime() -> 0
             o1.getPlaytime() > o2.getPlaytime() -> -1
             else -> 1
-        }
-    })
-}
-
-fun List<Achievement>.sortByLastAchieved(): List<Achievement> {
-    return sortedWith(kotlin.Comparator { o1, o2 ->
-        try {
-            if (o1.unlockTime != null && o2.unlockTime != null) {
-                when {
-                    o1.unlockTime == o2.unlockTime -> 0
-                    o1.unlockTime!!.after(o2.unlockTime) -> -1
-                    else -> 1
-                }
-            } else if (o1.unlockTime == null && o2.unlockTime != null) {
-                1
-            } else if (o1.unlockTime == null && o2.unlockTime == null) {
-                0
-            } else {
-                -1
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            0
-        }
-    })
-}
-
-fun List<Achievement>.sortByNotAchieved(): List<Achievement> {
-    return sortedWith(kotlin.Comparator { o1, o2 ->
-        try {
-            if (o1.unlockTime != null && o2.unlockTime != null) {
-                when {
-                    o1.unlockTime == o2.unlockTime -> 0
-                    o1.unlockTime!!.after(o2.unlockTime) -> 1
-                    else -> -1
-                }
-            } else if (o1.unlockTime == null && o2.unlockTime != null) {
-                -1
-            } else if (o1.unlockTime == null && o2.unlockTime == null) {
-                0
-            } else {
-                1
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            0
-        }
-    })
-}
-
-fun List<Achievement>.sortByRarity(): List<Achievement> {
-    return sortedWith(kotlin.Comparator { o1, o2 ->
-        when {
-            o1.percentage > o2.percentage -> 1
-            o1.percentage < o2.percentage -> -1
-            else -> 0
         }
     })
 }

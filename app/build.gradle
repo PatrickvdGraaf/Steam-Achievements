@@ -8,30 +8,38 @@ android {
     def STRING = 'String'
     def API_URL = 'API_URL'
     def DB_NAME = 'DB_NAME'
+    def STEAM_API_KEY = 'STEAM_API_KEY'
+    def TEST_USER_ID = 'TEST_USER_ID'
+
     androidExtensions {
         experimental = true
     }
+
     buildToolsVersion '28.0.3'
+
     buildTypes {
         debug {
             ext.enableCrashlytics = false
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
         }
-
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileSdkVersion 28
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     dataBinding {
         enabled = true
     }
+
     defaultConfig {
         applicationId "com.crepetete.steamachievements"
         minSdkVersion 21
@@ -42,12 +50,27 @@ android {
 
         buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
         buildConfigField STRING, DB_NAME, '"players.db"'
+
+        /* Define the following values in your local.properties. */
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        def steam_api_key = properties.getProperty("steam_api_key", "")
+        def test_user_id = properties.getProperty("test_user_id", "")
+
+        /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
+        buildConfigField STRING, STEAM_API_KEY, steam_api_key
+
+        /* It's recommended to use your own steam ID, which can be found in your profile URL,
+         or can be found with tools like https://steamidfinder.com. */
+        buildConfigField STRING, TEST_USER_ID, test_user_id
     }
+
     // Specifies one flavor dimension.
     flavorDimensions "version"
     lintOptions {
         lintConfig rootProject.file('lint.xml')
     }
+
     productFlavors {
         // When building a variant that uses this flavor, the following configurations
         // override those in the defaultConfig block.
@@ -76,6 +99,7 @@ android {
             dimension "version"
         }
     }
+
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
         test.java.srcDirs += "src/test-common/java"
@@ -127,9 +151,9 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Room
-    implementation 'androidx.room:room-runtime:2.1.0-alpha03'
+    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
     implementation 'android.arch.persistence.room:rxjava2:1.1.1'
-    kapt "androidx.room:room-compiler:2.1.0-alpha03"
+    kapt "androidx.room:room-compiler:2.1.0-alpha04"
 
     // Glide Image Loading
     implementation "com.github.bumptech.glide:glide:$glide_version"
@@ -139,7 +163,6 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
-    implementation 'com.google.code.gson:gson:2.8.2'
 
     // Graph Library http://www.android-graphview.org/download-getting-started/
     implementation 'com.jjoe64:graphview:4.2.2'

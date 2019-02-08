@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.viewmodel
+package com.crepetete.steamachievements.di.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

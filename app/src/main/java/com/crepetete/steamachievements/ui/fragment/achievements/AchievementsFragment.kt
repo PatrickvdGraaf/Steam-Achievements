@@ -18,7 +18,12 @@ import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import java.text.DecimalFormat
 
-class AchievementsFragment : Fragment(){
+class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchievementClickListener {
+    // TODO decide whether to implement this or make the adapter accept null as listener.
+    override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
+        // No implementation yet.
+    }
+
     companion object {
         const val TAG = "ACHIEVEMENTS_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
@@ -28,7 +33,7 @@ class AchievementsFragment : Fragment(){
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-//                setLoaderIndicator(loadingIndicator)
+                //                setLoaderIndicator(loadingIndicator)
             }
         }
     }
@@ -40,7 +45,7 @@ class AchievementsFragment : Fragment(){
     private lateinit var recyclerViewLatestAchievements: RecyclerView
 
     private val achievementsAdapter by lazy {
-        HorizontalAchievementsAdapter()
+        HorizontalAchievementsAdapter(this)
     }
 
     private var achievementCount = 0
@@ -56,7 +61,7 @@ class AchievementsFragment : Fragment(){
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_achievements, container,
-                false)
+            false)
 
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
@@ -68,10 +73,10 @@ class AchievementsFragment : Fragment(){
             updatePercentageText(it.animatedValue as Float)
         })
 
-        recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewLatestAchievements)
+        recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewAchievements)
         recyclerViewLatestAchievements.adapter = achievementsAdapter
         recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
-                LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager.HORIZONTAL, false)
 
         return view
     }
@@ -115,7 +120,7 @@ class AchievementsFragment : Fragment(){
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
     fun showLatestAchievements(achievements: List<Achievement>,
-                                        allAchievements: List<Achievement>) {
+                               allAchievements: List<Achievement>) {
         this.achievements = achievements
         this.allAchievements = allAchievements
         achievementsAdapter.setAchievements(achievements)
@@ -135,6 +140,6 @@ class AchievementsFragment : Fragment(){
             "#,###"
         }
         textViewCompletion.text = String.format(getString(R.string.percentage),
-                DecimalFormat(pattern).format(percentage))
+            DecimalFormat(pattern).format(percentage))
     }
 }

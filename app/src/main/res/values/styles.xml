@@ -28,6 +28,21 @@
         <!--<item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>-->
     </style>
 
+    <style name="SplashScreen" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen_background</item>
+
+        <!-- -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <!-- Optional, on Android 5+ you can modify the colorPrimaryDark color to match the windowBackground color for further branding-->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <!-- BUTTON -->
     <style name="AppTheme.Button.Clear" parent="AppTheme">
         <item name="android:background">@color/transparent</item>
