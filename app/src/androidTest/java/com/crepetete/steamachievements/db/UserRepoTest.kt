@@ -3,7 +3,7 @@ package com.crepetete.steamachievements.db
 import TestUtil
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.runner.AndroidJUnit4
-import com.crepetete.steamachievements.api.TEST_USER_ID
+import com.crepetete.steamachievements.BuildConfig.TEST_USER_ID
 import com.crepetete.steamachievements.util.LiveDataTestUtil.getValue
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert

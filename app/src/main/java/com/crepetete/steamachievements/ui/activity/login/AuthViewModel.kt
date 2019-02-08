@@ -45,9 +45,4 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun retry() {
-        currentPlayerId.value?.let {
-            currentPlayerId.value = it
-        }
-    }
 }

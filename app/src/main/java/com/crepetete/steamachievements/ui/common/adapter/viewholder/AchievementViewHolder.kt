@@ -60,13 +60,4 @@ class AchievementViewHolder(private val view: View)
                 .into(imageViewIcon)
         }
     }
-
-    private fun getDescription(achievement: Achievement): String {
-        return if (achievement.description != null) {
-            "Global achievement rate: ${achievement.percentage}%\n\n" +
-                "${achievement.description}"
-        } else {
-            "\"Global achievement rate: ${achievement.percentage}%"
-        }
-    }
 }

@@ -2,7 +2,6 @@
 /*/build/
 
 # Crashlytics configuations
-com_crashlytics_export_strings.xml
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -11,34 +10,18 @@ local.properties
 .gradle/
 
 # Signing files
-.signing/
 
 # User-specific configurations
 .idea/libraries/
 .idea/workspace.xml
-.idea/tasks.xml
-.idea/.name
-.idea/compiler.xml
-.idea/copyright/profiles_settings.xml
-.idea/encodings.xml
 .idea/misc.xml
 .idea/modules.xml
-.idea/scopes/scope_settings.xml
 .idea/vcs.xml
 *.iml
 
-# OS-specific files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
 /build
 /app/google-services.json
-app/libs/
-libs/
-/app/src/main/java/com/crepetete/steamachievements/utils/Constants.kt
 /.idea/render.experimental.xml
+.idea/fileTemplates/code/
+.idea/fileTemplates/internal/
+.idea/fileTemplates/j2ee/

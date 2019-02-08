@@ -2,16 +2,11 @@ package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * Sorts a list of games.
@@ -84,23 +79,4 @@ fun CardView.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration:
         setCardBackgroundColor(animator.animatedValue as Int)
     }
     colorAnimation.start()
-}
-
-fun TextView.setColor(color: Int) {
-    setTextColor(color)
-    compoundDrawables.forEach { drawable: Drawable? ->
-        drawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-    }
-}
-
-fun Date.getDaysFromNow(): Long {
-    return TimeUnit.DAYS.convert(Calendar.getInstance().time.time - time, TimeUnit.MILLISECONDS)
-}
-
-/**
- * Appends all elements that are not `null` to the given [destination].
- */
-fun <C : MutableCollection<in T>, T : Any> Iterable<T?>.filterNotNullTo(destination: C): C {
-    for (element in this) if (element != null) destination.add(element)
-    return destination
 }
