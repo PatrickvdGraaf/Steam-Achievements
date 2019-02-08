@@ -38,6 +38,10 @@ class GameRepository @Inject constructor(
                 val games = item.response.games
                 games.forEach { game ->
                     game.userId = userId
+
+                    if (game.name.contains("Planet Coaster", true)){
+                        Timber.d(game.recentPlayTime.toString())
+                    }
                 }
 
                 dao.upsert(games)
