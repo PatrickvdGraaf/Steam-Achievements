@@ -22,12 +22,6 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
         else -> "No achievements"
     }
 
-    @Bindable
-    fun getTotalPlaytime() = game.getPlaytime()
-
-    @Bindable
-    fun getRecentPlaytime() = game.getRecentPlaytime()
-
     /**
      * @return Image URL for the games big banner image.
      */
@@ -68,8 +62,6 @@ class GameData(private val game: GameWithAchievements) : BaseObservable() {
     private fun getAmountOfAchievements() = game.achievements.size
 
     private fun getAchievedAchievements() = game.achievements.filter { achievement -> achievement.achieved }
-
-    fun hasAchievements() = getAmountOfAchievements() > 0
 
     /**
      * Getter for a list of all achieved achievements.
