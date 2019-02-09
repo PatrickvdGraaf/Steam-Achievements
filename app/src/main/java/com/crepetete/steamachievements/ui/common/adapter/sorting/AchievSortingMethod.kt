@@ -1,9 +1,10 @@
-package com.crepetete.steamachievements.ui.common.enums
+package com.crepetete.steamachievements.ui.common.adapter.sorting
 
 import android.content.res.Resources
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.vo.Achievement
 import timber.log.Timber
+import java.util.*
 
 /**
  *
@@ -20,22 +21,43 @@ class Order {
     }
 
     class AchievedOrder : BaseComparator<Achievement> {
+
+        private val steamReleaseDate = Calendar.getInstance().apply {
+            set(2003, 9, 12, 0, 0, 0)
+        }.time
+
         override fun compare(o1: Achievement, o2: Achievement) = try {
-            if (o1.achieved && o2.achieved) {
-                if (o1.unlockTime == null && o2.unlockTime != null) {
-                    1
-                } else if (o1.unlockTime == null && o2.unlockTime == null) {
-                    0
-                } else {
-                    -1
+            val unlockTime1 = o1.unlockTime
+            val unlockTime2 = o2.unlockTime
+
+            if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(steamReleaseDate) == true) {
+                when {
+                    unlockTime1.after(unlockTime2) -> 1
+                    unlockTime1.before(unlockTime2) -> -1
+                    else -> 0
                 }
-            } else if (!o1.achieved && o2.achieved) {
+            } else if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(steamReleaseDate) == false) {
                 1
-            } else if (!o1.achieved && !o2.achieved) {
-                0
-            } else {
+            } else if (unlockTime1?.after(steamReleaseDate) == false && unlockTime2?.after(steamReleaseDate) == true) {
                 -1
+            } else {
+                0
             }
+            //            if (o1.achieved && o2.achieved) {
+            //                if (o1.unlockTime == null && o2.unlockTime != null) {
+            //                    1
+            //                } else if (o1.unlockTime == null && o2.unlockTime == null) {
+            //                    0
+            //                } else {
+            //                    -1
+            //                }
+            //            } else if (!o1.achieved && o2.achieved) {
+            //                1
+            //            } else if (!o1.achieved && !o2.achieved) {
+            //                0
+            //            } else {
+            //                -1
+            //            }
         } catch (e: Exception) {
             Timber.e(e, "Error while comparing Achievments in AchievedOrder")
             0

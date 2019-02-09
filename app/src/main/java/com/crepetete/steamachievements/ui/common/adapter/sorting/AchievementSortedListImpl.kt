@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.common.adapter.sorting
 
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.steamachievements.ui.common.enums.Order
 import com.crepetete.steamachievements.vo.Achievement
 
 /**

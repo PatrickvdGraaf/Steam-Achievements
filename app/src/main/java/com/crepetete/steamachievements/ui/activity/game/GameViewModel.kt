@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSortedListImpl
-import com.crepetete.steamachievements.ui.common.enums.Order
+import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.GameWithAchievements
