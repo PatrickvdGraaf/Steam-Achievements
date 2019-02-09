@@ -9,6 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Games List-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_games"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <!-- LOADER -->
         <!-- Progress Bar -->
         <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
             android:id="@+id/pulsator"
@@ -25,23 +36,19 @@
             app:pulse_repeat="0"
             app:pulse_startFromScratch="false">
 
-            <ImageView
+            <ImageButton
+                android:id="@+id/loaderButton"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_centerInParent="true"
+                android:background="@color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_steam_round"/>
 
         </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_games"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
+        <!-- FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"

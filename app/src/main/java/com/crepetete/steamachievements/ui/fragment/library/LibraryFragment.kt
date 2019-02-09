@@ -57,10 +57,14 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        loaderButton.setOnClickListener { view ->
+            viewModel.refresh()
+        }
+
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
-        viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchResponse ->
+        viewModel.mediatorLiveData.observe(this, Observer { gameWithAchResponse ->
             when (gameWithAchResponse.status) {
                 Status.SUCCESS -> {
 
@@ -76,7 +80,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 }
                 Status.ERROR -> {
                     pulsator.stop()
-                    // TODO make pulsator clickable as a retry button.
 
                     Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
                 }
