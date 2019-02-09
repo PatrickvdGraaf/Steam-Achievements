@@ -10,24 +10,28 @@
         android:layout_height="match_parent">
 
         <!-- Progress Bar -->
-        <FrameLayout
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/coordinator"
-            tools:visibility="visible">
+        <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+            android:id="@+id/pulsator"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:pulse_color="@color/colorAccent"
+            app:pulse_count="4"
+            app:pulse_duration="2500"
+            app:pulse_interpolator="Decelerate"
+            app:pulse_repeat="0"
+            app:pulse_startFromScratch="false">
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:indeterminateOnly="true"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </FrameLayout>
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_steam_round"/>
+
+        </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_games"

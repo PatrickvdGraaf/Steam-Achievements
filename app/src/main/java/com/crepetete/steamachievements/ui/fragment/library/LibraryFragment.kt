@@ -63,7 +63,10 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         viewModel.gamesWithAchievement.observe(this, Observer { gameWithAchResponse ->
             when (gameWithAchResponse.status) {
                 Status.SUCCESS -> {
-                    progressBar.visibility = View.GONE
+
+                    pulsator.stop()
+                    pulsator.visibility = View.GONE
+
                     adapter.updateGames(gameWithAchResponse.data)
                     gameWithAchResponse.data?.map { game -> game.getAppId() }?.forEach { id ->
                         viewModel.updateAchievements(id, this).observe(this, Observer {
@@ -72,11 +75,14 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                     }
                 }
                 Status.ERROR -> {
-                    progressBar.visibility = View.GONE
+                    pulsator.stop()
+                    // TODO make pulsator clickable as a retry button.
+
                     Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
                 }
                 Status.LOADING -> {
-                    progressBar.visibility = View.VISIBLE
+                    pulsator.start()
+                    pulsator.visibility = View.VISIBLE
                 }
             }
         })

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ProgressBar
 import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -50,13 +49,15 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     private val containerId: Int = R.id.fragment_container
     private val fragmentManager: FragmentManager = supportFragmentManager
 
-    private lateinit var loadingIndicator: ProgressBar
+    //    private lateinit var loadingIndicator: PulsatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        loadingIndicator = findViewById(R.id.progressBar)
+        /* Set a reference to the view responsible for showing a loader indicator. */
+        //        loadingIndicator = findViewById(R.id.pulsator)
+
         handleIntent(intent)
 
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)
@@ -198,6 +199,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
      * Displays the loading indicator of the view
      */
     override fun showLoading() {
+        //        loadingIndicator.start()
         //        loadingIndicator.visibility = View.VISIBLE
     }
 
@@ -205,6 +207,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
      * Hides the loading indicator of the view
      */
     override fun hideLoading() {
+        //        loadingIndicator.stop()
         //        loadingIndicator.visibility = View.GONE
     }
 
