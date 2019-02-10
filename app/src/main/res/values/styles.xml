@@ -73,6 +73,7 @@
     <style name="AppTheme.Text.Value" parent="AppTheme">
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textSize">@dimen/text_body_one</item>
+        <item name="android:textStyle">normal|bold</item>
     </style>
 
     <style name="AppTheme.Text.Value.Big" parent="AppTheme.Text.Value">
@@ -100,6 +101,7 @@
         <item name="android:maxLines">2</item>
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textSize">@dimen/text_body_two</item>
+        <item name="android:textStyle">normal|bold</item>
     </style>
 
     <style name="AppTheme.Achievements.RecyclerView" parent="AppTheme.Achievements.ListItem.Text">
