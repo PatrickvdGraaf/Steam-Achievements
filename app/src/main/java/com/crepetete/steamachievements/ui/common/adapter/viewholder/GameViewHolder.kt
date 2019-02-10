@@ -34,7 +34,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                     if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
             }
 
-            setProgressAnimated(binding.progressBar, dataItem.getPercentageCompleted())
+            binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
             Glide.with(binding.root.context)
                 .asBitmap()

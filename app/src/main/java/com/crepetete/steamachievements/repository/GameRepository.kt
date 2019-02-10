@@ -26,6 +26,8 @@ class GameRepository @Inject constructor(
     private val api: SteamApiService
 ) {
 
+    var i = 0
+
     // Refresh games every day
     private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
 
@@ -43,18 +45,18 @@ class GameRepository @Inject constructor(
                 dao.upsert(games)
             }
 
-            override fun shouldFetch(data: List<GameWithAchievements>?) = data == null
-                || gameListRateLimit.shouldFetch("getGamesForUser$userId")
+            override fun shouldFetch(data: List<GameWithAchievements>?) = i == 0
 
             override fun loadFromDb(): LiveData<List<GameWithAchievements>> = dao.getGamesWithAchievementsAsLiveData()
 
             override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
 
             override fun onFetchFailed() {
-                gameListRateLimit.reset(userId)
                 if (userId == "-1") {
                     Timber.e("An invalid userId was passed to GameRepository.getGames(). Are the SP empty?")
                 }
+
+                i++
             }
         }.asLiveData()
     }
