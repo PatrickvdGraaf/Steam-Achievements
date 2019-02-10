@@ -23,6 +23,9 @@ import timber.log.Timber
  * Created at 19 January, 2019.
  */
 class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    private var palette: Palette? = null
+
     fun bind(game: GameWithAchievements?) {
         if (game != null) {
             val dataItem = GameData(game)
@@ -47,9 +50,10 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
                         if (resource != null) {
-                            Palette.from(resource).generate {
-                                val vibrantRgb = it?.darkVibrantSwatch?.rgb
-                                val mutedRgb = it?.darkMutedSwatch?.rgb
+                            Palette.from(resource).generate { newPalette ->
+                                palette = newPalette
+                                val vibrantRgb = newPalette?.darkVibrantSwatch?.rgb
+                                val mutedRgb = newPalette?.darkMutedSwatch?.rgb
 
                                 binding.background.setBackgroundColor(when {
                                     mutedRgb != null -> mutedRgb
@@ -70,6 +74,8 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 .into(binding.gameBanner)
         }
     }
+
+    fun getPalette(): Palette? = palette
 
     /**
      * Animates the progress from 0 to the given progress param.

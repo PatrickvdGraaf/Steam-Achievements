@@ -42,13 +42,27 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
 
+        private const val INTENT_PALETTE_DARK_MUTED = "INTENT_PALETTE_DARK_MUTED"
+        private const val INTENT_PALETTE_DARK_VIBRANT = "INTENT_PALETTE_DARK_VIBRANT"
+        private const val INTENT_PALETTE_LIGHT_MUTED = "INTENT_PALETTE_LIGHT_MUTED"
+        private const val INTENT_PALETTE_LIGHT_VIBRANT = "INTENT_PALETTE_LIGHT_VIBRANT"
+        private const val INTENT_PALETTE_MUTED = "INTENT_PALETTE_MUTED"
+        private const val INTENT_PALETTE_VIBRANT = "INTENT_PALETTE_VIBRANT"
+        private const val INTENT_PALETTE_DOMINANT = "INTENT_PALETTE_DOMINANT"
+
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, appId: String) = Intent(context, GameActivity::class.java)
-            .apply { putExtra(INTENT_GAME_ID, appId) }
-
-        fun getInstance(context: Context, game: GameWithAchievements) = Intent(context, GameActivity::class.java)
-            .apply { putExtra(INTENT_GAME, game) }
+        fun getInstance(context: Context, game: GameWithAchievements, palette: Palette?) = Intent(context, GameActivity::class.java)
+            .apply {
+                putExtra(INTENT_GAME, game)
+                putExtra(INTENT_PALETTE_DARK_MUTED, palette?.darkMutedSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_DARK_VIBRANT, palette?.darkVibrantSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_LIGHT_MUTED, palette?.lightMutedSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_LIGHT_VIBRANT, palette?.lightVibrantSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_MUTED, palette?.mutedSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_VIBRANT, palette?.vibrantSwatch?.rgb ?: -1)
+                putExtra(INTENT_PALETTE_DOMINANT, palette?.dominantSwatch?.rgb ?: -1)
+            }
     }
 
     @Inject
@@ -103,22 +117,35 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
             achievementsAdapter.updateSortingMethod(method)
         })
 
-        viewModel.vibrantColor.observe(this, Observer { swatch ->
-            if (swatch != null) {
-                collapsingToolbar.setContentScrimColor(swatch.rgb)
-                collapsingToolbar.setStatusBarScrimColor(swatch.rgb)
-            }
-        })
-
-        viewModel.mutedColor.observe(this, Observer { swatch ->
-            if (swatch != null) {
-                scrollView.setBackgroundColor(swatch.rgb)
-            }
-        })
+        setColorsWithIntent(intent)
 
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
+        }
+    }
+
+    private fun setColorsWithIntent(intent: Intent?) {
+        val darkMuted = intent?.getIntExtra(INTENT_PALETTE_DARK_VIBRANT, -1) ?: -1
+        val darkVibrant = intent?.getIntExtra(INTENT_PALETTE_DARK_MUTED, -1) ?: -1
+        val lightMuted = intent?.getIntExtra(INTENT_PALETTE_LIGHT_MUTED, -1) ?: -1
+        val lightVibrant = intent?.getIntExtra(INTENT_PALETTE_LIGHT_VIBRANT, -1) ?: -1
+        val muted = intent?.getIntExtra(INTENT_PALETTE_MUTED, -1) ?: -1
+        val vibrant = intent?.getIntExtra(INTENT_PALETTE_VIBRANT, -1) ?: -1
+        val dominant = intent?.getIntExtra(INTENT_PALETTE_DOMINANT, -1) ?: -1
+
+        if (darkMuted != -1) {
+            collapsingToolbar.setContentScrimColor(darkMuted)
+            collapsingToolbar.setStatusBarScrimColor(darkMuted)
+        } else if (muted != -1) {
+            collapsingToolbar.setContentScrimColor(muted)
+            collapsingToolbar.setStatusBarScrimColor(muted)
+        }
+
+        if (darkVibrant != -1) {
+            scrollView.setBackgroundColor(darkVibrant)
+        } else if (lightMuted != -1) {
+            scrollView.setBackgroundColor(lightMuted)
         }
     }
 
@@ -138,9 +165,6 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
         // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
         //        title = game.getName()
-
-        // Set ScrollView background to game specific color.
-        binding.scrollView.setBackgroundColor(game.getPrimaryColor())
 
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {
