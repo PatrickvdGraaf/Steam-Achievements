@@ -8,9 +8,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/icon_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/colorPrimaryLight"
+        android:layout_width="@dimen/list_achievement_image_size"
+        android:layout_height="@dimen/list_achievement_image_size"
+        app:cardBackgroundColor="@color/colorPrimary"
         app:cardCornerRadius="@dimen/default_margin_quarter"
         app:cardElevation="@dimen/elevation_card_default"
         app:cardUseCompatPadding="true"
@@ -19,13 +19,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/imageViewIcon"
-            style="@style/AppTheme.Achievements.ListItem.Icon"
-            android:layout_width="@dimen/list_achievement_image_size"
-            android:layout_height="@dimen/list_achievement_image_size"
-            android:contentDescription="@string/contentDescAchievIcon"
-            android:src="@drawable/ic_help_outline_24dp"/>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"/>
+
+        <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+            android:id="@+id/pulsator"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/default_margin"
+            app:pulse_color="@color/colorAccent"
+            app:pulse_count="4"
+            app:pulse_duration="2500"
+            app:pulse_interpolator="Decelerate"
+            app:pulse_repeat="0"
+            app:pulse_startFromScratch="false">
+
+            <ImageButton
+                android:id="@+id/imageViewIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_steam_round"/>
+
+        </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
+
     </androidx.cardview.widget.CardView>
 
     <TextView
