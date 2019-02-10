@@ -15,7 +15,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
-import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import timber.log.Timber
@@ -52,16 +51,12 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                 val vibrantRgb = it?.darkVibrantSwatch?.rgb
                                 val mutedRgb = it?.darkMutedSwatch?.rgb
 
-                                // Listener should update the database, which will trigger Liv=[Data observers,
-                                // and the view should reload with the new background color.
-                                val defaultBg = ContextCompat.getColor(binding.root.context,
-                                    R.color.colorGameViewHolderTitleBackground)
-
-                                binding.background.setBackgroundColorAnimated(defaultBg, when {
+                                binding.background.setBackgroundColor(when {
                                     mutedRgb != null -> mutedRgb
                                     vibrantRgb != null -> vibrantRgb
-                                    else -> defaultBg
-                                }, 400)
+                                    else -> ContextCompat.getColor(binding.root.context,
+                                        R.color.colorGameViewHolderTitleBackground)
+                                })
                             }
                         }
                         return false

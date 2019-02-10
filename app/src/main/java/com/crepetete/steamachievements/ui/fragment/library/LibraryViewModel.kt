@@ -12,6 +12,9 @@ import com.crepetete.steamachievements.vo.GameWithAchievements
 import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
+/**
+ * ViewModel responsible for the [LibraryFragment].
+ */
 class LibraryViewModel @Inject constructor(
     private val gameRepo: GameRepository,
     private val achievementsRepository: AchievementsRepository,
