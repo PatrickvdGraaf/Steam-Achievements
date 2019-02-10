@@ -15,7 +15,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
-import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import timber.log.Timber
@@ -24,6 +23,9 @@ import timber.log.Timber
  * Created at 19 January, 2019.
  */
 class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    private var palette: Palette? = null
+
     fun bind(game: GameWithAchievements?) {
         if (game != null) {
             val dataItem = GameData(game)
@@ -35,7 +37,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                     if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
             }
 
-            setProgressAnimated(binding.progressBar, dataItem.getPercentageCompleted())
+            binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
             Glide.with(binding.root.context)
                 .asBitmap()
@@ -48,20 +50,17 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
                         if (resource != null) {
-                            Palette.from(resource).generate {
-                                val vibrantRgb = it?.darkVibrantSwatch?.rgb
-                                val mutedRgb = it?.darkMutedSwatch?.rgb
+                            Palette.from(resource).generate { newPalette ->
+                                palette = newPalette
+                                val vibrantRgb = newPalette?.darkVibrantSwatch?.rgb
+                                val mutedRgb = newPalette?.darkMutedSwatch?.rgb
 
-                                // Listener should update the database, which will trigger Liv=[Data observers,
-                                // and the view should reload with the new background color.
-                                val defaultBg = ContextCompat.getColor(binding.root.context,
-                                    R.color.colorGameViewHolderTitleBackground)
-
-                                binding.background.setBackgroundColorAnimated(defaultBg, when {
+                                binding.background.setBackgroundColor(when {
                                     mutedRgb != null -> mutedRgb
                                     vibrantRgb != null -> vibrantRgb
-                                    else -> defaultBg
-                                }, 400)
+                                    else -> ContextCompat.getColor(binding.root.context,
+                                        R.color.colorGameViewHolderTitleBackground)
+                                })
                             }
                         }
                         return false
@@ -75,6 +74,8 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 .into(binding.gameBanner)
         }
     }
+
+    fun getPalette(): Palette? = palette
 
     /**
      * Animates the progress from 0 to the given progress param.

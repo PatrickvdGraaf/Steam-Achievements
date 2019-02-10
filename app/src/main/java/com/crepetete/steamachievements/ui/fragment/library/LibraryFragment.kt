@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
@@ -40,6 +41,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     lateinit var binding: FragmentLibraryBinding
 
+    private var hasShownInternetError = false
+
     private var dataBindingComponent = FragmentDataBindingComponent()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,24 +67,30 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
-        viewModel.mediatorLiveData.observe(this, Observer { gameWithAchResponse ->
-            when (gameWithAchResponse.status) {
+        viewModel.mediatorLiveData.observe(this, Observer { response ->
+            when (response.status) {
                 Status.SUCCESS -> {
+                    // Reset error message boolean.
+                    hasShownInternetError = false
 
                     pulsator.stop()
-                    pulsator.visibility = View.GONE
 
-                    adapter.updateGames(gameWithAchResponse.data)
-                    gameWithAchResponse.data?.map { game -> game.getAppId() }?.forEach { id ->
-                        viewModel.updateAchievements(id, this).observe(this, Observer {
-                            // Just observe, otherwise the NetworkBoundResource won't fire and achievements wont be fetched.
-                        })
-                    }
+                    setGamesData(response.data ?: listOf())
                 }
                 Status.ERROR -> {
                     pulsator.stop()
 
-                    Snackbar.make(coordinator, "Error while updating Games.", Snackbar.LENGTH_SHORT).show()
+                    if (response.data?.isNotEmpty() == true) {
+                        pulsator.visibility = View.GONE
+
+                        setGamesData(response.data)
+                    }
+
+                    // TODO Move this to a separate ErrorChecker class.
+                    if (response.message?.contains("Unable to resolve host") == true && !hasShownInternetError) {
+                        hasShownInternetError = true
+                        Snackbar.make(coordinator, "Could not update games, are you connected to the internet?", Snackbar.LENGTH_LONG).show()
+                    }
                 }
                 Status.LOADING -> {
                     pulsator.start()
@@ -92,6 +101,25 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
         initScrollFab()
         initRecyclerView()
+    }
+
+    private fun setGamesData(games: List<GameWithAchievements>) {
+        if (games.isEmpty()) {
+            pulsator.visibility = View.VISIBLE
+
+            Snackbar.make(coordinator, "We couldn't find any games in your library.", Snackbar.LENGTH_LONG).setAction("Retry") {
+                viewModel.refresh()
+            }.show()
+        } else {
+            pulsator.visibility = View.GONE
+        }
+
+        adapter.updateGames(games)
+        games.map { game -> game.getAppId() }.forEach { id ->
+            viewModel.updateAchievements(id, this).observe(this, Observer {
+                // Just observe, otherwise the NetworkBoundResource won't fire and achievements wont be fetched.
+            })
+        }
     }
 
     private fun initScrollFab() {
@@ -137,20 +165,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      *
      * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
-        //        startActivity(
-        //            GameActivity.getInstance(requireContext(), game),
-        //            ActivityOptions.makeSceneTransitionAnimation(
-        //                requireActivity(),
-        //                Pair.create(background, "background"),
-        //                Pair.create(imageView as View, "banner"),
-        //                Pair.create(title, "title")
-        //            ).toBundle()
-        //        )
-
-        val intent = GameActivity.getInstance(requireContext(), game)
-        startActivity(intent)
-        //        activity?.overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.slide_out_from_top)
+    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View, palette: Palette?) {
+        startActivity(GameActivity.getInstance(requireContext(), game, palette))
     }
 
     /**

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.databinding.ItemGameBinding
@@ -37,7 +38,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
-            listener?.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner)
+            listener?.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner, viewHolder.getPalette())
         }
 
         return viewHolder
@@ -106,7 +107,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
     override fun getItemCount() = filteredItems.size
 
     interface OnGameClickListener {
-        fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View)
+        fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View, palette: Palette?)
         fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int)
     }
 }

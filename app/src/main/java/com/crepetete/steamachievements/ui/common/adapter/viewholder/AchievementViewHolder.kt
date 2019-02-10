@@ -3,7 +3,9 @@ package com.crepetete.steamachievements.ui.common.adapter.viewholder
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -11,6 +13,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
 import com.crepetete.steamachievements.vo.Achievement
 import timber.log.Timber
 
@@ -20,6 +23,9 @@ class AchievementViewHolder(private val view: View)
 
     private val imageViewIcon = view.findViewById<ImageButton>(R.id.imageViewIcon)
     private val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
+    private val cardView = view.findViewById<CardView>(R.id.icon_container)
+    private val pulsator = view.findViewById<PulsatorLayout>(R.id.pulsator)
+    private val imageView = view.findViewById<ImageView>(R.id.imageView)
 
     private var startingIndex = 0
 
@@ -30,6 +36,10 @@ class AchievementViewHolder(private val view: View)
 
         val context = view.context
         if (context != null) {
+
+            pulsator.visibility = View.VISIBLE
+            pulsator.start()
+
             Glide.with(context)
                 .load(if (achievement.achieved) {
                     achievement.iconUrl
@@ -42,6 +52,9 @@ class AchievementViewHolder(private val view: View)
                                               target: Target<Drawable>?,
                                               isFirstResource: Boolean): Boolean {
                         Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
+
+                        pulsator.stop()
+
                         return false
                     }
 
@@ -52,12 +65,15 @@ class AchievementViewHolder(private val view: View)
                                                  isFirstResource: Boolean): Boolean {
                         if (resource != null) {
                             // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
-                            imageViewIcon.background = null
+                            cardView.setCardBackgroundColor(null)
                         }
+
+                        pulsator.stop()
+                        pulsator.visibility = View.GONE
                         return false
                     }
                 })
-                .into(imageViewIcon)
+                .into(imageView)
         }
     }
 }

@@ -74,8 +74,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="@dimen/default_margin"
-                android:paddingBottom="@dimen/default_margin">
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp">
 
                 <TextView
                     android:id="@+id/playtime_header_textview"
@@ -95,11 +95,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
-                    app:valueText="1h 23m"
                     app:label="@string/header_recent_playtime"
                     app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
                     app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"/>
+                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
+                    app:valueText="1h 23m"/>
 
                 <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
                     android:id="@+id/total_played_textView"
@@ -107,11 +107,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     app:label="@string/header_total_playtime"
-                    app:valueText="123h 45m"
+                    app:layout_constraintBottom_toTopOf="@+id/textViewAchievementsHeader"
                     app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
                     app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
                     app:layout_constraintTop_toBottomOf="@+id/recently_played_textView"
-                    app:layout_constraintBottom_toTopOf="@+id/textViewAchievementsHeader"/>
+                    app:valueText="123h 45m"/>
 
                 <TextView
                     android:id="@+id/textViewAchievementsHeader"
@@ -119,7 +119,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/header_achievements"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -145,9 +145,10 @@
                     style="@style/AppTheme.Button.Clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_sort_24dp"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:drawableEnd="@drawable/ic_sort_24dp"
                     android:drawablePadding="@dimen/default_margin"
-                    android:paddingEnd="@dimen/default_margin"
+                    android:paddingStart="@dimen/default_margin"
                     android:text="@string/action_sort"
                     app:layout_constraintBottom_toBottomOf="@+id/sortMethodDescription"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -158,6 +159,7 @@
                     style="@style/AppTheme.Achievements.RecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
                     android:orientation="horizontal"
                     android:paddingStart="@dimen/default_margin_halved"
                     android:paddingEnd="@dimen/default_margin_halved"
@@ -174,7 +176,6 @@
                     style="@style/AppTheme.Text.Label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/default_margin"
                     android:labelFor="@+id/graph_textView"
                     android:paddingStart="@dimen/default_margin"
                     android:paddingEnd="@dimen/default_margin"
