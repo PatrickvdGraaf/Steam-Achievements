@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,90 +16,118 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginEnd="@dimen/default_margin_double"
         android:layout_marginStart="@dimen/default_margin_double"
+        android:layout_marginEnd="@dimen/default_margin_double"
         android:clickable="false"
         android:focusable="false">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/achievement_cardview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:elevation="4dp"
-            android:minWidth="182dp"
-            app:cardBackgroundColor="@color/colorPrimary"
-            app:cardCornerRadius="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/info_content"
-            app:layout_constraintEnd_toEndOf="@+id/info_content"
-            app:layout_constraintStart_toStartOf="@+id/info_content"
-            app:layout_constraintTop_toTopOf="@+id/info_content" />
-
-        <LinearLayout
-            android:id="@+id/info_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="2dp"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/default_margin"
-            android:paddingEnd="@dimen/default_margin"
-            android:paddingStart="@dimen/default_margin"
-            android:paddingTop="60dp"
+            android:clipToPadding="false"
+            android:elevation="6dp"
+            android:minWidth="182dp"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="4dp"
+            card_view:cardElevation="8dp"
+            app:cardUseCompatPadding="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.55">
 
-            <TextView
-                android:id="@+id/achievement_name_textview"
-                style="@style/AppTheme.Text.Header"
+            <LinearLayout
+                android:id="@+id/info_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Achievement Title" />
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingTop="70dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="@dimen/default_margin_double">
 
-            <TextView
-                android:id="@+id/achievement_date_textview"
-                style="@style/AppTheme.Text.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="11-01-1995" />
+                <TextView
+                    android:id="@+id/achievement_name_textview"
+                    style="@style/AppTheme.Text.Header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_margin_quarter"
+                    tools:text="Achievement Title"/>
 
-            <TextView
-                android:id="@+id/achievement_desc_textview"
-                style="@style/AppTheme.Text.Value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin_halved"
-                android:text="Description on how to achieve this achievement." />
+                <TextView
+                    android:id="@+id/achievement_date_textview"
+                    style="@style/AppTheme.Text.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_margin_halved"
+                    tools:text="11-01-1995"/>
 
-            <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
-                android:id="@+id/label_global_stats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin_halved"
-                app:label="@string/label_global_achievement_rate"
-                app:valueText="100%"/>
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/achievement_desc_textview"
+                    style="@style/AppTheme.Text.Value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_margin_halved"
+                    android:layout_marginBottom="@dimen/default_margin_halved"
+                    tools:text="Description on how to achieve this achievement."/>
+
+                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                    android:id="@+id/label_global_stats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_margin_halved"
+                    app:label="@string/label_global_achievement_rate"
+                    app:valueText="100%"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/icon_card_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
+            android:layout_width="184dp"
+            android:layout_height="184dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="10dp"
             app:cardBackgroundColor="@color/colorPrimaryDark"
             app:cardCornerRadius="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/info_content"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toTopOf="@+id/achievement_cardview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/achievement_cardview"
-            app:layout_constraintVertical_bias="0.7">
+            card_view:cardElevation="12dp">
 
             <ImageView
                 android:id="@+id/achievement_icon_imageview"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:adjustViewBounds="false"
-                android:cropToPadding="false" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"/>
+
+            <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+                android:id="@+id/pulsator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/default_margin"
+                app:pulse_color="@color/colorAccent"
+                app:pulse_count="4"
+                app:pulse_duration="2500"
+                app:pulse_interpolator="Decelerate"
+                app:pulse_repeat="0"
+                app:pulse_startFromScratch="false">
+
+                <ImageButton
+                    android:id="@+id/imageViewIcon"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_centerInParent="true"
+                    android:background="@color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_steam_round"/>
+
+            </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

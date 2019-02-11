@@ -28,6 +28,7 @@ import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
+import kotlinx.android.synthetic.main.fragment_achievement_pager.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -124,17 +125,23 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
         val context = context
         if (context != null) {
+
+            pulsator.visibility = View.VISIBLE
+            pulsator.start()
+
             GlideApp.with(context)
                 .asBitmap()
-                .load(achievement.iconUrl)
+                .load(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_image_placeholder)
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?,
                                               model: Any?,
                                               target: Target<Bitmap>?,
                                               isFirstResource: Boolean): Boolean {
                         Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
+
+                        pulsator.stop()
+
                         return false
                     }
 
@@ -150,8 +157,8 @@ class AchievementPagerFragment : Fragment(), Injectable {
                                     palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
                             }
 
-                            // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
-                            iconContent.setCardBackgroundColor(null)
+                            pulsator.visibility = View.GONE
+                            pulsator.stop()
                         }
                         return false
                     }

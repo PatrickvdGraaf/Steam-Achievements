@@ -31,7 +31,7 @@
 
 
     <dimen name="progressBar_dimen">150dp</dimen>
-    <dimen name="list_achievement_image_size">100dp</dimen>
+    <dimen name="list_achievement_image_size">110dp</dimen>
     <dimen name="headerImageHeight">184dp</dimen>
 
     <!-- ELEVATION -->
