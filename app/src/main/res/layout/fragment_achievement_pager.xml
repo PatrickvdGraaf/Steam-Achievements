@@ -35,8 +35,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.55">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/info_content"
@@ -100,10 +99,12 @@
             app:layout_constraintTop_toTopOf="@+id/achievement_cardview"
             card_view:cardElevation="12dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/achievement_icon_imageview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/transparent"
                 android:scaleType="fitXY"/>
 
             <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout

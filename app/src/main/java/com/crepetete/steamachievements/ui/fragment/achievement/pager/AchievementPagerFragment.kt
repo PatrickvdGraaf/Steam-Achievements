@@ -102,6 +102,14 @@ class AchievementPagerFragment : Fragment(), Injectable {
         // Retrieve Achievement for this Fragment through
         arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
             viewModel.setAchievementInfo(achievement)
+
+
+            iconView.setOnClickListener {
+                if (!achievement.achieved) {
+                    iconView.setOnClickListener(null)
+                    loadIcon(achievement.iconUrl)
+                }
+            }
         }
     }
 
@@ -123,47 +131,47 @@ class AchievementPagerFragment : Fragment(), Injectable {
             globalStatsLabel.setText("${achievement.percentage}%")
         }
 
-        val context = context
-        if (context != null) {
+        loadIcon(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
+    }
 
-            pulsator.visibility = View.VISIBLE
-            pulsator.start()
+    private fun loadIcon(url: String) {
+        pulsator.visibility = View.VISIBLE
+        pulsator.start()
 
-            GlideApp.with(context)
-                .asBitmap()
-                .load(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(e: GlideException?,
-                                              model: Any?,
-                                              target: Target<Bitmap>?,
-                                              isFirstResource: Boolean): Boolean {
-                        Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
+        GlideApp.with(requireContext())
+            .asBitmap()
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?,
+                                          model: Any?,
+                                          target: Target<Bitmap>?,
+                                          isFirstResource: Boolean): Boolean {
+                    Timber.w(e, "Error while loading image from url: $url.")
 
-                        pulsator.stop()
+                    pulsator.stop()
 
-                        return false
-                    }
+                    return false
+                }
 
-                    override fun onResourceReady(resource: Bitmap?,
-                                                 model: Any?,
-                                                 target: Target<Bitmap>?,
-                                                 dataSource: DataSource?,
-                                                 isFirstResource: Boolean): Boolean {
-                        if (resource != null) {
-                            Palette.from(resource).generate { palette ->
-                                cardView.setBackgroundColorAnimated(
-                                    ContextCompat.getColor(context, R.color.colorPrimary),
-                                    palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
-                            }
-
-                            pulsator.visibility = View.GONE
-                            pulsator.stop()
+                override fun onResourceReady(resource: Bitmap?,
+                                             model: Any?,
+                                             target: Target<Bitmap>?,
+                                             dataSource: DataSource?,
+                                             isFirstResource: Boolean): Boolean {
+                    if (resource != null) {
+                        Palette.from(resource).generate { palette ->
+                            cardView.setBackgroundColorAnimated(
+                                ContextCompat.getColor(requireContext(), R.color.colorPrimary),
+                                palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
                         }
-                        return false
+
+                        pulsator.visibility = View.GONE
+                        pulsator.stop()
                     }
-                }).into(iconView)
-        }
+                    return false
+                }
+            }).into(iconView)
     }
 
     private fun getDateString(achievement: Achievement): String {
