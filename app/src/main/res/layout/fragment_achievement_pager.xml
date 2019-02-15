@@ -120,8 +120,8 @@
 
                 <ImageButton
                     android:id="@+id/imageViewIcon"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:layout_centerInParent="true"
                     android:background="@color/transparent"
                     android:scaleType="fitCenter"

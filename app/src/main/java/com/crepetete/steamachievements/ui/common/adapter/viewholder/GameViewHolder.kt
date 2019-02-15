@@ -55,12 +55,15 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                 val vibrantRgb = newPalette?.darkVibrantSwatch?.rgb
                                 val mutedRgb = newPalette?.darkMutedSwatch?.rgb
 
-                                binding.background.setBackgroundColor(when {
+                                when {
                                     mutedRgb != null -> mutedRgb
                                     vibrantRgb != null -> vibrantRgb
                                     else -> ContextCompat.getColor(binding.root.context,
                                         R.color.colorGameViewHolderTitleBackground)
-                                })
+                                }.let { color ->
+                                    binding.gameCard.setCardBackgroundColor(color)
+                                    binding.mainCard.setCardBackgroundColor(color)
+                                }
                             }
                         }
                         return false
