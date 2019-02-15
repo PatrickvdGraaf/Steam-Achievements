@@ -90,17 +90,15 @@
             android:id="@+id/icon_card_view"
             android:layout_width="184dp"
             android:layout_height="184dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:elevation="10dp"
             app:cardBackgroundColor="@color/colorPrimaryDark"
-            app:cardCornerRadius="8dp"
+            app:cardCornerRadius="@dimen/corner_radius_medium"
             app:cardUseCompatPadding="true"
             app:layout_constraintBottom_toTopOf="@+id/achievement_cardview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/achievement_cardview"
-            card_view:cardElevation="12dp">
+            card_view:cardElevation="@dimen/elevation_card_heavy">
 
             <ImageButton
                 android:id="@+id/achievement_icon_imageview"

@@ -1,8 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -12,25 +11,17 @@
 
     <style name="AppTheme.Transparent" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="GameDetailTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!--&lt;!&ndash; enable window content transitions &ndash;&gt;-->
-        <!--<item name="android:windowActivityTransitions">true</item>-->
-
-        <!--&lt;!&ndash;&lt;!&ndash; specify enter and exit transitions &ndash;&gt;&ndash;&gt;-->
-        <!--&lt;!&ndash;<item name="android:windowEnterTransition">@transition/explode</item>&ndash;&gt;-->
-        <!--&lt;!&ndash;<item name="android:windowExitTransition">@transition/explode</item>&ndash;&gt;-->
-
-        <!--&lt;!&ndash; specify shared element transitions &ndash;&gt;-->
-        <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>-->
-        <!--<item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>-->
-    </style>
-
-    <style name="SplashScreen" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.SplashScreen" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_screen_background</item>
 
         <!-- -->

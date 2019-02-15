@@ -22,7 +22,7 @@
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@color/colorGameViewHolderTitleBackground"
-        app:cardCornerRadius="4dp"
+        app:cardCornerRadius="@dimen/corner_radius_small"
         app:cardElevation="@dimen/elevation_card_default"
         app:cardUseCompatPadding="true">
 

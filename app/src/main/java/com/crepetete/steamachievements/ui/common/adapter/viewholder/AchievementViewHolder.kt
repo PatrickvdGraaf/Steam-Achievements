@@ -25,7 +25,7 @@ class AchievementViewHolder(private val view: View)
     private val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
     private val cardView = view.findViewById<CardView>(R.id.icon_container)
     private val pulsator = view.findViewById<PulsatorLayout>(R.id.pulsator)
-    private val imageView = view.findViewById<ImageView>(R.id.imageView)
+    val imageView = view.findViewById<ImageView>(R.id.imageView)
 
     private var startingIndex = 0
 
@@ -63,11 +63,6 @@ class AchievementViewHolder(private val view: View)
                                                  target: Target<Drawable>?,
                                                  dataSource: DataSource?,
                                                  isFirstResource: Boolean): Boolean {
-                        if (resource != null) {
-                            // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
-                            cardView.setCardBackgroundColor(null)
-                        }
-
                         pulsator.stop()
                         pulsator.visibility = View.GONE
                         return false
