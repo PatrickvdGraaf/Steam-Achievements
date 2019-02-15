@@ -6,11 +6,6 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ScrollView
-import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -24,7 +19,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
@@ -55,36 +49,8 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
     private lateinit var viewModel: PagerFragmentViewModel
 
-    private lateinit var cardView: CardView
-    private lateinit var iconContent: CardView
-    private lateinit var scrollView: ScrollView
-    private lateinit var iconView: ImageView
-    private lateinit var nameView: TextView
-    private lateinit var dateView: TextView
-    private lateinit var descView: TextView
-    private lateinit var globalStatsLabel: ValueWithLabelTextView
-    private lateinit var content: ConstraintLayout
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
-        iconView = view.findViewById(R.id.achievement_icon_imageview)
-        cardView = view.findViewById(R.id.achievement_cardview)
-        nameView = view.findViewById(R.id.achievement_name_textview)
-        dateView = view.findViewById(R.id.achievement_date_textview)
-        descView = view.findViewById(R.id.achievement_desc_textview)
-        content = view.findViewById(R.id.content)
-        scrollView = view.findViewById(R.id.scrollView)
-        globalStatsLabel = view.findViewById(R.id.label_global_stats)
-        iconContent = view.findViewById(R.id.icon_card_view)
-
-        content.setOnClickListener {
-            activity?.onBackPressed()
-        }
-
-        return view
-    }
+                              savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -103,13 +69,16 @@ class AchievementPagerFragment : Fragment(), Injectable {
         arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
             viewModel.setAchievementInfo(achievement)
 
-
-            iconView.setOnClickListener {
+            achievement_icon_imageview.setOnClickListener {
                 if (!achievement.achieved) {
-                    iconView.setOnClickListener(null)
+                    achievement_icon_imageview.setOnClickListener(null)
                     loadIcon(achievement.iconUrl)
                 }
             }
+        }
+
+        content.setOnClickListener {
+            activity?.onBackPressed()
         }
     }
 
@@ -117,18 +86,18 @@ class AchievementPagerFragment : Fragment(), Injectable {
      * Update View Text labels and load icon with a listener that handles the background color of the cardview.
      */
     private fun setAchievementInfo(achievement: Achievement) {
-        nameView.text = achievement.displayName
-        dateView.text = getDateString(achievement)
+        achievement_name_textview.text = achievement.displayName
+        achievement_date_textview.text = getDateString(achievement)
 
         val desc = achievement.description
-        descView.text = if (desc.isNullOrBlank()) {
+        achievement_desc_textview.text = if (desc.isNullOrBlank()) {
             "Hidden"
         } else {
             desc
         }
 
         if (achievement.percentage >= 0f) {
-            globalStatsLabel.setText("${achievement.percentage}%")
+            label_global_stats.setText("${achievement.percentage}%")
         }
 
         loadIcon(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
@@ -161,7 +130,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
                                              isFirstResource: Boolean): Boolean {
                     if (resource != null) {
                         Palette.from(resource).generate { palette ->
-                            cardView.setBackgroundColorAnimated(
+                            achievement_cardview.setBackgroundColorAnimated(
                                 ContextCompat.getColor(requireContext(), R.color.colorPrimary),
                                 palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
                         }
@@ -171,7 +140,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
                     }
                     return false
                 }
-            }).into(iconView)
+            }).into(achievement_icon_imageview)
     }
 
     private fun getDateString(achievement: Achievement): String {
