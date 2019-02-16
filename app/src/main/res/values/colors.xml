@@ -8,7 +8,7 @@
     <color name="colorTextLabel">#a3a3a3</color>
 
     <color name="transparent">#00000000</color>
-    <color name="transparent_overlay">#41000000</color>
+    <color name="transparent_overlay">#80000000</color>
 
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
     <color name="statusbar_translucent">#64000000</color>
