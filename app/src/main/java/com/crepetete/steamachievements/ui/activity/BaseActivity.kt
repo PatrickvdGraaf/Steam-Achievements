@@ -1,8 +1,12 @@
 package com.crepetete.steamachievements.ui.activity
 
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 
@@ -34,6 +38,15 @@ open class BaseActivity : AppCompatActivity(), Injectable {
             return
         } else {
             userId = intent.getStringExtra(INTENT_USER_ID)
+        }
+    }
+
+    protected fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
+        val sdkInt = Build.VERSION.SDK_INT
+        if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = color
+        } else if (sdkInt >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
     }
 
