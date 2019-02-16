@@ -6,6 +6,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -48,6 +49,9 @@ class AchievementPagerFragment : Fragment(), Injectable {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModel: PagerFragmentViewModel
+
+    @ColorInt
+    private var backgroundColor: Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
@@ -130,9 +134,12 @@ class AchievementPagerFragment : Fragment(), Injectable {
                                              isFirstResource: Boolean): Boolean {
                     if (resource != null) {
                         Palette.from(resource).generate { palette ->
-                            achievement_cardview.setBackgroundColorAnimated(
-                                ContextCompat.getColor(requireContext(), R.color.colorPrimary),
-                                palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
+                            val defaultColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+                            val newColor = palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb ?: defaultColor
+
+                            achievement_cardview.setBackgroundColorAnimated(backgroundColor ?: defaultColor, newColor)
+
+                            backgroundColor = newColor
                         }
 
                         pulsator.visibility = View.GONE
