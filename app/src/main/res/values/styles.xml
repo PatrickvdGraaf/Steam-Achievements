@@ -9,14 +9,14 @@
         <item name="android:windowBackground">@color/colorPrimaryLight</item>
     </style>
 
-    <style name="AppTheme.Transparent" parent="Theme.AppCompat.NoActionBar">
+    <style name="Transparent" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/slide_top</item>
+        <item name="android:windowExitTransition">@android:transition/slide_bottom</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>

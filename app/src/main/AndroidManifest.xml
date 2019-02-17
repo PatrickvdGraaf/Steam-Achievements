@@ -39,10 +39,10 @@
         </activity> <!-- GAME DETAIL -->
         <activity
             android:name=".ui.activity.game.GameActivity"
-            android:theme="@style/AppTheme.Transparent"/> <!-- PAGER -->
+            android:theme="@style/Transparent"/> <!-- PAGER -->
         <activity
             android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
-            android:theme="@style/AppTheme.Transparent"/>
+            android:theme="@style/Transparent"/>
     </application>
 
 </manifest>

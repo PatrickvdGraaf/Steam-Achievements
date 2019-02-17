@@ -1,9 +1,8 @@
 package com.crepetete.steamachievements.ui.activity
 
-import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.WindowManager
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
@@ -41,13 +40,12 @@ open class BaseActivity : AppCompatActivity(), Injectable {
         }
     }
 
-    protected fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
-        val sdkInt = Build.VERSION.SDK_INT
-        if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = color
-        } else if (sdkInt >= Build.VERSION_CODES.KITKAT) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        }
+    protected fun setTranslucentStatusBar() {
+        setStatusBarColor(ContextCompat.getColor(window.context, R.color.statusbar_translucent))
+    }
+
+    private fun setStatusBarColor(@ColorInt color: Int) {
+        window.statusBarColor = color
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
