@@ -205,7 +205,7 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
     /**
      * GraphView was clicked
      */
-    override fun onDateTapped(date: Date) {
+    override fun onGraphDateTapped(date: Date) {
         //        val achievements = viewModel.finalAchievements.value?.data?.filter {
         //            it.achieved
         //        }

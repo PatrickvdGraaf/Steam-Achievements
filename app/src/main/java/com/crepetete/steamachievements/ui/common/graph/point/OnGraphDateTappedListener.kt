@@ -8,5 +8,5 @@ import java.util.*
  * drawn.
  */
 interface OnGraphDateTappedListener {
-    fun onDateTapped(date: Date)
+    fun onGraphDateTapped(date: Date)
 }

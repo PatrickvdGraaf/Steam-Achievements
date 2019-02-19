@@ -10,14 +10,13 @@ import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.NavHostFragment
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
-import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
-import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -65,6 +64,12 @@ class MainActivity : BaseActivity(), LoadingIndicator,
         navigation.setOnNavigationItemSelectedListener(this)
 
         navigation.selectedItemId = R.id.menu_library
+
+        val finalHost = NavHostFragment.create(R.navigation.nav_graph)
+        supportFragmentManager.beginTransaction()
+            .replace(containerId, finalHost)
+            .setPrimaryNavigationFragment(finalHost) // this is the equivalent to app:defaultNavHost="true"
+            .commit()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -140,48 +145,48 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        var fragment: Fragment? = null
-        val transaction = fragmentManager.beginTransaction()
-
-        selectedNavItem = item.itemId
-        when (selectedNavItem) {
-            R.id.menu_profile -> {
-                currentTag = ProfileFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(currentTag)
-                if (fragment == null) {
-                    fragment = ProfileFragment.getInstance(userId)
-                }
-            }
-            R.id.menu_library -> {
-                currentTag = LibraryFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(currentTag)
-                if (fragment == null) {
-                    fragment = LibraryFragment.getInstance(userId)
-                }
-                navBarListener = fragment as LibraryFragment
-            }
-            R.id.menu_achievements -> {
-                currentTag = AchievementsFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(currentTag)
-                if (fragment == null) {
-                    fragment = AchievementsFragment.getInstance(userId, this)
-                }
-            }
-        }
-
-        navBarListener = if (fragment is NavBarInteractionListener) {
-            fragment
-        } else {
-            null
-        }
-
-        updateTitle()
-
-        if (fragment != null) {
-            transaction.replace(containerId, fragment, currentTag)
-                .addToBackStack(null)
-                .commit()
-        }
+//        var fragment: Fragment? = null
+//        val transaction = fragmentManager.beginTransaction()
+//
+//        selectedNavItem = item.itemId
+//        when (selectedNavItem) {
+//            R.id.menu_profile -> {
+//                currentTag = ProfileFragment.TAG
+//                fragment = fragmentManager.findFragmentByTag(currentTag)
+//                if (fragment == null) {
+//                    fragment = ProfileFragment.getInstance(userId)
+//                }
+//            }
+//            R.id.menu_library -> {
+//                currentTag = LibraryFragment.TAG
+//                fragment = fragmentManager.findFragmentByTag(currentTag)
+//                if (fragment == null) {
+//                    fragment = LibraryFragment.getInstance(userId)
+//                }
+//                navBarListener = fragment as LibraryFragment
+//            }
+//            R.id.menu_achievements -> {
+//                currentTag = AchievementsFragment.TAG
+//                fragment = fragmentManager.findFragmentByTag(currentTag)
+//                if (fragment == null) {
+//                    fragment = AchievementsFragment.getInstance(userId, this)
+//                }
+//            }
+//        }
+//
+//        navBarListener = if (fragment is NavBarInteractionListener) {
+//            fragment
+//        } else {
+//            null
+//        }
+//
+//        updateTitle()
+//
+//        if (fragment != null) {
+//            transaction.replace(containerId, fragment, currentTag)
+//                .addToBackStack(null)
+//                .commit()
+//        }
         return true
     }
 

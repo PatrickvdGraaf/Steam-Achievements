@@ -28,4 +28,7 @@
     <string name="sorting_order_achieved_name">Latest</string>
     <string name="sorting_order_not_achieved">Chronological</string>
     <string name="sorting_order_rarity">Rarity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

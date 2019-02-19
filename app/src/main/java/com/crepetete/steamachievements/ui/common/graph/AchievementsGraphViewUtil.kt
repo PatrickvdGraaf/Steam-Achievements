@@ -97,7 +97,7 @@ class AchievementsGraphViewUtil {
                     if (onTapListener != null) {
                         series.setOnDataPointTapListener { _, datePoint ->
                             if (datePoint is DateDataPoint) {
-                                onTapListener.onDateTapped(datePoint.date)
+                                onTapListener.onGraphDateTapped(datePoint.date)
                             }
                         }
                     }

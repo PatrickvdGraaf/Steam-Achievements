@@ -8,14 +8,16 @@
     android:clipToPadding="false"
     tools:context=".ui.activity.main.MainActivity">
 
-    <FrameLayout
+    <fragment
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@id/navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_graph"/>
 
     <View
         android:layout_width="match_parent"
@@ -29,10 +31,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:elevation="@dimen/elevation_fab_default"
-        android:foregroundTint="#fff"
+        android:foregroundTint="@color/colorAccent"
         app:itemBackground="@color/colorPrimary"
-        app:itemIconTint="#fff"
-        app:itemTextColor="#fff"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_items"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
