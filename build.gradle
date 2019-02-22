@@ -2,6 +2,7 @@
 
 buildscript {
     ext.fabric_version = '1.27.1'
+    ext.firebase_performance_version = '1.1.5'
     ext.gradle_version = '3.3.1'
     ext.kotlin_version = '1.3.21'
     ext.services_version = '4.2.0'
@@ -10,6 +11,7 @@ buildscript {
         classpath "io.fabric.tools:gradle:$fabric_version"
         classpath "com.google.gms:google-services:$services_version"
         classpath "com.android.tools.build:gradle:$gradle_version"
+        classpath "com.google.firebase:firebase-plugins:$firebase_performance_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
