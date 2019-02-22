@@ -8,14 +8,27 @@
     android:clipToPadding="false"
     tools:context=".ui.activity.main.MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/elevation_card_default"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="My Games"/>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <View
         android:layout_width="match_parent"
@@ -29,10 +42,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:elevation="@dimen/elevation_fab_default"
-        android:foregroundTint="#fff"
+        android:foregroundTint="@color/colorAccent"
+        android:visibility="gone"
         app:itemBackground="@color/colorPrimary"
-        app:itemIconTint="#fff"
-        app:itemTextColor="#fff"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_items"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
