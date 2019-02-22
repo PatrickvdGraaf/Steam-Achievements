@@ -54,6 +54,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         /* Set a reference to the view responsible for showing a loader indicator. */
         //        loadingIndicator = findViewById(R.id.pulsator)
