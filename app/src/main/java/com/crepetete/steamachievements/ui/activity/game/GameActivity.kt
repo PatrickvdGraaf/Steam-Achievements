@@ -2,12 +2,8 @@ package com.crepetete.steamachievements.ui.activity.game
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
@@ -30,7 +27,7 @@ import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
-class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener, HorizontalAchievementsAdapter.OnAchievementClickListener {
+class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, HorizontalAchievementsAdapter.OnAchievementClickListener {
 
     companion object {
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
@@ -191,15 +188,6 @@ class GameActivity : AppCompatActivity(), Injectable, OnGraphDateTappedListener,
 
         // Init Graph.
         AchievementsGraphViewUtil.setAchievementsOverTime(graph, game.achievements, this)
-    }
-
-    private fun setTranslucentStatusBar(color: Int = ContextCompat.getColor(window.context, R.color.statusbar_translucent)) {
-        val sdkInt = Build.VERSION.SDK_INT
-        if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = color
-        } else if (sdkInt >= Build.VERSION_CODES.KITKAT) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        }
     }
 
     /**

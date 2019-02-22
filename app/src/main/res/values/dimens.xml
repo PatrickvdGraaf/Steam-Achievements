@@ -31,7 +31,7 @@
 
 
     <dimen name="progressBar_dimen">150dp</dimen>
-    <dimen name="list_achievement_image_size">100dp</dimen>
+    <dimen name="list_achievement_image_size">112dp</dimen>
     <dimen name="headerImageHeight">184dp</dimen>
 
     <!-- ELEVATION -->
@@ -49,5 +49,9 @@
     <dimen name="elevation_button_default">2dp</dimen>
     <dimen name="elevation_button_large">8dp</dimen>
     <dimen name="elevation_dialog_default">24dp</dimen>
+    <dimen name="corner_radius_small">4dp</dimen>
+    <dimen name="loader_image_icon_size">24dp</dimen>
+    <dimen name="elevation_card_heavy">12dp</dimen>
+    <dimen name="corner_radius_medium">8dp</dimen>
 
 </resources>

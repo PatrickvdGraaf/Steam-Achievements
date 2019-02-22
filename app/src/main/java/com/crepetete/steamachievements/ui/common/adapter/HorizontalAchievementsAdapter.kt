@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.common.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
@@ -26,7 +25,7 @@ class HorizontalAchievementsAdapter(private val listener: OnAchievementClickList
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_achievement, parent, false)
         val viewHolder = AchievementViewHolder(view)
 
-        view.findViewById<View>(R.id.imageViewIcon).setOnClickListener {
+        viewHolder.imageView.setOnClickListener {
             listener.onAchievementClick(viewHolder.adapterPosition, getAchievementsAsList())
         }
         return viewHolder

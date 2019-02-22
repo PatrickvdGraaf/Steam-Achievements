@@ -6,11 +6,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ScrollView
-import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -24,10 +20,10 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
+import kotlinx.android.synthetic.main.fragment_achievement_pager.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -54,36 +50,11 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
     private lateinit var viewModel: PagerFragmentViewModel
 
-    private lateinit var cardView: CardView
-    private lateinit var iconContent: CardView
-    private lateinit var scrollView: ScrollView
-    private lateinit var iconView: ImageView
-    private lateinit var nameView: TextView
-    private lateinit var dateView: TextView
-    private lateinit var descView: TextView
-    private lateinit var globalStatsLabel: ValueWithLabelTextView
-    private lateinit var content: ConstraintLayout
+    @ColorInt
+    private var backgroundColor: Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
-        iconView = view.findViewById(R.id.achievement_icon_imageview)
-        cardView = view.findViewById(R.id.achievement_cardview)
-        nameView = view.findViewById(R.id.achievement_name_textview)
-        dateView = view.findViewById(R.id.achievement_date_textview)
-        descView = view.findViewById(R.id.achievement_desc_textview)
-        content = view.findViewById(R.id.content)
-        scrollView = view.findViewById(R.id.scrollView)
-        globalStatsLabel = view.findViewById(R.id.label_global_stats)
-        iconContent = view.findViewById(R.id.icon_card_view)
-
-        content.setOnClickListener {
-            activity?.onBackPressed()
-        }
-
-        return view
-    }
+                              savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,6 +72,17 @@ class AchievementPagerFragment : Fragment(), Injectable {
         // Retrieve Achievement for this Fragment through
         arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
             viewModel.setAchievementInfo(achievement)
+
+            achievement_icon_imageview.setOnClickListener {
+                if (!achievement.achieved) {
+                    achievement_icon_imageview.setOnClickListener(null)
+                    loadIcon(achievement.iconUrl)
+                }
+            }
+        }
+
+        content.setOnClickListener {
+            activity?.onBackPressed()
         }
     }
 
@@ -108,55 +90,64 @@ class AchievementPagerFragment : Fragment(), Injectable {
      * Update View Text labels and load icon with a listener that handles the background color of the cardview.
      */
     private fun setAchievementInfo(achievement: Achievement) {
-        nameView.text = achievement.displayName
-        dateView.text = getDateString(achievement)
+        achievement_name_textview.text = achievement.displayName
+        achievement_date_textview.text = getDateString(achievement)
 
         val desc = achievement.description
-        descView.text = if (desc.isNullOrBlank()) {
+        achievement_desc_textview.text = if (desc.isNullOrBlank()) {
             "Hidden"
         } else {
             desc
         }
 
         if (achievement.percentage >= 0f) {
-            globalStatsLabel.setText("${achievement.percentage}%")
+            label_global_stats.setText("${achievement.percentage}%")
         }
 
-        val context = context
-        if (context != null) {
-            GlideApp.with(context)
-                .asBitmap()
-                .load(achievement.iconUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_image_placeholder)
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(e: GlideException?,
-                                              model: Any?,
-                                              target: Target<Bitmap>?,
-                                              isFirstResource: Boolean): Boolean {
-                        Timber.w(e, "Error while loading image from url: ${achievement.iconUrl}.")
-                        return false
-                    }
+        loadIcon(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
+    }
 
-                    override fun onResourceReady(resource: Bitmap?,
-                                                 model: Any?,
-                                                 target: Target<Bitmap>?,
-                                                 dataSource: DataSource?,
-                                                 isFirstResource: Boolean): Boolean {
-                        if (resource != null) {
-                            Palette.from(resource).generate { palette ->
-                                cardView.setBackgroundColorAnimated(
-                                    ContextCompat.getColor(context, R.color.colorPrimary),
-                                    palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb)
-                            }
+    private fun loadIcon(url: String) {
+        pulsator.visibility = View.VISIBLE
+        pulsator.start()
 
-                            // Prevent overdraw; when we know a resource is loaded, don't render the iconContent background color.
-                            iconContent.setCardBackgroundColor(null)
+        GlideApp.with(requireContext())
+            .asBitmap()
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?,
+                                          model: Any?,
+                                          target: Target<Bitmap>?,
+                                          isFirstResource: Boolean): Boolean {
+                    Timber.w(e, "Error while loading image from url: $url.")
+
+                    pulsator.stop()
+
+                    return false
+                }
+
+                override fun onResourceReady(resource: Bitmap?,
+                                             model: Any?,
+                                             target: Target<Bitmap>?,
+                                             dataSource: DataSource?,
+                                             isFirstResource: Boolean): Boolean {
+                    if (resource != null) {
+                        Palette.from(resource).generate { palette ->
+                            val defaultColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+                            val newColor = palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb ?: defaultColor
+
+                            achievement_cardview.setBackgroundColorAnimated(backgroundColor ?: defaultColor, newColor)
+
+                            backgroundColor = newColor
                         }
-                        return false
+
+                        pulsator.visibility = View.GONE
+                        pulsator.stop()
                     }
-                }).into(iconView)
-        }
+                    return false
+                }
+            }).into(achievement_icon_imageview)
     }
 
     private fun getDateString(achievement: Achievement): String {

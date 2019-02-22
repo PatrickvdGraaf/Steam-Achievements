@@ -9,14 +9,14 @@
     <application
         android:name=".SteamAchievementsApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ui.activity.splash.SplashScreenActivity"
-            android:theme="@style/SplashScreen">
+            android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -39,10 +39,10 @@
         </activity> <!-- GAME DETAIL -->
         <activity
             android:name=".ui.activity.game.GameActivity"
-            android:theme="@style/GameDetailTheme"/> <!-- PAGER -->
+            android:theme="@style/Transparent"/> <!-- PAGER -->
         <activity
             android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
-            android:theme="@style/AppTheme.Transparent"/>
+            android:theme="@style/Transparent"/>
     </application>
 
 </manifest>

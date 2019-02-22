@@ -20,6 +20,7 @@ android {
     buildTypes {
         debug {
             ext.enableCrashlytics = false
+            aaptOptions.cruncherEnabled = false
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
         }
