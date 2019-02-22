@@ -1,10 +1,42 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 27
+    def STRING = 'String'
+    def API_URL = 'API_URL'
+    def DB_NAME = 'DB_NAME'
+    def STEAM_API_KEY = 'STEAM_API_KEY'
+    def TEST_USER_ID = 'TEST_USER_ID'
+
+    androidExtensions {
+        experimental = true
+    }
+
+    buildToolsVersion '28.0.3'
+
+    buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+            aaptOptions.cruncherEnabled = false
+            debuggable true
+            testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileSdkVersion 28
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     dataBinding {
         enabled = true
@@ -13,44 +45,92 @@ android {
     defaultConfig {
         applicationId "com.crepetete.steamachievements"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionName "0.0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
+        buildConfigField STRING, DB_NAME, '"players.db"'
+
+        /* Define the following values in your local.properties. */
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        def steam_api_key = properties.getProperty("steam_api_key", "")
+        def test_user_id = properties.getProperty("test_user_id", "")
+
+        /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
+        buildConfigField STRING, STEAM_API_KEY, steam_api_key
+
+        /* It's recommended to use your own steam ID, which can be found in your profile URL,
+         or can be found with tools like https://steamidfinder.com. */
+        buildConfigField STRING, TEST_USER_ID, test_user_id
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    // Specifies one flavor dimension.
+    flavorDimensions "version"
+    lintOptions {
+        lintConfig rootProject.file('lint.xml')
+    }
+
+    productFlavors {
+        // When building a variant that uses this flavor, the following configurations
+        // override those in the defaultConfig block.
+        dev {
+            applicationIdSuffix '.dev'
+            versionNameSuffix "-dev"
+
+            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
+            ext.alwaysUpdateBuildId = false
+
+            // Assigns this product flavor to the "version" flavor dimension.
+            // This property is optional if you are using only one dimension.
+            dimension "version"
+
+            // The following configuration limits the "dev" flavor to using
+            // English string resources and xxhdpi screen-density resources.
+            resConfigs "en", "xxhdpi"
         }
+
+        prod {
+            // If you've configured the defaultConfig block for the release version of
+            // your app, you can leave this block empty and Gradle uses configurations in
+            // the defaultConfig block instead. You still need to create this flavor.
+            // Otherwise, all variants use the "dev" flavor configurations.
+
+            dimension "version"
+        }
+    }
+
+    sourceSets {
+        androidTest.java.srcDirs += "src/test-common/java"
+        test.java.srcDirs += "src/test-common/java"
     }
 }
 
-def support_version = '27.1.1'
-def lifecycle_version = "1.1.1"
-def retrofit_version = '2.3.0'
-def okhttp_version = '3.10.0'
-def dagger_version = '2.14.1'
-def room_version = '1.1.1'
-def glide_version = '4.7.1'
-
 dependencies {
-    // Android
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    def support_version = '1.0.0'
+    def lifecycle_version = "2.0.0"
+    def retrofit_version = '2.3.0'
+    def okhttp_version = '3.10.0'
+    def dagger_version = '2.21'
+    def glide_version = '4.9.0-SNAPSHOT'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation "com.android.support:palette-v7:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
-    implementation "com.android.support:cardview-v7:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    // Android
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation "androidx.palette:palette:$support_version"
+    implementation "androidx.recyclerview:recyclerview:$support_version"
+    implementation "androidx.cardview:cardview:$support_version"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation 'com.google.android.material:material:1.0.0'
 
     // ViewModel and LiveData
-    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     // Logging
-    implementation 'com.jakewharton.timber:timber:4.7.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     //Retrofit 2
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
@@ -59,34 +139,53 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     // Dagger 2
-    implementation "com.google.dagger:dagger:$dagger_version"
-    implementation 'com.android.support:support-v4:27.1.1'
+    implementation "com.google.dagger:dagger:2.21"
+    implementation "com.google.dagger:dagger-android-support:2.21"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    compileOnly "org.glassfish:javax.annotation:3.1.1"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     //Rx
-    implementation "io.reactivex.rxjava2:rxjava:2.1.9"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
-
-    // Data binding
-    kapt "com.android.databinding:compiler:$gradle_version"
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    /* RxAndroid adds android specific bindings for RxJava,
+       Specifically AndroidSchedulers.mainThread() which provides a Scheduler that schedules
+       on main thread and can be used to switch between threads in Android. */
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Room
-    implementation "android.arch.persistence.room:runtime:$room_version"
-    implementation "android.arch.persistence.room:rxjava2:$room_version"
-    kapt "android.arch.persistence.room:compiler:$room_version"
+    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
+    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
+    kapt "androidx.room:room-compiler:2.1.0-alpha04"
 
     // Glide Image Loading
     implementation "com.github.bumptech.glide:glide:$glide_version"
+    implementation "com.github.bumptech.glide:okhttp-integration:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-perf:16.2.3'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+
+    // Graph Library http://www.android-graphview.org/download-getting-started/
+    implementation 'com.jjoe64:graphview:4.2.2'
 
     // Testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    testImplementation 'androidx.arch.core:core-testing:2.0.0'
+    testImplementation 'org.mockito:mockito-core:2.22.0'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.appcompat:appcompat:1.0.2'
+    androidTestImplementation 'androidx.recyclerview:recyclerview:1.0.0'
+    androidTestImplementation 'androidx.cardview:cardview:1.0.0'
+    androidTestImplementation 'com.google.android.material:material:1.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.0.0'
+    androidTestImplementation 'org.mockito:mockito-core:2.22.0'
+    androidTestImplementation 'org.mockito:mockito-android:2.22.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

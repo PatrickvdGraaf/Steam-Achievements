@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.crepetete.steamachievements.vo.GameData"/>
+
+        <variable
+            name="gameData"
+            type="com.crepetete.steamachievements.vo.GameData"/>
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/gameCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:clipToPadding="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/colorGameViewHolderTitleBackground"
+        app:cardCornerRadius="@dimen/corner_radius_small"
+        app:cardElevation="@dimen/elevation_card_default"
+        app:cardUseCompatPadding="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:transitionName="background">
+
+            <ImageView
+                android:id="@+id/game_banner"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:transitionName="banner"
+                app:layout_constraintBottom_toTopOf="@+id/mainCard"
+                app:layout_constraintDimensionRatio="184:69"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="#6c4444"/>
+
+            <View
+                android:id="@+id/timeBackground"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/transparent_overlay"
+                app:layout_constraintBottom_toBottomOf="@+id/game_banner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/game_banner"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/total_played_textView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:drawableStart="@drawable/ic_all_time_24dp"
+                android:drawablePadding="@dimen/default_margin_halved"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin"
+                android:paddingEnd="@dimen/default_margin"
+                android:paddingBottom="@dimen/default_margin_halved"
+                android:text="@{gameData.getTotalPlayTimeString()}"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/text_label_small"
+                android:textStyle="normal|bold"
+                app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/game_banner"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="81h 31m"/>
+
+            <TextView
+                android:id="@+id/recently_played_textView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:drawableStart="@drawable/ic_recent_24dp"
+                android:drawablePadding="@dimen/default_margin_halved"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin_halved"
+                android:paddingEnd="@dimen/default_margin"
+                android:paddingBottom="@dimen/default_margin"
+                android:text="@{gameData.getRecentPlaytimeString()}"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/text_label_small"
+                android:textStyle="normal|bold"
+                app:layout_constraintBottom_toTopOf="@+id/mainCard"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/game_banner"
+                app:layout_constraintTop_toBottomOf="@+id/total_played_textView"
+                tools:text="2h 42m"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/mainCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/colorGameViewHolderTitleBackground"
+                app:cardElevation="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/game_banner">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/name_textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/default_margin"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="@dimen/default_margin"
+                        android:paddingBottom="12dp"
+                        android:text="@{gameData.getName()}"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:transitionName="title"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Game name"/>
+
+                    <FrameLayout
+                        android:id="@+id/progressContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        app:layout_constraintTop_toBottomOf="@id/name_textView">
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:progressTint="@android:color/white"
+                            app:layout_constraintEnd_toStartOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:progress="75"/>
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/achievements_textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/default_margin"
+                        android:paddingTop="@dimen/default_margin_halved"
+                        android:paddingEnd="@dimen/default_margin"
+                        android:paddingBottom="@dimen/default_margin_halved"
+                        android:text="@{gameData.getAchievementsText()}"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toBottomOf="@id/progressContainer"
+                        tools:text="42/42 (100%) achievements"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

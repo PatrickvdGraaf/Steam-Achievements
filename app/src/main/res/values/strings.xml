@@ -1,13 +1,8 @@
 <resources>
     <string name="app_name">Steam Achievements</string>
-    <string name="error_auth">Error during authentication.</string>
-    <string name="error_user_details">Error while getting user info.</string>
-    <string name="error_user_save">Error while saving user data.</string>
-    <string name="label_recently_played">Recently played:</string>
-    <string name="label_total_playtime">Total playtime:</string>
     <string name="abbr_minutes">m</string>
     <string name="abbr_hours">h</string>
-    <string name="action_sort">Sort</string>
+    <string name="action_sort">SORT</string>
     <string name="action_search">Search</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_library">Library</string>
@@ -15,8 +10,22 @@
     <string name="percentage">%s%%</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="menu_sort_playtime">Playtime</string>
     <string name="menu_sort_name">Name</string>
     <string name="menu_sort_completion">Completion</string>
+    <string name="header_playtime">Playtime</string>
+    <string name="header_recent_playtime">Recent playtime:</string>
+    <string name="header_total_playtime">Total playtime:</string>
+    <string name="header_achievements">Achievements</string>
+    <string name="sorting_method_achieved">Sorted by: Achieved</string>
+    <string name="header_achievements_over_time">Achievements over time</string>
+    <string name="label_achievement_completion">Completion</string>
+    <string name="contentDescAchievIcon">Achievement icon.</string>
+    <string name="label_placeholder">Label placeholder</string>
+    <string name="value_placeholder">Value placeholder</string>
+    <string name="textview_label_contentDesc">Label for the below defined value.</string>
+    <string name="label_global_achievement_rate">Global achievement rate</string>
+    <string name="sorting_order_achieved_name">Latest</string>
+    <string name="sorting_order_not_achieved">Chronological</string>
+    <string name="sorting_order_rarity">Rarity</string>
 </resources>
