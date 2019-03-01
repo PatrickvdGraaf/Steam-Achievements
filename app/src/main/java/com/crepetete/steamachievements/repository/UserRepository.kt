@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.repository
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.AppExecutors
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.user.UserResponse
@@ -77,7 +78,11 @@ class UserRepository @Inject constructor(
         }.asLiveData()
     }
 
-    fun getCurrentPlayerId(defValue: String = "-1") = sharedPreferences.getString(userIdKey, defValue)!!
+    fun getCurrentPlayerId(defValue: String = "-1") = if (BuildConfig.DEBUG) {
+        BuildConfig.TEST_USER_ID
+    } else {
+        sharedPreferences.getString(userIdKey, defValue)!!
+    }
 
     fun putCurrentPlayerId(userId: String) {
         sharedPreferences.edit().putString(userIdKey, userId).apply()

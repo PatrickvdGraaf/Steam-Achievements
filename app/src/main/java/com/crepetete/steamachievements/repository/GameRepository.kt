@@ -36,13 +36,12 @@ class GameRepository @Inject constructor(
 
             override fun saveCallResult(item: BaseGameResponse) {
                 Timber.d("Saving Games in DB")
-
-                val games = item.response.games
-                games.forEach { game ->
+                item.response.games.map { game ->
                     game.userId = userId
+                    game
+                }.let { games ->
+                    dao.upsert(games)
                 }
-
-                dao.upsert(games)
             }
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = i == 0
