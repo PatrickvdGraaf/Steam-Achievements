@@ -15,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false"/>
+
+        <!-- SPLASH -->
         <activity android:name=".ui.activity.splash.SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
@@ -23,23 +29,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="firebase_crashlytics_collection_enabled"
-            android:value="false"/> <!-- LOGIN -->
+        <!-- LOGIN -->
         <activity android:name=".ui.activity.login.LoginActivity"/>
-        <activity android:name=".ui.activity.main.MainActivity">
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable_games"/>
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-        </activity> <!-- GAME DETAIL -->
+        <!-- MAIN -->
+        <activity android:name=".ui.activity.main.MainActivity"/>
+        <!-- GAME DETAIL -->
         <activity
             android:name=".ui.activity.game.GameActivity"
-            android:theme="@style/Transparent"/> <!-- PAGER -->
+            android:theme="@style/Transparent"/>
+        <!-- PAGER -->
         <activity
             android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
             android:theme="@style/Transparent"/>

@@ -7,27 +7,30 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.IdRes
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.BaseActivity
-import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
 import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.oshi.libsearchtoolbar.SearchAnimationToolbar
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
+
+
 
 /**
  *
  */
 class MainActivity : BaseActivity(), LoadingIndicator,
-    BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
+    BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector, SearchAnimationToolbar.OnSearchQueryChangedListener {
+
+    private lateinit var toolbar: SearchAnimationToolbar
 
     companion object {
         fun getInstance(context: Context, userId: String) = Intent(context, MainActivity::class.java).apply {
@@ -54,7 +57,11 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+
+        /* Init search toolbar. */
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.setSupportActionBar(this)
+        toolbar.setOnSearchQueryChangedListener(this)
 
         /* Set a reference to the view responsible for showing a loader indicator. */
         //        loadingIndicator = findViewById(R.id.pulsator)
@@ -75,69 +82,30 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     }
 
     override fun onBackPressed() {
-        val fragmentManager = supportFragmentManager
-        if (fragmentManager.backStackEntryCount != 0) {
-            fragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
-        }
-    }
+        val handledByToolbar = toolbar.onBackPressed()
 
-    private fun handleIntent(intent: Intent) {
-        if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            navBarListener?.onSearchQueryUpdate(query)
+        if (!handledByToolbar) {
+            super.onBackPressed()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
-        val searchItem = menu?.findItem(R.id.action_search)
-        val searchView = searchItem?.actionView as SearchView
-        // Configure the search info and add any event listeners...
-
-        // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                navBarListener?.onSearchQueryUpdate(newText)
-                return true
-            }
-
-            override fun onQueryTextSubmit(query: String): Boolean {
-                navBarListener?.onSearchQueryUpdate(query)
-                searchView.clearFocus()
-                return true
-            }
-        })
-
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.menuSortCompletion -> {
-            navBarListener?.onSortingMethodChanged(SortingType.COMPLETION)
-            true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val itemId = item.itemId
+
+        if (itemId == R.id.action_search) {
+            toolbar.onSearchIconClick()
+            return true
+        } else if (itemId == android.R.id.home) {
+            onBackPressed()
+            return true
         }
-        R.id.menuSortName -> {
-            navBarListener?.onSortingMethodChanged(SortingType.NAME)
-            true
-        }
-        R.id.menuSortPlaytime -> {
-            navBarListener?.onSortingMethodChanged(SortingType.PLAYTIME)
-            true
-        }
-        R.id.action_refresh -> {
-            // TODO fix refresh
-            //            presenter.onRefreshClicked()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -184,6 +152,34 @@ class MainActivity : BaseActivity(), LoadingIndicator,
                 .commit()
         }
         return true
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (Intent.ACTION_SEARCH == intent.action) {
+            val query = intent.getStringExtra(SearchManager.QUERY)
+            navBarListener?.onSearchQueryUpdate(query)
+        }
+    }
+
+    override fun onSearchCollapsed() {
+        /* Do nothing. */
+        onBackPressed()
+    }
+
+    override fun onSearchExpanded() {
+        /* Do nothing. */
+    }
+
+    override fun onSearchQueryChanged(query: String?) {
+        query?.let { q ->
+            navBarListener?.onSearchQueryUpdate(q)
+        }
+    }
+
+    override fun onSearchSubmitted(query: String?) {
+        query?.let { q ->
+            navBarListener?.onSearchQueryUpdate(q)
+        }
     }
 
     // TODO let Fragments set Page titles.

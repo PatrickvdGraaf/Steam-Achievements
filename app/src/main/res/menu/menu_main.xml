@@ -14,7 +14,7 @@
         android:icon="@drawable/ic_refresh_24dp"
         android:title="@string/action_search"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always|collapseActionView" />
 
     <item
         android:icon="@drawable/ic_sort_24dp"
