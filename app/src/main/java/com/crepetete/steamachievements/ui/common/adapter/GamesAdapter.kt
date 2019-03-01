@@ -82,8 +82,10 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
      * Update the search query. Displayed games must have the query String in their name.
      */
     fun setQuery(query: String?) {
-        this.query = query
-        filter.filter(query)
+        if (!items.isNullOrEmpty()) {
+            this.query = query
+            filter.filter(query)
+        }
     }
 
     /**

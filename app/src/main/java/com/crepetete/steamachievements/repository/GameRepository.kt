@@ -36,12 +36,7 @@ class GameRepository @Inject constructor(
 
             override fun saveCallResult(item: BaseGameResponse) {
                 Timber.d("Saving Games in DB")
-                item.response.games.map { game ->
-                    game.userId = userId
-                    game
-                }.let { games ->
-                    dao.upsert(games)
-                }
+                dao.upsert(item.response.games)
             }
 
             override fun shouldFetch(data: List<GameWithAchievements>?) = i == 0
@@ -65,13 +60,7 @@ class GameRepository @Inject constructor(
 
             override fun saveCallResult(item: BaseGameResponse) {
                 Timber.d("Saving Games in DB")
-
-                val games = item.response.games
-                games.forEach { game ->
-                    game.userId = appId
-                }
-
-                dao.upsert(games)
+                dao.upsert(item.response.games)
             }
 
             // At the moment, Steam offers no call to retrieve one game at the time.

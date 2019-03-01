@@ -1,8 +1,10 @@
 package com.crepetete.steamachievements.vo
 
 import android.os.Parcelable
-import androidx.room.*
-import androidx.room.ForeignKey.CASCADE
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -12,22 +14,16 @@ import java.util.*
  * More info;
  * @see <a href="https://proandroiddev.com/parcelable-in-kotlin-here-comes-parcelize-b998d5a5fcac">this link</a>.
  */
-@Entity(tableName = "games",
-    indices = [Index("appId"), Index("userId")],
-    foreignKeys = [(ForeignKey(
-        entity = Player::class,
-        parentColumns = ["steamId"],
-        childColumns = ["userId"],
-        onDelete = CASCADE))])
+@Entity(
+    tableName = "games",
+    indices = [Index("appId")]
+)
 @Parcelize
 data class Game(
     @PrimaryKey
     @ColumnInfo(name = "appId")
     @Json(name = "appid")
     val appId: String,
-    // TODO maybe remove userId property, let a user have a list of game Ids instead.
-    @ColumnInfo(name = "userId")
-    var userId: String,
     val name: String,
     @Json(name = "playtime_2weeks")
     val recentPlayTime: Long,

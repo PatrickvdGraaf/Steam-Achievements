@@ -19,7 +19,7 @@ abstract class BaseDao<T> {
      * @param obj the object to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(vararg obj: T)
+    protected abstract fun insert(vararg obj: T)
 
     /**
      * Insert an array of objects in the database.

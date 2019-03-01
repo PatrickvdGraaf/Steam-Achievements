@@ -60,7 +60,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        loaderButton.setOnClickListener { view ->
+        loaderButton.setOnClickListener {
             viewModel.refresh()
         }
 
