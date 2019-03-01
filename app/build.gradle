@@ -165,6 +165,7 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.firebase:firebase-perf:16.2.3'
+    implementation 'com.google.firebase:firebase-config:16.3.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
 
     // Graph Library; http://www.android-graphview.org/download-getting-started/
