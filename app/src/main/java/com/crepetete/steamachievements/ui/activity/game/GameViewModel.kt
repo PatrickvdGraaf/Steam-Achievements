@@ -34,7 +34,7 @@ class GameViewModel @Inject constructor(
     private var index = 0
 
     private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
-        0 to Order.AchievedOrder(),
+        0 to Order.LatestAchievedOrder(),
         1 to Order.RarityOrder(),
         2 to Order.NotAchievedOrder())
 

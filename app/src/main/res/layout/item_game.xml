@@ -147,6 +147,8 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/achievementContainer"
                         android:layout_width="0dp"
+                        android:paddingStart="@dimen/default_margin_quarter"
+                        android:paddingEnd="@dimen/default_margin_quarter"
                         android:layout_height="wrap_content"
                         android:paddingTop="@dimen/default_padding"
                         app:layout_constraintEnd_toEndOf="parent"

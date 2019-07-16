@@ -13,7 +13,7 @@ class AchievementSortedListImpl(
     companion object {
         /* By default, set the sort by rarity, starting from lowest.
          * This is most likely what the player wants to know (in current use case, used in GameActivity. */
-        val DEFAULT_ORDER = Order.RarityOrder()
+        val DEFAULT_ORDER = Order.LatestAchievedOrder()
     }
 
     override fun areContentsTheSame(oldItem: Achievement,
