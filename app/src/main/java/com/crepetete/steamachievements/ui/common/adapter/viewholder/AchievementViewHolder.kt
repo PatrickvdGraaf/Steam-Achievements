@@ -2,10 +2,8 @@ package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -19,18 +17,14 @@ import timber.log.Timber
 
 class AchievementViewHolder(private val view: View)
     : RecyclerView.ViewHolder(view) {
-    private lateinit var achievement: Achievement
 
-    private val imageViewIcon = view.findViewById<ImageButton>(R.id.imageViewIcon)
     private val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
-    private val cardView = view.findViewById<CardView>(R.id.icon_container)
     private val pulsator = view.findViewById<PulsatorLayout>(R.id.pulsator)
-    val imageView = view.findViewById<ImageView>(R.id.imageView)
+    val imageView: ImageView = view.findViewById(R.id.imageView)
 
     private var startingIndex = 0
 
     fun bind(achievement: Achievement, index: Int) {
-        this.achievement = achievement
         this.startingIndex = index
         textViewTitle.text = achievement.displayName
 

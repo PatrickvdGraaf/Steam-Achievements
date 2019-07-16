@@ -15,6 +15,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import timber.log.Timber
@@ -38,6 +40,15 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             }
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
+
+            // Set RecyclerView adapter.
+            val achievementsAdapter = HorizontalAchievementsAdapter(null, true)
+            binding.achievementsRecyclerView.adapter = achievementsAdapter
+            binding.achievementsRecyclerView.setHasFixedSize(true)
+
+            // Move achievements to adapter.
+            achievementsAdapter.setAchievements(game.achievements.take(10))
+            achievementsAdapter.updateSortingMethod(Order.AchievedOrder())
 
             Glide.with(binding.root.context)
                 .asBitmap()

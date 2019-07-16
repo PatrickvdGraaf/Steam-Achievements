@@ -39,8 +39,8 @@ class GameViewModel @Inject constructor(
         2 to Order.NotAchievedOrder())
 
     /* Colors */
-    val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
-    val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
     init {
         setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)

@@ -38,7 +38,8 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
-            listener?.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner, viewHolder.getPalette())
+            listener?.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner,
+                viewHolder.getPalette())
         }
 
         return viewHolder

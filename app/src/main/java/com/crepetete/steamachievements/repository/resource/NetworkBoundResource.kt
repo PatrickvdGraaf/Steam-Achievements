@@ -98,8 +98,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constru
                 is ApiErrorResponse -> {
                     onFetchFailed()
                     result.addSource(dbSource) { newData ->
-                        result.setValue(Resource.error(response.errorMessage
-                            ?: "No error message available.", newData))
+                        result.setValue(Resource.error(response.errorMessage ?: "No error message available.", newData))
                     }
                 }
                 else -> onFetchFailed()

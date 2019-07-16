@@ -8,7 +8,7 @@ import com.crepetete.steamachievements.vo.Achievement
  */
 class AchievementSortedListImpl(
     adapter: RecyclerView.Adapter<*>
-) : SortedListComparatorWrapper<Achievement>(adapter, AchievementSortedListImpl.DEFAULT_ORDER) {
+) : SortedListComparatorWrapper<Achievement>(adapter, DEFAULT_ORDER) {
 
     companion object {
         /* By default, set the sort by rarity, starting from lowest.

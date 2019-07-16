@@ -13,6 +13,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_games"
             android:layout_width="0dp"
+            android:paddingStart="@dimen/default_padding"
+            android:paddingEnd="@dimen/default_padding"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
