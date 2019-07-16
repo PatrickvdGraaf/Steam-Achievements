@@ -1,9 +1,8 @@
 package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.Bitmap
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import android.widget.ProgressBar
+import android.graphics.drawable.Drawable
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +14,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
-import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
-import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.GameData
 import com.crepetete.steamachievements.vo.GameWithAchievements
 import timber.log.Timber
@@ -42,13 +39,48 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
             // Set RecyclerView adapter.
-            val achievementsAdapter = HorizontalAchievementsAdapter(null, true)
-            binding.achievementsRecyclerView.adapter = achievementsAdapter
-            binding.achievementsRecyclerView.setHasFixedSize(true)
+            val latestAchievements = game.achievements.take(10)
+            if (latestAchievements.isEmpty()) {
+                binding.achievementContainer.visibility = View.GONE
+            } else {
+                binding.achievementContainer.visibility = View.VISIBLE
+                latestAchievements.forEachIndexed { index, achievement ->
+                    val view = when (index) {
+                        0 -> binding.achievement1
+                        1 -> binding.achievement2
+                        2 -> binding.achievement3
+                        3 -> binding.achievement4
+                        4 -> binding.achievement5
+                        5 -> binding.achievement6
+                        6 -> binding.achievement7
+                        else -> binding.achievement8
+                    }
 
-            // Move achievements to adapter.
-            achievementsAdapter.setAchievements(game.achievements.take(10))
-            achievementsAdapter.updateSortingMethod(Order.AchievedOrder())
+                    Glide.with(binding.root.context)
+                        .load(achievement.getActualIconUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(e: GlideException?,
+                                                      model: Any?,
+                                                      target: Target<Drawable>?,
+                                                      isFirstResource: Boolean): Boolean {
+                                view.visibility = View.GONE
+                                return false
+                            }
+
+                            override fun onResourceReady(resource: Drawable?,
+                                                         model: Any?,
+                                                         target: Target<Drawable>?,
+                                                         dataSource: DataSource?,
+                                                         isFirstResource: Boolean): Boolean {
+                                view.visibility = View.VISIBLE
+                                return false
+                            }
+
+                        })
+                        .into(view)
+                }
+            }
 
             Glide.with(binding.root.context)
                 .asBitmap()
@@ -91,25 +123,4 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
     fun getPalette(): Palette? = palette
 
-    /**
-     * Animates the progress from 0 to the given progress param.
-     */
-    private fun setProgressAnimated(view: ProgressBar, progress: Float) {
-        val animationDuration: Long = 1000
-        view.progress = 0
-        val percentage = progress.toInt()
-        view.startAnimation(object : Animation() {
-            var mTo = if (percentage < 0) 0 else if (percentage > view.max) view.max else percentage
-            var mFrom = progress
-
-            init {
-                duration = (Math.abs(mTo - mFrom) * (animationDuration / view.max)).toLong()
-            }
-
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                val value = mFrom + (mTo - mFrom) * interpolatedTime
-                view.progress = value.toInt()
-            }
-        })
-    }
 }

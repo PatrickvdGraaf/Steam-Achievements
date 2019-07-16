@@ -54,5 +54,6 @@
     <dimen name="loader_image_icon_size">24dp</dimen>
     <dimen name="elevation_card_heavy">12dp</dimen>
     <dimen name="corner_radius_medium">8dp</dimen>
+    <dimen name="size_achievement_small">36dp</dimen>
 
 </resources>

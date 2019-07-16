@@ -61,7 +61,7 @@
                 android:drawablePadding="@dimen/default_margin_halved"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/default_margin_halved"
-                android:paddingTop="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
                 android:paddingBottom="@dimen/default_margin_halved"
                 android:text="@{gameData.getTotalPlayTimeString()}"
@@ -81,10 +81,10 @@
                 android:drawableStart="@drawable/ic_recent_24dp"
                 android:drawablePadding="@dimen/default_margin_halved"
                 android:gravity="center_vertical"
-                android:paddingStart="@dimen/default_margin"
+                android:paddingStart="@dimen/default_margin_halved"
                 android:paddingTop="@dimen/default_margin_halved"
                 android:paddingEnd="@dimen/default_margin"
-                android:paddingBottom="@dimen/default_margin"
+                android:paddingBottom="@dimen/default_margin_halved"
                 android:text="@{gameData.getRecentPlaytimeString()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_label"
@@ -144,22 +144,95 @@
                             tools:progress="75"/>
                     </FrameLayout>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/achievementsRecyclerView"
-                        style="@style/AppTheme.Achievements.RecyclerView"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/achievementContainer"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/default_margin"
-                        android:clickable="false"
-                        android:focusable="false"
-                        android:nestedScrollingEnabled="false"
-                        android:layout_marginStart="@dimen/default_margin_halved"
-                        android:layout_marginEnd="@dimen/default_margin_halved"
-                        android:orientation="horizontal"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:paddingTop="@dimen/default_padding"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/progressContainer"/>
+                        app:layout_constraintTop_toBottomOf="@id/progressContainer">
+
+                        <ImageView
+                            android:id="@+id/achievement1"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement2"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement2"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement3"
+                            app:layout_constraintStart_toEndOf="@id/achievement1"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement3"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement4"
+                            app:layout_constraintStart_toEndOf="@id/achievement2"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement4"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement5"
+                            app:layout_constraintStart_toEndOf="@id/achievement3"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement5"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement6"
+                            app:layout_constraintStart_toEndOf="@id/achievement4"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement6"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement7"
+                            app:layout_constraintStart_toEndOf="@id/achievement5"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement7"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement8"
+                            app:layout_constraintStart_toEndOf="@id/achievement6"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/achievement8"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/achievement7"
+                            app:layout_constraintTop_toTopOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/achievements_textView"
@@ -174,7 +247,7 @@
                         android:text="@{gameData.getAchievementsText()}"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp"
-                        app:layout_constraintTop_toBottomOf="@id/achievementsRecyclerView"
+                        app:layout_constraintTop_toBottomOf="@id/achievementContainer"
                         tools:text="42/42 (100%) achievements"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
