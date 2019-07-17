@@ -53,46 +53,60 @@
                 app:layout_constraintStart_toEndOf="@id/game_banner"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <ImageView
+                android:id="@+id/total_played_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="@dimen/default_margin_halved"
+                android:src="@drawable/ic_all_time_24dp"
+                app:layout_constraintBottom_toTopOf="@+id/recently_played_icon"
+                app:layout_constraintEnd_toStartOf="@id/recently_played_textView"
+                app:layout_constraintStart_toStartOf="@id/timeBackground"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <TextView
                 android:id="@+id/total_played_textView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:drawableStart="@drawable/ic_all_time_24dp"
-                android:drawablePadding="@dimen/default_margin_halved"
+                android:layout_marginStart="@dimen/default_margin_halved"
+                android:layout_marginEnd="@dimen/default_margin"
                 android:gravity="center_vertical"
-                android:paddingStart="@dimen/default_margin_halved"
-                android:paddingTop="@dimen/default_margin_halved"
-                android:paddingEnd="@dimen/default_margin"
-                android:paddingBottom="@dimen/default_margin_halved"
                 android:text="@{gameData.getTotalPlayTimeString()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_label"
                 android:textStyle="normal|bold"
-                app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
+                app:layout_constraintBottom_toBottomOf="@id/total_played_icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/game_banner"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/total_played_icon"
+                app:layout_constraintTop_toTopOf="@id/total_played_icon"
                 tools:text="81h 31m"/>
+
+            <ImageView
+                android:id="@+id/recently_played_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="@dimen/default_margin"
+                android:src="@drawable/ic_recent_24dp"
+                app:layout_constraintBottom_toTopOf="@id/mainCard"
+                app:layout_constraintEnd_toStartOf="@id/recently_played_textView"
+                app:layout_constraintStart_toStartOf="@id/timeBackground"/>
 
             <TextView
                 android:id="@+id/recently_played_textView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:drawableStart="@drawable/ic_recent_24dp"
-                android:drawablePadding="@dimen/default_margin_halved"
+                android:layout_marginStart="@dimen/default_margin_halved"
+                android:layout_marginEnd="@dimen/default_margin"
                 android:gravity="center_vertical"
-                android:paddingStart="@dimen/default_margin_halved"
-                android:paddingTop="@dimen/default_margin_halved"
-                android:paddingEnd="@dimen/default_margin"
-                android:paddingBottom="@dimen/default_margin_halved"
                 android:text="@{gameData.getRecentPlaytimeString()}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_label"
                 android:textStyle="normal|bold"
-                app:layout_constraintBottom_toTopOf="@+id/mainCard"
+                app:layout_constraintBottom_toBottomOf="@id/recently_played_icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/game_banner"
-                app:layout_constraintTop_toBottomOf="@+id/total_played_textView"
+                app:layout_constraintStart_toEndOf="@id/recently_played_icon"
+                app:layout_constraintTop_toTopOf="@id/recently_played_icon"
                 tools:text="2h 42m"/>
 
             <androidx.cardview.widget.CardView
@@ -103,7 +117,7 @@
                 app:cardElevation="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/game_banner">
+                app:layout_constraintTop_toTopOf="@id/recently_played_icon">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -147,10 +161,10 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/achievementContainer"
                         android:layout_width="0dp"
-                        android:paddingStart="@dimen/default_margin_quarter"
-                        android:paddingEnd="@dimen/default_margin_quarter"
                         android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/default_margin_quarter"
                         android:paddingTop="@dimen/default_padding"
+                        android:paddingEnd="@dimen/default_margin_quarter"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/progressContainer">
