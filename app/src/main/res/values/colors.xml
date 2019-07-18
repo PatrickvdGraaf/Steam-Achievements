@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#171a21</color>
     <color name="colorPrimaryDark">#111111</color>
-    <color name="colorPrimaryLight">#2E3136</color>
+    <color name="colorPrimaryLight">#212227</color>
     <color name="colorAccent">#ffffff</color>
 
     <color name="colorTextLabel">#a3a3a3</color>
@@ -12,4 +12,5 @@
 
     <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
     <color name="statusbar_translucent">#64000000</color>
+    <color name="backgroundAchievementsContainer">#50000000</color>
 </resources>

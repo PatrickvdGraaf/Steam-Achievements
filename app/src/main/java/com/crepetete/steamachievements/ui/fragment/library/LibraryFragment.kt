@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
@@ -166,8 +165,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      *
      * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View, palette: Palette?) {
-        startActivity(GameActivity.getInstance(requireContext(), game, palette))
+    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View) {
+        startActivity(GameActivity.getInstance(requireContext(), game))
     }
 
     /**

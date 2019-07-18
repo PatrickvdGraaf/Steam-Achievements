@@ -2,8 +2,10 @@ package com.crepetete.steamachievements.ui.activity.game
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +13,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -32,28 +38,15 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
     companion object {
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
-
-        private const val INTENT_PALETTE_DARK_MUTED = "INTENT_PALETTE_DARK_MUTED"
-        private const val INTENT_PALETTE_DARK_VIBRANT = "INTENT_PALETTE_DARK_VIBRANT"
-        private const val INTENT_PALETTE_LIGHT_MUTED = "INTENT_PALETTE_LIGHT_MUTED"
-        private const val INTENT_PALETTE_LIGHT_VIBRANT = "INTENT_PALETTE_LIGHT_VIBRANT"
-        private const val INTENT_PALETTE_MUTED = "INTENT_PALETTE_MUTED"
-        private const val INTENT_PALETTE_VIBRANT = "INTENT_PALETTE_VIBRANT"
-        private const val INTENT_PALETTE_DOMINANT = "INTENT_PALETTE_DOMINANT"
+        private const val INTENT_PALETTE = "INTENT_PALETTE"
 
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, game: GameWithAchievements, palette: Palette?) = Intent(context, GameActivity::class.java)
-            .apply {
+        fun getInstance(context: Context, game: GameWithAchievements): Intent {
+            return Intent(context, GameActivity::class.java).apply {
                 putExtra(INTENT_GAME, game)
-                putExtra(INTENT_PALETTE_DARK_MUTED, palette?.darkMutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_DARK_VIBRANT, palette?.darkVibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_LIGHT_MUTED, palette?.lightMutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_LIGHT_VIBRANT, palette?.lightVibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_MUTED, palette?.mutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_VIBRANT, palette?.vibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_DOMINANT, palette?.dominantSwatch?.rgb ?: -1)
             }
+        }
     }
 
     @Inject
@@ -82,14 +75,9 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
 
         // Retrieve data.
-        val id = intent.getStringExtra(INTENT_GAME_ID) ?: INVALID_ID
-        if (id != INVALID_ID) {
-            viewModel.setAppId(id)
-        } else {
-            intent.getParcelableExtra<GameWithAchievements>(INTENT_GAME)?.let { game ->
-                setGameInfo(game)
-                viewModel.setGame(game)
-            }
+        intent.getParcelableExtra<GameWithAchievements>(INTENT_GAME)?.let { game ->
+            setGameInfo(game)
+            viewModel.setGame(game)
         }
 
         // Set observers
@@ -108,36 +96,9 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
             achievementsAdapter.updateSortingMethod(method)
         })
 
-        setColorsWithIntent(intent)
-
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
-        }
-    }
-
-    private fun setColorsWithIntent(intent: Intent?) {
-        val darkMuted = intent?.getIntExtra(INTENT_PALETTE_DARK_VIBRANT, -1) ?: -1
-        val darkVibrant = intent?.getIntExtra(INTENT_PALETTE_DARK_MUTED, -1) ?: -1
-        val lightMuted = intent?.getIntExtra(INTENT_PALETTE_LIGHT_MUTED, -1) ?: -1
-        val lightVibrant = intent?.getIntExtra(INTENT_PALETTE_LIGHT_VIBRANT, -1) ?: -1
-        val muted = intent?.getIntExtra(INTENT_PALETTE_MUTED, -1) ?: -1
-        val vibrant = intent?.getIntExtra(INTENT_PALETTE_VIBRANT, -1) ?: -1
-        val dominant = intent?.getIntExtra(INTENT_PALETTE_DOMINANT, -1) ?: -1
-
-        if (darkMuted != -1) {
-            collapsingToolbar.setContentScrimColor(darkMuted)
-            collapsingToolbar.setStatusBarScrimColor(darkMuted)
-        } else if (muted != -1) {
-            collapsingToolbar.setContentScrimColor(muted)
-            collapsingToolbar.setStatusBarScrimColor(muted)
-        }
-
-        when {
-            darkVibrant != -1 -> scrollView.setBackgroundColor(darkVibrant)
-            lightMuted != -1 -> scrollView.setBackgroundColor(lightMuted)
-            muted != -1 -> scrollView.setBackgroundColor(muted)
-            dominant != -1 -> scrollView.setBackgroundColor(dominant)
         }
     }
 
@@ -169,9 +130,64 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
 
         // Load Banner
         Glide.with(this)
+            .asBitmap()
             .load(data.getImageUrl())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(banner)
+            .listener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?,
+                                          model: Any?,
+                                          target: Target<Bitmap>?,
+                                          isFirstResource: Boolean): Boolean {
+                    return false
+                }
+
+                override fun onResourceReady(resource: Bitmap?,
+                                             model: Any?,
+                                             target: Target<Bitmap>?,
+                                             dataSource: DataSource?,
+                                             isFirstResource: Boolean): Boolean {
+                    if (resource != null) {
+                        Palette.from(resource).generate { palette ->
+                            if (palette != null) {
+                                val colorBackground = palette.getDarkMutedColor(
+                                    ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
+                                )
+                                val colorToolbar = palette.getDarkVibrantColor(
+                                    ContextCompat.getColor(applicationContext, R.color.colorPrimary)
+                                )
+                                val colorCards = if (palette.getMutedColor(ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)) != ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)) {
+                                    palette.getMutedColor(
+                                        ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
+                                    )
+                                } else {
+                                    palette.getDarkMutedColor(
+                                        ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
+                                    )
+                                }
+
+                                collapsingToolbar.setContentScrimColor(colorToolbar)
+                                collapsingToolbar.setStatusBarScrimColor(colorToolbar)
+
+                                val vibrantRgb = palette.darkVibrantSwatch?.rgb
+                                val mutedRgb = palette.darkMutedSwatch?.rgb
+
+                                when {
+                                    mutedRgb != null -> mutedRgb
+                                    vibrantRgb != null -> vibrantRgb
+                                    else -> ContextCompat.getColor(binding.root.context,
+                                        R.color.colorGameViewHolderTitleBackground)
+                                }.let { color ->
+                                    playTimeContainer.setBackgroundColor(color)
+                                    achievementContainer.setBackgroundColor(color)
+                                    progressContainer.setBackgroundColor(color)
+                                }
+
+                            }
+                        }
+                    }
+                    return false
+                }
+            }).into(banner)
 
         // Prepare Achievements RecyclerView.
         recyclerViewAchievements.layoutManager = LinearLayoutManager(

@@ -136,6 +136,4 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
         }
     }
 
-    fun getPalette(): Palette? = palette
-
 }
