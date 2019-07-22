@@ -37,6 +37,12 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                     if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
             }
 
+            if (dataItem.isCompleted()) {
+                binding.imageViewAchievedFlag.visibility = View.VISIBLE
+            } else {
+                binding.imageViewAchievedFlag.visibility = View.GONE
+            }
+
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
             binding.achievement1.visibility = View.INVISIBLE
