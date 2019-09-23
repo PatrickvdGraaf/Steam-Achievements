@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -146,41 +147,12 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
                                              target: Target<Bitmap>?,
                                              dataSource: DataSource?,
                                              isFirstResource: Boolean): Boolean {
-                    if (resource != null) {
+                    if (resource != null && !isDestroyed) {
                         Palette.from(resource).generate { palette ->
-                            if (palette != null) {
-                                val colorBackground = palette.getDarkMutedColor(
-                                    ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
-                                )
-                                val colorToolbar = palette.getDarkVibrantColor(
-                                    ContextCompat.getColor(applicationContext, R.color.colorPrimary)
-                                )
-                                val colorCards = if (palette.getMutedColor(ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)) != ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)) {
-                                    palette.getMutedColor(
-                                        ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
-                                    )
-                                } else {
-                                    palette.getDarkMutedColor(
-                                        ContextCompat.getColor(applicationContext, R.color.colorPrimaryLight)
-                                    )
-                                }
-
+                            if (palette != null && !isDestroyed) {
+                                val colorToolbar = palette.getDarkVibrantColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
                                 collapsingToolbar.setContentScrimColor(colorToolbar)
-                                collapsingToolbar.setStatusBarScrimColor(colorToolbar)
-
-                                val vibrantRgb = palette.darkVibrantSwatch?.rgb
-                                val mutedRgb = palette.darkMutedSwatch?.rgb
-
-                                when {
-                                    mutedRgb != null -> mutedRgb
-                                    vibrantRgb != null -> vibrantRgb
-                                    else -> ContextCompat.getColor(binding.root.context,
-                                        R.color.colorGameViewHolderTitleBackground)
-                                }.let { color ->
-                                    playTimeContainer.setBackgroundColor(color)
-                                    achievementContainer.setBackgroundColor(color)
-                                    progressContainer.setBackgroundColor(color)
-                                }
+                                window.statusBarColor = ColorUtils.setAlphaComponent(colorToolbar, 200)
 
                             }
                         }

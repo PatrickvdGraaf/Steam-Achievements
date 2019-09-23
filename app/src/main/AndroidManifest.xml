@@ -38,8 +38,7 @@
             </intent-filter>
         </activity> <!-- GAME DETAIL -->
         <activity
-            android:name=".ui.activity.game.GameActivity"
-            android:theme="@style/Transparent"/> <!-- PAGER -->
+            android:name=".ui.activity.game.GameActivity"/> <!-- PAGER -->
         <activity
             android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
             android:theme="@style/Transparent"/>
