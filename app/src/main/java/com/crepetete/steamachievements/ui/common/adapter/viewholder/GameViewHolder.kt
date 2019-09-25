@@ -15,8 +15,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
-import com.crepetete.steamachievements.vo.GameWithAchievements
 import timber.log.Timber
 
 /**
@@ -26,7 +26,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
     private var palette: Palette? = null
 
-    fun bind(game: GameWithAchievements?) {
+    fun bind(game: Game?) {
         if (game != null) {
             val dataItem = GameData(game)
             binding.gameData = dataItem

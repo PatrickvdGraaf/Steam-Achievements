@@ -18,13 +18,14 @@ import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.AchievementsRepository
+import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Status
+import com.crepetete.steamachievements.vo.Game
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener,
@@ -40,8 +41,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     var adapter = GamesAdapter()
 
     lateinit var binding: FragmentLibraryBinding
-
-    private var hasShownInternetError = false
 
     private var dataBindingComponent = FragmentDataBindingComponent()
 
@@ -60,50 +59,50 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        loaderButton.setOnClickListener {
-            viewModel.refresh()
-        }
-
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
-        viewModel.mediatorLiveData.observe(this, Observer { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
-                    // Reset error message boolean.
-                    hasShownInternetError = false
-
-                    pulsator.stop()
-
-                    setGamesData(response.data ?: listOf())
+        with(viewModel) {
+            games.observe(this@LibraryFragment, Observer { games ->
+                games?.let {
+                    setGamesData(it)
                 }
-                Status.ERROR -> {
-                    pulsator.stop()
+            })
 
-                    if (response.data?.isNotEmpty() == true) {
-                        pulsator.visibility = View.GONE
-
-                        setGamesData(response.data)
-                    }
-
-                    // TODO Move this to a separate ErrorChecker class.
-                    if (response.message?.contains("Unable to resolve host") == true && !hasShownInternetError) {
-                        hasShownInternetError = true
-                        Snackbar.make(coordinator, "Could not update games, are you connected to the internet?", Snackbar.LENGTH_LONG).show()
+            gamesLoadingState.observe(this@LibraryFragment, Observer { state ->
+                state?.let {
+                    when (state) {
+                        LiveResource.STATE_LOADING -> {
+                            pulsator.visibility = View.VISIBLE
+                            pulsator.start()
+                        }
+                        LiveResource.STATE_FAILED, LiveResource.STATE_SUCCESS -> {
+                            pulsator.visibility = View.GONE
+                            pulsator.stop()
+                        }
                     }
                 }
-                Status.LOADING -> {
-                    pulsator.start()
-                    pulsator.visibility = View.VISIBLE
+            })
+
+            gamesLoadingError.observe(this@LibraryFragment, Observer { error ->
+                Timber.e("Error while loading Games: $error")
+
+                if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
+                    Snackbar.make(
+                        coordinator,
+                        "Could not update games, are you connected to the internet?",
+                        Snackbar.LENGTH_LONG).show()
                 }
-            }
-        })
+            })
+
+            fetchGames()
+        }
 
         initScrollFab()
         initRecyclerView()
     }
 
-    private fun setGamesData(games: List<GameWithAchievements>) {
+    private fun setGamesData(games: List<Game>) {
         if (games.isEmpty()) {
             pulsator.visibility = View.VISIBLE
 
@@ -116,9 +115,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
         adapter.updateGames(games)
         games.map { game -> game.getAppId() }.forEach { id ->
-            viewModel.updateAchievements(id, this).observe(this, Observer {
-                // Just observe, otherwise the NetworkBoundResource won't fire and achievements wont be fetched.
-            })
+            viewModel.updateAchievements(id, this)
         }
     }
 
@@ -165,7 +162,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      *
      * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View, palette: Palette?) {
+    override fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View, palette: Palette?) {
         startActivity(GameActivity.getInstance(requireContext(), game, palette))
     }
 
@@ -173,7 +170,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Invoked when the Adapter has created a primary rgb color for the games thumbnail.
      * Calls the ViewModel so it can update this property in the Database.
      */
-    override fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int) {
+    override fun onPrimaryGameColorCreated(game: Game, rgb: Int) {
         viewModel.updatePrimaryColorForGame(game, rgb)
     }
 

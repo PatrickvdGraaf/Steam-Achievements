@@ -16,15 +16,18 @@ import com.crepetete.steamachievements.ui.common.adapter.filter.GameFilterListen
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
-import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Game
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
  * Adapter that shows Games in a (vertical) List.
  */
 class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFilterListener {
-    private var items = listOf<GameWithAchievements>()
-    private var filteredItems = listOf<GameWithAchievements>()
+    private var items = listOf<Game>()
+    private var filteredItems = listOf<Game>()
     private val filter = GameFilter(items, this)
 
     private var sortMethod = SortingType.PLAYTIME
@@ -57,7 +60,8 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
             holder.bind(filteredItems[position])
             holder.itemView.visibility = View.VISIBLE
         } catch (e: IndexOutOfBoundsException) {
-            Timber.e(e, "Could not display Game in RecyclerView. Invalid index $position on filteredItems with size $itemCount.")
+            Timber.e(e, "Could not display BaseGameInfo in RecyclerView. " +
+                "Invalid index $position on filteredItems with size $itemCount.")
             holder.itemView.visibility = View.GONE
         }
     }
@@ -66,15 +70,17 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
      * Set the games list shown in the RecyclerView attached to this adapter.
      * Sorts the list with the current sorting method before submitting.
      */
-    fun updateGames(games: List<GameWithAchievements>?) {
-        items = games.sort(sortMethod)
-        filter.updateGames(items)
+    fun updateGames(games: List<Game>?) {
+        CoroutineScope(Default).launch {
+            items = games.sort(sortMethod)
+            filter.updateGames(items)
 
-        // If we're not currently showing a search result, reset displayed items to unfiltered data.
-        if (query.isNullOrBlank()) {
-            val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, items))
-            diffResult.dispatchUpdatesTo(this)
-            filteredItems = items
+            // If we're not currently showing a search result, reset displayed items to unfiltered data.
+            if (query.isNullOrBlank()) {
+                val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, items))
+                diffResult.dispatchUpdatesTo(this@GamesAdapter)
+                filteredItems = items
+            }
         }
     }
 
@@ -91,12 +97,14 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
     /**
      * Update shown data after a new search query was processed.
      */
-    override fun updateFilteredData(data: List<GameWithAchievements>) {
-        val sortedData = data.sort(sortMethod)
-        val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, sortedData))
+    override fun updateFilteredData(data: List<Game>) {
+        CoroutineScope(Default).launch {
+            val sortedData = data.sort(sortMethod)
+            val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, sortedData))
 
-        diffResult.dispatchUpdatesTo(this)
-        filteredItems = sortedData
+            diffResult.dispatchUpdatesTo(this@GamesAdapter)
+            filteredItems = sortedData
+        }
     }
 
     /**
@@ -109,7 +117,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
     override fun getItemCount() = filteredItems.size
 
     interface OnGameClickListener {
-        fun onGameClicked(game: GameWithAchievements, imageView: ImageView, background: View, title: View, palette: Palette?)
-        fun onPrimaryGameColorCreated(game: GameWithAchievements, rgb: Int)
+        fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View, palette: Palette?)
+        fun onPrimaryGameColorCreated(game: Game, rgb: Int)
     }
 }

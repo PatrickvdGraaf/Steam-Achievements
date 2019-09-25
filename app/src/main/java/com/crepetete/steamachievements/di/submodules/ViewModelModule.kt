@@ -9,7 +9,6 @@ import com.crepetete.steamachievements.ui.activity.game.GameViewModel
 import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
 import com.crepetete.steamachievements.ui.fragment.achievement.pager.PagerFragmentViewModel
 import com.crepetete.steamachievements.ui.fragment.library.LibraryViewModel
-import com.crepetete.steamachievements.ui.fragment.profile.ProfileViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -50,11 +49,6 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AuthViewModel::class)
     abstract fun postAuthViewModel(viewModel: AuthViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(ProfileViewModel::class)
-    abstract fun postProfileViewModel(viewModel: ProfileViewModel): ViewModel
 
     // Add more ViewModels here
 }

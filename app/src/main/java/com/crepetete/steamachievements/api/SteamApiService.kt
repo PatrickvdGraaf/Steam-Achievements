@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.api
 
-import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.response.ApiResponse
 import com.crepetete.steamachievements.api.response.achievement.AchievedAchievementResponse
@@ -20,34 +19,34 @@ import retrofit2.http.Query
  */
 interface SteamApiService {
     @GET("/ISteamUser/GetPlayerSummaries/v0002/")
-    fun getUserInfo(
+    suspend fun getUserInfo(
         @Query("steamids") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): LiveData<ApiResponse<UserResponse>>
+    ): ApiResponse<UserResponse>
 
     @GET("/IPlayerService/GetOwnedGames/v0001/")
-    fun getGamesForUser(
+    suspend fun getGamesForUser(
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY,
         @Query("include_appinfo") includeAppInfo: Int = 1,
         @Query("include_played_free_games") includeFreeGames: Int = 1
-    ): LiveData<ApiResponse<BaseGameResponse>>
+    ): BaseGameResponse
 
     @GET("/ISteamUserStats/GetSchemaForGame/v2/")
-    fun getSchemaForGame(
+    suspend fun getSchemaForGame(
         @Query("appid") appId: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): LiveData<ApiResponse<SchemaResponse>>
+    ): ApiResponse<SchemaResponse>
 
     @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
-    fun getAchievementsForPlayer(
+    suspend fun getAchievementsForPlayer(
         @Query("appid") appId: String,
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): LiveData<ApiResponse<AchievedAchievementResponse>>
+    ): ApiResponse<AchievedAchievementResponse>
 
     @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
-    fun getGlobalAchievementStats(
+    suspend fun getGlobalAchievementStats(
         @Query("gameid") appId: String
-    ): LiveData<ApiResponse<GlobalAchievResponse>>
+    ): ApiResponse<GlobalAchievResponse>
 }

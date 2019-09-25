@@ -7,9 +7,15 @@ import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.repository.UserRepository
+import com.crepetete.steamachievements.repository.resource.LiveResource
+import com.crepetete.steamachievements.repository.resource.LiveResource.Companion.STATE_LOADING
+import com.crepetete.steamachievements.repository.resource.ResourceState
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Resource
+import com.crepetete.steamachievements.vo.Game
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -21,36 +27,74 @@ class LibraryViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private var sortingType = MutableLiveData<SortingType>()
+    private val mainJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
 
-    val mediatorLiveData = MediatorLiveData<Resource<List<GameWithAchievements>>>()
-    private var gamesWithAchievement: LiveData<Resource<List<GameWithAchievements>>> = gameRepo.getGames(userRepository.getCurrentPlayerId())
+    private var sortingType = MutableLiveData<SortingType>()
+    private var gamesFetchJob: Job? = null
+    private var achievementsUpdateJob: Job? = null
+
+    private var gamesLiveResource: LiveResource<List<Game>>? = null
+    private val _games = MediatorLiveData<List<Game>?>()
+    private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
+    private val _gamesLoadingError = MediatorLiveData<Exception?>()
+
+    val games: LiveData<List<Game>?> = _games
+    val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
+    val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
 
     init {
-        mediatorLiveData.addSource(gamesWithAchievement) { gamesResource ->
-            mediatorLiveData.value = gamesResource
-        }
         sortingType.value = SortingType.PLAYTIME
     }
 
-    fun refresh() {
-        mediatorLiveData.removeSource(gamesWithAchievement)
-        gamesWithAchievement = gameRepo.getGames(userRepository.getCurrentPlayerId())
-        mediatorLiveData.addSource(gamesWithAchievement) { gameResource ->
-            mediatorLiveData.value = gameResource
+    fun fetchGames() {
+        if (_gamesLoadingState.value == STATE_LOADING) {
+            return
+        }
+
+        uiScope.launch {
+            gameRepo.getGames(userRepository.getCurrentPlayerId(), sortingType.value ?: SortingType.PLAYTIME)
+                .apply {
+                    gamesLiveResource = this
+                    gamesFetchJob = this.job
+                    bindObserver(_games, this.data)
+                    bindObserver(_gamesLoadingState, this.state)
+                    bindObserver(_gamesLoadingError, this.error)
+                }
         }
     }
 
-    fun updateAchievements(appId: String,
-                           listener: AchievementsRepository.AchievementsErrorListener) = achievementsRepository
-        .getAchievements(appId, listener)
+    fun refresh() {
 
-    fun updatePrimaryColorForGame(game: GameWithAchievements, rgb: Int) {
+    }
+
+    fun updateAchievements(appId: String, listener: AchievementsRepository.AchievementsErrorListener) {
+        uiScope.launch {
+            achievementsRepository.getAchievements(appId, listener).apply {
+                achievementsUpdateJob = this.job
+            }
+        }
+    }
+
+    fun updatePrimaryColorForGame(game: Game, rgb: Int) {
         game.setPrimaryColor(rgb)
 
         val gameData = game.game
         if (gameData != null) {
             gameRepo.update(gameData)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mainJob.cancel()
+    }
+
+    private fun <R> bindObserver(observer: MediatorLiveData<R?>?, source: LiveData<R?>) {
+        observer?.apply {
+            addSource(source) {
+                postValue(it)
+            }
         }
     }
 }

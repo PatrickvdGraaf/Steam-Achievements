@@ -10,8 +10,7 @@ import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSort
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Resource
+import com.crepetete.steamachievements.vo.Game
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
@@ -22,7 +21,7 @@ class GameViewModel @Inject constructor(
     val appId: LiveData<AppId>
         get() = _appId
 
-    val game: LiveData<Resource<GameWithAchievements>> = Transformations
+    val game: LiveData<Game> = Transformations
         .switchMap(_appId) { id ->
             id.ifExists { appId ->
                 gameRepo.getGame(appId)
@@ -93,7 +92,7 @@ class GameViewModel @Inject constructor(
         _appId.value = AppId(appId)
     }
 
-    fun setGame(newGame: GameWithAchievements) {
+    fun setGame(newGame: Game) {
         _appId.value = AppId(newGame.getAppId())
     }
 

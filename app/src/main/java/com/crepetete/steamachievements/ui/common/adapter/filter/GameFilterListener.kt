@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.ui.common.adapter.filter
 
-import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Game
 
 /**
  *
@@ -10,5 +10,5 @@ import com.crepetete.steamachievements.vo.GameWithAchievements
  * @date: Fri 08 Feb, 2019; 19:12.
  */
 interface GameFilterListener {
-    fun updateFilteredData(data: List<GameWithAchievements>)
+    fun updateFilteredData(data: List<Game>)
 }

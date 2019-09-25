@@ -21,8 +21,8 @@ import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsA
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
-import com.crepetete.steamachievements.vo.GameWithAchievements
 import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
@@ -43,7 +43,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
 
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, game: GameWithAchievements, palette: Palette?) = Intent(context, GameActivity::class.java)
+        fun getInstance(context: Context, game: Game, palette: Palette?) = Intent(context, GameActivity::class.java)
             .apply {
                 putExtra(INTENT_GAME, game)
                 putExtra(INTENT_PALETTE_DARK_MUTED, palette?.darkMutedSwatch?.rgb ?: -1)
@@ -86,7 +86,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         if (id != INVALID_ID) {
             viewModel.setAppId(id)
         } else {
-            intent.getParcelableExtra<GameWithAchievements>(INTENT_GAME)?.let { game ->
+            intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
                 setGameInfo(game)
                 viewModel.setGame(game)
             }
@@ -94,8 +94,8 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
 
         // Set observers
         viewModel.game.observe(this, Observer { game ->
-            if (game?.data != null) {
-                setGameInfo(game.data)
+            if (game != null) {
+                setGameInfo(game)
             }
         })
 
@@ -145,7 +145,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         startActivity(TransparentPagerActivity.getInstance(this, index, sortedList))
     }
 
-    private fun setGameInfo(game: GameWithAchievements?) {
+    private fun setGameInfo(game: Game?) {
         if (game == null) {
             return
         }

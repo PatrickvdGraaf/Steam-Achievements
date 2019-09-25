@@ -18,8 +18,8 @@ abstract class BaseDao<T> {
      *
      * @param obj the object to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    protected abstract fun insert(vararg obj: T)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insert(vararg obj: T)
 
     /**
      * Insert an array of objects in the database.
@@ -29,23 +29,23 @@ abstract class BaseDao<T> {
      * @param objList the objects to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(objList: List<T>)
+    abstract suspend fun insert(objList: List<T>)
 
     /**
      * Update an object from the database.
      *
      * @param obj the object to be updated.
      */
-    @Update
-    abstract fun update(obj: T)
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun update(obj: T)
 
     /**
      * Update an array of objects from the database.
      *
      * @param objList the object to be updated.
      */
-    @Update
-    abstract fun update(objList: List<T>)
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun update(objList: List<T>)
 
     /**
      * Delete an object from the database.
@@ -53,7 +53,7 @@ abstract class BaseDao<T> {
      * @param obj the object to be deleted.
      */
     @Delete
-    abstract fun delete(obj: T)
+    abstract suspend fun delete(obj: T)
 
     /**
      * Update an object from the database if it exists, otherwise insert it.
@@ -61,7 +61,7 @@ abstract class BaseDao<T> {
      * @param obj the object to be 'up-serted'.
      */
     @Transaction
-    open fun upsert(obj: T) {
+    open suspend fun upsert(obj: T) {
         insert(obj)
         update(obj)
     }
@@ -72,8 +72,10 @@ abstract class BaseDao<T> {
      * @param objList the object to be 'up-serted'.
      */
     @Transaction
-    open fun upsert(objList: List<T>) {
+    open suspend fun upsert(objList: List<T>) {
         insert(objList)
         update(objList)
     }
+
+
 }
