@@ -38,7 +38,7 @@ class Game(
     fun getAmountOfAchievements() = achievements.size
     fun getRecentPlaytime() = game?.recentPlayTime ?: 0
     fun getPrimaryColor() = game?.colorPrimaryDark ?: INVALID_COLOR
-    fun getAppId() = game?.appId ?: ""
+    fun getAppId(): Long = game?.appId ?: -1L
     fun getName() = game?.name ?: ""
     fun getPlaytime() = game?.playTime ?: 0L
     fun getBannerUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/${game?.appId ?: "0"}/${game?.logoUrl

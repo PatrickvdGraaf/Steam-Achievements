@@ -9,12 +9,10 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
 import dagger.Module
 import dagger.Provides
-import io.reactivex.schedulers.Schedulers
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.text.ParseException
 import java.util.*
@@ -28,13 +26,11 @@ class ApiModule {
     @Singleton
     fun provideRetrofitInterface(
         moshiConverterFactory: MoshiConverterFactory,
-        rxJava2CallAdapterFactory: RxJava2CallAdapterFactory,
         liveDataCallAdapterFactory: LiveDataCallAdapterFactory,
         okHttpClient: OkHttpClient
     ): SteamApiService = Retrofit.Builder()
         .baseUrl(BuildConfig.API_URL)
         .addConverterFactory(moshiConverterFactory)
-        .addCallAdapterFactory(rxJava2CallAdapterFactory)
         .addCallAdapterFactory(liveDataCallAdapterFactory)
         .client(okHttpClient)
         .build()
@@ -90,9 +86,9 @@ class ApiModule {
         return MoshiConverterFactory.create(moshi)
     }
 
-    @Provides
-    @Singleton
-    fun providesRxJavaCallAdapterFactory(): RxJava2CallAdapterFactory {
-        return RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())
-    }
+    //    @Provides
+    //    @Singleton
+    //    fun providesRxJavaCallAdapterFactory(): RxJava2CallAdapterFactory {
+    //        return RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())
+    //    }
 }

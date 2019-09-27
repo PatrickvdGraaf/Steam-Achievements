@@ -68,7 +68,7 @@ class LibraryViewModel @Inject constructor(
 
     }
 
-    fun updateAchievements(appId: String, listener: AchievementsRepository.AchievementsErrorListener) {
+    fun updateAchievements(appId: Long, listener: AchievementsRepository.AchievementsErrorListener) {
         uiScope.launch {
             achievementsRepository.getAchievements(appId, listener).apply {
                 achievementsUpdateJob = this.job

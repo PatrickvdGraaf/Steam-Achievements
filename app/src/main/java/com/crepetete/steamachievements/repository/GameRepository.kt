@@ -2,6 +2,7 @@ package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
@@ -15,6 +16,7 @@ import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,16 +36,23 @@ class GameRepository @Inject constructor(
         return object : NetworkBoundResource<List<Game>, List<BaseGameInfo>>() {
 
             override suspend fun saveCallResult(data: List<BaseGameInfo>) {
-                dao.upsert(data)
+                Timber.d("Updating Games database with ${data.size} items.")
+                data.take(10).forEach { gameInfo ->
+                    Timber.d(gameInfo.toString())
+                }
+                val insertResult = dao.insert(data)
+                insertResult.forEach { id ->
+                    Timber.d("$id")
+                }
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
-                return gameListRateLimit.shouldFetch(FETCH_GAMES_KEY)
+                return gameListRateLimit.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
             }
 
             override suspend fun createCall(): List<BaseGameInfo>? {
-                val apiResponse = api.getGamesForUser(userId)
-                return listOf()
+                val data = api.getGamesForUser(userId)
+                return data.response.games
             }
 
             override suspend fun loadFromDb(): List<Game> {

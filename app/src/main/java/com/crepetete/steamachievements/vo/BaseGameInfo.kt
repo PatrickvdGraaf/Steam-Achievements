@@ -22,16 +22,17 @@ import java.util.*
 data class BaseGameInfo(
     @PrimaryKey
     @ColumnInfo(name = "appId")
-    @Json(name = "appid")
-    val appId: String,
+    @field:Json(name = "appid")
+    val appId: Long,
+    @field:Json(name = "name")
     val name: String,
-    @Json(name = "playtime_2weeks")
+    @field:Json(name = "playtime_2weeks")
     val recentPlayTime: Long,
-    @Json(name = "playtime_forever")
+    @field:Json(name = "playtime_forever")
     val playTime: Long,
-    @Json(name = "img_icon_url")
+    @field:Json(name = "img_icon_url")
     val iconUrl: String,
-    @Json(name = "img_logo_url")
+    @field:Json(name = "img_logo_url")
     val logoUrl: String,
     // Custom variables.
     var colorPrimaryDark: Int = 0, // Color extracted from overall banner image color Used to set colors in views.

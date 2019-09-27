@@ -93,7 +93,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun setGame(newGame: Game) {
-        _appId.value = AppId(newGame.getAppId())
+        _appId.value = AppId(newGame.getAppId().toString())
     }
 
     data class AppId(val id: String) {

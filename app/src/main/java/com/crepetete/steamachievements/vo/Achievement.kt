@@ -15,7 +15,7 @@ import java.util.*
     primaryKeys = ["name", "appId"])
 @Parcelize
 data class Achievement(
-    var appId: String,
+    var appId: Long,
     val name: String,
     @Json(name = "defaultvalue")
     val defaultValue: Int,
@@ -33,6 +33,6 @@ data class Achievement(
 ) : Parcelable
 
 data class AchievementKeys(
-    val appId: String,
+    val appId: Long,
     val name: String
 )

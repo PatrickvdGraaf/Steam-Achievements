@@ -25,7 +25,7 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(15, TimeUnit.MINUTES)
 
-    suspend fun getAchievements(appId: String, listener: AchievementsErrorListener): LiveResource<List<Achievement>> {
+    suspend fun getAchievements(appId: Long, listener: AchievementsErrorListener): LiveResource<List<Achievement>> {
         return object : NetworkBoundResource<List<Achievement>, SchemaResponse>() {
 
             override suspend fun saveCallResult(data: SchemaResponse) {
@@ -50,10 +50,10 @@ class AchievementsRepository @Inject constructor(
              * [SteamApiService.getGlobalAchievementStats] for global stats for each achievement.
              */
             override suspend fun createCall(): SchemaResponse? {
-                val baseResponse = api.getSchemaForGame(appId)
-                val achievedResponse = api.getAchievementsForPlayer(appId,
+                val baseResponse = api.getSchemaForGame(appId.toString())
+                val achievedResponse = api.getAchievementsForPlayer(appId.toString(),
                     userRepository.getCurrentPlayerId())
-                val globalResponse = api.getGlobalAchievementStats(appId)
+                val globalResponse = api.getGlobalAchievementStats(appId.toString())
 
                 /* Check if the base achievement call response was successful. */
                 if (baseResponse is ApiSuccessResponse) {
@@ -97,7 +97,7 @@ class AchievementsRepository @Inject constructor(
                 return null
             }
 
-            override suspend fun loadFromDb(): List<Achievement> = dao.getAchievements(appId)
+            override suspend fun loadFromDb(): List<Achievement> = dao.getAchievements(appId.toString())
 
         }.asLiveResource()
     }

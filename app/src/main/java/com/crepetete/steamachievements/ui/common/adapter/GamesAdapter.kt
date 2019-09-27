@@ -78,7 +78,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
             // If we're not currently showing a search result, reset displayed items to unfiltered data.
             if (query.isNullOrBlank()) {
                 val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, items))
-                diffResult.dispatchUpdatesTo(this@GamesAdapter)
+                //                diffResult.dispatchUpdatesTo(this@GamesAdapter)
                 filteredItems = items
             }
         }

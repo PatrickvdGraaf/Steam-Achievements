@@ -19,7 +19,7 @@ abstract class BaseDao<T> {
      * @param obj the object to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(vararg obj: T)
+    abstract suspend fun insert(obj: T): Long
 
     /**
      * Insert an array of objects in the database.
@@ -28,15 +28,15 @@ abstract class BaseDao<T> {
      *
      * @param objList the objects to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insert(objList: List<T>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insert(objList: List<T>): List<Long>
 
     /**
      * Update an object from the database.
      *
      * @param obj the object to be updated.
      */
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun update(obj: T)
 
     /**
@@ -44,7 +44,7 @@ abstract class BaseDao<T> {
      *
      * @param objList the object to be updated.
      */
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun update(objList: List<T>)
 
     /**

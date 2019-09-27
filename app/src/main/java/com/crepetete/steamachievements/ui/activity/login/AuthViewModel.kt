@@ -35,7 +35,7 @@ class AuthViewModel @Inject constructor(
     private val _currentPlayerId = MediatorLiveData<String?>()
     val currentPlayerId: LiveData<String?> = _currentPlayerId
 
-    /* The way the switchmap is set up comes from https://developer.android.com/topic/libraries/architecture/coroutines. */
+    /* The way the switchmap set up comes from https://developer.android.com/topic/libraries/architecture/coroutines. */
     val currentPlayer: LiveData<Player?>
         get() {
             Transformations.map(_currentPlayerId) { id ->
