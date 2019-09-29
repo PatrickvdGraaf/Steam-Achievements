@@ -23,6 +23,10 @@ class Game(
 
     companion object {
         const val INVALID_COLOR = 0
+        const val INVALID_ID = -1L
+
+        // Killing Floor 2
+        const val TEST_GAME_ID = 232090L
     }
 
     fun setPrimaryColor(color: Int) {
@@ -38,7 +42,7 @@ class Game(
     fun getAmountOfAchievements() = achievements.size
     fun getRecentPlaytime() = game?.recentPlayTime ?: 0
     fun getPrimaryColor() = game?.colorPrimaryDark ?: INVALID_COLOR
-    fun getAppId(): Long = game?.appId ?: -1L
+    fun getAppId(): Long = game?.appId ?: INVALID_ID
     fun getName() = game?.name ?: ""
     fun getPlaytime() = game?.playTime ?: 0L
     fun getBannerUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/${game?.appId ?: "0"}/${game?.logoUrl

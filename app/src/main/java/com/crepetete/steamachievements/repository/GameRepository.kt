@@ -16,7 +16,6 @@ import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,25 +28,22 @@ class GameRepository @Inject constructor(
 ) : BaseRepository() {
 
     // Refresh games every day
-    private val gameListRateLimit by lazy { RateLimiter<String>(1, TimeUnit.DAYS) }
+    private val gameListRateLimiter by lazy { RateLimiter<String>(1, TimeUnit.DAYS) }
     private val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
 
+    /**
+     * Fetch Games from both the Database and the API.
+     * Refresh rate is set with the [gameListRateLimiter].
+     */
     suspend fun getGames(userId: String, sortingType: SortingType): LiveResource<List<Game>> {
         return object : NetworkBoundResource<List<Game>, List<BaseGameInfo>>() {
 
             override suspend fun saveCallResult(data: List<BaseGameInfo>) {
-                Timber.d("Updating Games database with ${data.size} items.")
-                data.take(10).forEach { gameInfo ->
-                    Timber.d(gameInfo.toString())
-                }
-                val insertResult = dao.insert(data)
-                insertResult.forEach { id ->
-                    Timber.d("$id")
-                }
+                dao.insert(data)
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
-                return gameListRateLimit.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
+                return gameListRateLimiter.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
             }
 
             override suspend fun createCall(): List<BaseGameInfo>? {
@@ -61,6 +57,10 @@ class GameRepository @Inject constructor(
         }.asLiveResource()
     }
 
+    /**
+     * Fetch a specific [Game] form the Database.
+     * Steam API doesn't provide a call for one specific game, so the data will only be the stored value of the last API call.
+     */
     fun getGame(appId: String): LiveData<Game> {
         return liveData {
             emitSource(dao.getGame(appId))
