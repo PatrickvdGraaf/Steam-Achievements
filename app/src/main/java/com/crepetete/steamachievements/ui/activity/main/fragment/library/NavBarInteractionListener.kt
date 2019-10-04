@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.library
+package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 

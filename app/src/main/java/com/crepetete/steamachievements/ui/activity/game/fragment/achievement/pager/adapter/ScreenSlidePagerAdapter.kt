@@ -1,9 +1,9 @@
-package com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter
+package com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager.adapter
 
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
-import com.crepetete.steamachievements.ui.fragment.achievement.pager.AchievementPagerFragment
+import com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager.AchievementPagerFragment
 import com.crepetete.steamachievements.vo.Achievement
 
 /**

@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.profile
+package com.crepetete.steamachievements.ui.activity.main.fragment.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater

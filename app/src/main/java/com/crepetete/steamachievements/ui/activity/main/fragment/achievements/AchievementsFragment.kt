@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.achievements
+package com.crepetete.steamachievements.ui.activity.main.fragment.achievements
 
 import android.animation.ValueAnimator
 import android.os.Bundle

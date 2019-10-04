@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.library
+package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,6 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.repository.AchievementsRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
 import com.crepetete.steamachievements.ui.common.adapter.GamesAdapter
@@ -28,8 +27,7 @@ import kotlinx.android.synthetic.main.fragment_library.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener,
-    AchievementsRepository.AchievementsErrorListener {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -114,9 +112,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         }
 
         adapter.updateGames(games)
-        games.map { game -> game.getAppId() }.forEach { id ->
-            viewModel.updateAchievements(id, this)
-        }
+        viewModel.updateAchievementsForGames(games)
     }
 
     private fun initScrollFab() {
@@ -143,18 +139,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 }
             }
         })
-    }
-
-    /**
-     *  Listener from the [AchievementsRepository.AchievementsErrorListener] which informs the activity of Errors in the process
-     *  of getting new Achievements data.
-     */
-    override fun onPrivateProfileErrorMessage() {
-        // Needs to be shown only once. Prevent refresh calls from showing multiple Snackbars.
-        if (!hasShownPrivateProfileMessage) {
-            hasShownPrivateProfileMessage = true
-            Snackbar.make(list_games, "Could not get personal stats. Your profile is not public.", Snackbar.LENGTH_SHORT).show()
-        }
     }
 
     /**

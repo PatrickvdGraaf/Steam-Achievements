@@ -12,12 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.activity.BaseActivity
+import com.crepetete.steamachievements.ui.activity.main.fragment.achievements.AchievementsFragment
+import com.crepetete.steamachievements.ui.activity.main.fragment.library.LibraryFragment
+import com.crepetete.steamachievements.ui.activity.main.fragment.library.NavBarInteractionListener
+import com.crepetete.steamachievements.ui.activity.main.fragment.profile.ProfileFragment
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
-import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
-import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
-import com.crepetete.steamachievements.ui.fragment.library.NavBarInteractionListener
-import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector

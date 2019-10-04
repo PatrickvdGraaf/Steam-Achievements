@@ -7,7 +7,6 @@ import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -16,7 +15,7 @@ import java.util.*
  * @return A list ordered according to the passed method param,
  * or an empty list if the method was invoked on a null object.
  */
-suspend fun List<Game>?.sort(method: SortingType): List<Game> {
+fun List<Game>?.sort(method: SortingType): List<Game> {
     if (this == null) {
         return listOf()
     }
@@ -28,39 +27,33 @@ suspend fun List<Game>?.sort(method: SortingType): List<Game> {
     }
 }
 
-suspend fun List<Game>.sortByCompletion(): List<Game> {
-    return withContext(Default) {
-        sortedWith(Comparator { o1, o2 ->
-            val o1Percentage = o1.getPercentageCompleted()
-            val o2Percentage = o2.getPercentageCompleted()
-            when {
-                o1Percentage == o2Percentage -> 0
-                o1Percentage > o2Percentage -> -1
-                else -> 1
-            }
-        })
-    }
+fun List<Game>.sortByCompletion(): List<Game> {
+    return sortedWith(Comparator { o1, o2 ->
+        val o1Percentage = o1.getPercentageCompleted()
+        val o2Percentage = o2.getPercentageCompleted()
+        when {
+            o1Percentage == o2Percentage -> 0
+            o1Percentage > o2Percentage -> -1
+            else -> 1
+        }
+    })
 }
 
-suspend fun List<Game>.sortByName(): List<Game> {
-    return withContext(Default) {
-        sortedWith(Comparator { o1, o2 ->
-            val gameName = o1.getName()
-            gameName.compareTo(o2.getName())
-        })
-    }
+fun List<Game>.sortByName(): List<Game> {
+    return sortedWith(Comparator { o1, o2 ->
+        val gameName = o1.getName()
+        gameName.compareTo(o2.getName())
+    })
 }
 
-suspend fun List<Game>.sortByPlaytime(): List<Game> {
-    return withContext(Default) {
-        sortedWith(Comparator { o1, o2 ->
-            when {
-                o1.getPlaytime() == o2.getPlaytime() -> 0
-                o1.getPlaytime() > o2.getPlaytime() -> -1
-                else -> 1
-            }
-        })
-    }
+fun List<Game>.sortByPlaytime(): List<Game> {
+    return sortedWith(Comparator { o1, o2 ->
+        when {
+            o1.getPlaytime() == o2.getPlaytime() -> 0
+            o1.getPlaytime() > o2.getPlaytime() -> -1
+            else -> 1
+        }
+    })
 }
 
 fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {

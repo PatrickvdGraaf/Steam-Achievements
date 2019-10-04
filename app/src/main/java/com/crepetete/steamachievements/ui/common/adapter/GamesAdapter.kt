@@ -18,7 +18,7 @@ import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -71,15 +71,17 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
      * Sorts the list with the current sorting method before submitting.
      */
     fun updateGames(games: List<Game>?) {
-        CoroutineScope(Default).launch {
-            items = games.sort(sortMethod)
-            filter.updateGames(items)
+        games?.let {
+            filter.updateGames(games)
 
             // If we're not currently showing a search result, reset displayed items to unfiltered data.
             if (query.isNullOrBlank()) {
-                val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, items))
-                //                diffResult.dispatchUpdatesTo(this@GamesAdapter)
-                filteredItems = items
+                val diffResult = sortData(games)
+                diffResult.dispatchUpdatesTo(this@GamesAdapter)
+
+                // TODO replace notifyDataSetChanged with a DiffUtil
+                notifyDataSetChanged()
+
             }
         }
     }
@@ -98,13 +100,18 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
      * Update shown data after a new search query was processed.
      */
     override fun updateFilteredData(data: List<Game>) {
-        CoroutineScope(Default).launch {
-            val sortedData = data.sort(sortMethod)
-            val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, sortedData))
-
+        CoroutineScope(Main).launch {
+            val diffResult = sortData(data)
             diffResult.dispatchUpdatesTo(this@GamesAdapter)
-            filteredItems = sortedData
+            // TODO replace notifyDataSetChanged with a DiffUtil
+            notifyDataSetChanged()
         }
+    }
+
+    private fun sortData(data: List<Game>): DiffUtil.DiffResult {
+        val sortedData = data.sort(sortMethod)
+        filteredItems = sortedData
+        return DiffUtil.calculateDiff(GamesDiffCallback(filteredItems, sortedData))
     }
 
     /**

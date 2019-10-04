@@ -15,6 +15,7 @@ import com.crepetete.steamachievements.vo.BaseGameInfo
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -24,7 +25,8 @@ import javax.inject.Singleton
 @OpenForTesting
 class GameRepository @Inject constructor(
     private val dao: GamesDao,
-    private val api: SteamApiService
+    private val api: SteamApiService,
+    private val achievmentsRepository: AchievementsRepository
 ) : BaseRepository() {
 
     // Refresh games every day
@@ -36,25 +38,40 @@ class GameRepository @Inject constructor(
      * Refresh rate is set with the [gameListRateLimiter].
      */
     suspend fun getGames(userId: String, sortingType: SortingType): LiveResource<List<Game>> {
-        return object : NetworkBoundResource<List<Game>, List<BaseGameInfo>>() {
+        return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
-            override suspend fun saveCallResult(data: List<BaseGameInfo>) {
-                dao.insert(data)
+            override suspend fun saveCallResult(data: List<Game>) {
+                dao.insert(data.mapNotNull { it.game })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
                 return gameListRateLimiter.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
             }
 
-            override suspend fun createCall(): List<BaseGameInfo>? {
-                val data = api.getGamesForUser(userId)
-                return data.response.games
+            override suspend fun createCall(): List<Game>? {
+                val data = api.getGamesForUser(userId).response.games
+                val games = mutableListOf<Game>()
+                coroutineScope {
+                    data.forEach { game ->
+                        val achievements = achievmentsRepository.getAchievements(game.appId.toString())
+                        games.add(Game(game, achievements))
+                    }
+                }
+
+                return games
             }
 
             override suspend fun loadFromDb(): List<Game> {
                 return dao.getGames().sort(sortingType)
             }
         }.asLiveResource()
+    }
+
+    /* Trigger achievements refresh. */
+    suspend fun updateAchievementsForGames(appIds: List<String>) {
+        appIds.forEach { appId ->
+            achievmentsRepository.fetchAchievementsFromApi(appId)
+        }
     }
 
     /**

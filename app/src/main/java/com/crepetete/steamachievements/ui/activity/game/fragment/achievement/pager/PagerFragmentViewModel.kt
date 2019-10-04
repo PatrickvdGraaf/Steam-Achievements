@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.achievement.pager
+package com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

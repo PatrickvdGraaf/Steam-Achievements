@@ -15,7 +15,7 @@ import com.crepetete.steamachievements.vo.Player
         Player::class,
         BaseGameInfo::class,
         Achievement::class],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

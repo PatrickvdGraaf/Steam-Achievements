@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.library
+package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -29,6 +29,7 @@ class LibraryViewModel @Inject constructor(
 
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
+    private val ioScope = CoroutineScope(Dispatchers.IO + mainJob)
 
     private var sortingType = MutableLiveData<SortingType>()
     private var gamesFetchJob: Job? = null
@@ -68,11 +69,9 @@ class LibraryViewModel @Inject constructor(
 
     }
 
-    fun updateAchievements(appId: Long, listener: AchievementsRepository.AchievementsErrorListener) {
-        uiScope.launch {
-            achievementsRepository.getAchievements(appId, listener).apply {
-                achievementsUpdateJob = this.job
-            }
+    fun updateAchievementsForGames(games: List<Game>) {
+        ioScope.launch {
+            gameRepo.updateAchievementsForGames(games.map { game -> game.getAppId().toString() })
         }
     }
 

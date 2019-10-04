@@ -6,9 +6,9 @@ import com.crepetete.steamachievements.di.annotation.ViewModelKey
 import com.crepetete.steamachievements.di.factory.ViewModelFactory
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerViewModel
 import com.crepetete.steamachievements.ui.activity.game.GameViewModel
+import com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager.PagerFragmentViewModel
 import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
-import com.crepetete.steamachievements.ui.fragment.achievement.pager.PagerFragmentViewModel
-import com.crepetete.steamachievements.ui.fragment.library.LibraryViewModel
+import com.crepetete.steamachievements.ui.activity.main.fragment.library.LibraryViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

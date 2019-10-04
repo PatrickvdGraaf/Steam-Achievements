@@ -36,17 +36,17 @@ interface SteamApiService {
     suspend fun getSchemaForGame(
         @Query("appid") appId: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): ApiResponse<SchemaResponse>
+    ): SchemaResponse
 
     @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
     suspend fun getAchievementsForPlayer(
         @Query("appid") appId: String,
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): ApiResponse<AchievedAchievementResponse>
+    ): AchievedAchievementResponse
 
     @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
     suspend fun getGlobalAchievementStats(
         @Query("gameid") appId: String
-    ): ApiResponse<GlobalAchievResponse>
+    ): GlobalAchievResponse
 }

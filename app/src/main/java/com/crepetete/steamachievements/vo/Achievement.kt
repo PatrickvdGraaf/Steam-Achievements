@@ -17,15 +17,15 @@ import java.util.*
 data class Achievement(
     var appId: Long,
     val name: String,
-    @Json(name = "defaultvalue")
+    @field:Json(name = "defaultvalue")
     val defaultValue: Int,
     val displayName: String,
     val hidden: Int,
     var description: String?,
-    @Json(name = "icon")
-    val iconUrl: String,
-    @Json(name = "icongray")
-    val iconGrayUrl: String,
+    @field:Json(name = "icon")
+    val iconUrl: String?,
+    @field:Json(name = "icongray")
+    val iconGrayUrl: String?,
     var achieved: Boolean = false,
     var unlockTime: Date?,
     var updatedAt: Date?,

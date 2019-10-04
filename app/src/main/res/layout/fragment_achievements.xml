@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/default_margin"
         android:paddingTop="@dimen/default_margin"
-        tools:context=".ui.fragment.achievements.AchievementsFragment">
+        tools:context=".ui.activity.main.fragment.achievements.AchievementsFragment">
         <TextView
             android:id="@+id/textview_total_achievements"
             style="@style/AppTheme.Text.Value.Big"
