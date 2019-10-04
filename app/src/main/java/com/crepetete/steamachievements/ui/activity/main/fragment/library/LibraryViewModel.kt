@@ -83,15 +83,16 @@ class LibraryViewModel @Inject constructor(
                     bindObserver(_gamesLoadingError, this.error)
                 }
         }
+
     }
 
     fun refresh() {
 
     }
 
-    fun updateAchievementsForGames(games: List<Game>) {
+    fun updateAchievementsForGame(appId: String) {
         ioScope.launch {
-            gameRepo.updateAchievementsForGames(games.map { game -> game.getAppId().toString() })
+            achievementsRepository.fetchAchievementsFromApi(appId)
         }
     }
 

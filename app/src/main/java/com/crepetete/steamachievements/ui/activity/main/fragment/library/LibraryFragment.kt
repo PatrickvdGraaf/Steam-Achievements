@@ -27,8 +27,7 @@ import kotlinx.android.synthetic.main.fragment_library.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.OnGameClickListener {
-
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -36,7 +35,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private var hasShownPrivateProfileMessage = false
 
-    var adapter = GamesAdapter()
+    var adapter = GamesAdapter(this)
 
     lateinit var binding: FragmentLibraryBinding
 
@@ -99,6 +98,10 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         initRecyclerView()
     }
 
+    override fun updateAchievementsForGame(appId: String) {
+        viewModel.updateAchievementsForGame(appId)
+    }
+
     private fun setGamesData(games: List<Game>) {
         if (games.isEmpty()) {
             pulsator.visibility = View.VISIBLE
@@ -111,7 +114,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         }
 
         adapter.updateGames(games)
-        viewModel.updateAchievementsForGames(games)
     }
 
     private fun initScrollFab() {
@@ -123,8 +125,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
         list_games.setHasFixedSize(true)
-
-        adapter = GamesAdapter()
 
         adapter.listener = this
         list_games.adapter = adapter

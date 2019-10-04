@@ -55,13 +55,6 @@ class GameRepository @Inject constructor(
         }.asLiveResource()
     }
 
-    /* Trigger achievements refresh. */
-    suspend fun updateAchievementsForGames(appIds: List<String>) {
-        appIds.forEach { appId ->
-            achievmentsRepository.fetchAchievementsFromApi(appId)
-        }
-    }
-
     /**
      * Fetch a specific [Game] form the Database.
      * Steam API doesn't provide a call for one specific game, so the data will only be the stored value of the last API call.

@@ -25,14 +25,12 @@ import timber.log.Timber
 /**
  * Adapter that shows Games in a (vertical) List.
  */
-class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFilterListener {
+class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFilterListener {
     private var items = listOf<Game>()
     private var filteredItems = listOf<Game>()
     private val filter = GameFilter(items, this)
 
     private var sortMethod = SortingType.PLAYTIME
-
-    var listener: OnGameClickListener? = null
 
     private var query: String? = ""
 
@@ -41,7 +39,7 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
-            listener?.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner, viewHolder.getPalette())
+            listener.onGameClicked(filteredItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner, viewHolder.getPalette())
         }
 
         return viewHolder
@@ -57,8 +55,11 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
 
     override fun onBindViewHolder(holder: GameViewHolder, position: Int, payLoads: List<Any>) {
         try {
-            holder.bind(filteredItems[position])
+            val game = filteredItems[position]
+            holder.bind(game)
             holder.itemView.visibility = View.VISIBLE
+
+            listener.updateAchievementsForGame(game.getAppId().toString())
         } catch (e: IndexOutOfBoundsException) {
             Timber.e(e, "Could not display BaseGameInfo in RecyclerView. " +
                 "Invalid index $position on filteredItems with size $itemCount.")
@@ -123,8 +124,9 @@ class GamesAdapter : RecyclerView.Adapter<GameViewHolder>(), Filterable, GameFil
 
     override fun getItemCount() = filteredItems.size
 
-    interface OnGameClickListener {
+    interface GamesAdapterCallback {
         fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View, palette: Palette?)
         fun onPrimaryGameColorCreated(game: Game, rgb: Int)
+        fun updateAchievementsForGame(appId: String)
     }
 }
