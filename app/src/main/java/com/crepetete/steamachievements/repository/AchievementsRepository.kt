@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.repository
 
+import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
@@ -79,6 +80,10 @@ class AchievementsRepository @Inject constructor(
 
     fun getAchievements(appId: String): List<Achievement> {
         return dao.getAchievements(appId)
+    }
+
+    fun fetchAllAchievements(): LiveData<List<Achievement>?> {
+        return dao.getAchievements()
     }
 }
 

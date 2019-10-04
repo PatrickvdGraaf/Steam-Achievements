@@ -28,6 +28,9 @@ abstract class GamesDao : BaseDao<BaseGameInfo>() {
     @Query("SELECT * FROM games")
     abstract suspend fun getGames(): List<Game>
 
+    @Query("SELECT * FROM games")
+    abstract suspend fun getGamesInfo(): List<BaseGameInfo>
+
     @Delete
     abstract fun delete(vararg games: BaseGameInfo)
 }

@@ -60,11 +60,10 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         // Provide ViewModel.
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
 
+
         with(viewModel) {
-            games.observe(this@LibraryFragment, Observer { games ->
-                games?.let {
-                    setGamesData(it)
-                }
+            viewModel.data.observe(this@LibraryFragment, Observer {
+                setGamesData(it)
             })
 
             gamesLoadingState.observe(this@LibraryFragment, Observer { state ->

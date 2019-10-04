@@ -11,6 +11,9 @@ import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.LiveResource.Companion.STATE_LOADING
 import com.crepetete.steamachievements.repository.resource.ResourceState
 import com.crepetete.steamachievements.ui.common.enums.SortingType
+import com.crepetete.steamachievements.util.livedata.CombinedLiveData
+import com.crepetete.steamachievements.vo.Achievement
+import com.crepetete.steamachievements.vo.BaseGameInfo
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,14 +38,31 @@ class LibraryViewModel @Inject constructor(
     private var gamesFetchJob: Job? = null
     private var achievementsUpdateJob: Job? = null
 
-    private var gamesLiveResource: LiveResource<List<Game>>? = null
-    private val _games = MediatorLiveData<List<Game>?>()
+    // Games
+    private var gamesLiveResource: LiveResource<List<BaseGameInfo>>? = null
+    private val _games = MediatorLiveData<List<BaseGameInfo>?>()
     private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _gamesLoadingError = MediatorLiveData<Exception?>()
-
-    val games: LiveData<List<Game>?> = _games
+    val games: LiveData<List<BaseGameInfo>?> = _games
     val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
     val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
+
+    // Achievements
+    private val _achievements = achievementsRepository.fetchAllAchievements()
+
+    // Combined data
+    val data: CombinedLiveData<List<BaseGameInfo>,
+        List<Achievement>,
+        List<Game>> = CombinedLiveData(_games, _achievements) { gamesInfo, achievements ->
+        val games = mutableListOf<Game>()
+        gamesInfo?.forEach { gameInfo ->
+            games.add(Game(gameInfo, achievements?.filter { achievement ->
+                achievement.appId == gameInfo.appId
+            } ?: listOf()))
+        }
+        games
+
+    }
 
     init {
         sortingType.value = SortingType.PLAYTIME
@@ -54,7 +74,7 @@ class LibraryViewModel @Inject constructor(
         }
 
         uiScope.launch {
-            gameRepo.getGames(userRepository.getCurrentPlayerId(), sortingType.value ?: SortingType.PLAYTIME)
+            gameRepo.getGames(userRepository.getCurrentPlayerId())
                 .apply {
                     gamesLiveResource = this
                     gamesFetchJob = this.job
@@ -89,8 +109,8 @@ class LibraryViewModel @Inject constructor(
         mainJob.cancel()
     }
 
-    private fun <R> bindObserver(observer: MediatorLiveData<R?>?, source: LiveData<R?>) {
-        observer?.apply {
+    private fun <R> bindObserver(observer: MediatorLiveData<R>, source: LiveData<R>) {
+        observer.apply {
             addSource(source) {
                 postValue(it)
             }
