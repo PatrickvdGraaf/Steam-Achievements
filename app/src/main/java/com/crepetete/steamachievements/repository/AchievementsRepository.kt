@@ -21,16 +21,6 @@ class AchievementsRepository @Inject constructor(
 
     private val achievementsListRateLimit = RateLimiter<String>(15, TimeUnit.MINUTES)
 
-    //    suspend fun fetchAchievementsFromApi(appIds: List<String>) {
-    //        val achievements = mutableListOf<Achievement>()
-    //        appIds.forEach { appId ->
-    //            fetchAchievementsFromApi(appId)?.let { achievementsForGame ->
-    //                achievements.addAll(achievementsForGame)
-    //            }
-    //        }
-    //        dao.insert(achievements)
-    //    }
-
     suspend fun fetchAchievementsFromApi(appId: String) {
         if (!achievementsListRateLimit.shouldFetch(appId)) {
             return

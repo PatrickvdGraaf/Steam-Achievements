@@ -80,9 +80,6 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
                 val diffResult = sortData(games)
                 diffResult.dispatchUpdatesTo(this@GamesAdapter)
 
-                // TODO replace notifyDataSetChanged with a DiffUtil
-                notifyDataSetChanged()
-
             }
         }
     }
@@ -104,8 +101,6 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
         CoroutineScope(Main).launch {
             val diffResult = sortData(data)
             diffResult.dispatchUpdatesTo(this@GamesAdapter)
-            // TODO replace notifyDataSetChanged with a DiffUtil
-            notifyDataSetChanged()
         }
     }
 

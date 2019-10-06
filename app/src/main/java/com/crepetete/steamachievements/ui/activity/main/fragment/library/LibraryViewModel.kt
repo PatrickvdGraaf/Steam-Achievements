@@ -11,6 +11,7 @@ import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.LiveResource.Companion.STATE_LOADING
 import com.crepetete.steamachievements.repository.resource.ResourceState
 import com.crepetete.steamachievements.ui.common.enums.SortingType
+import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.util.livedata.CombinedLiveData
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.BaseGameInfo
@@ -36,7 +37,6 @@ class LibraryViewModel @Inject constructor(
 
     private var sortingType = MutableLiveData<SortingType>()
     private var gamesFetchJob: Job? = null
-    private var achievementsUpdateJob: Job? = null
 
     // Games
     private var gamesLiveResource: LiveResource<List<BaseGameInfo>>? = null
@@ -60,7 +60,7 @@ class LibraryViewModel @Inject constructor(
                 achievement.appId == gameInfo.appId
             } ?: listOf()))
         }
-        games
+        games.sort(sortingType.value ?: SortingType.PLAYTIME)
 
     }
 
@@ -98,10 +98,10 @@ class LibraryViewModel @Inject constructor(
 
     fun updatePrimaryColorForGame(game: Game, rgb: Int) {
         game.setPrimaryColor(rgb)
-
-        val gameData = game.game
-        if (gameData != null) {
-            gameRepo.update(gameData)
+        game.game?.let { gameData ->
+            ioScope.launch {
+                gameRepo.update(gameData)
+            }
         }
     }
 

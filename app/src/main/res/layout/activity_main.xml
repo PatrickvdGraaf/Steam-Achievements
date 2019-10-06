@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="My Games"/>
+        app:title="Library"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"
