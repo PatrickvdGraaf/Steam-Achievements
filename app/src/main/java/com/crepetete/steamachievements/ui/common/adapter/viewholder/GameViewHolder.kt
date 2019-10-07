@@ -1,10 +1,11 @@
 package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ProgressBar
-import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,9 +16,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import timber.log.Timber
+import kotlin.math.abs
 
 /**
  * Created at 19 January, 2019.
@@ -39,6 +42,53 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
+            // Set RecyclerView adapter.
+            val achievements = game.achievements
+            val latestAchievements = achievements.sortedWith(Order.LatestAchievedOrder())
+                .take(10)
+
+            if (latestAchievements.isEmpty()) {
+                binding.achievementContainer.visibility = View.GONE
+            } else {
+                binding.achievementContainer.visibility = View.VISIBLE
+                latestAchievements.forEachIndexed { index, achievement ->
+                    val view = when (index) {
+                        0 -> binding.achievement1
+                        1 -> binding.achievement2
+                        2 -> binding.achievement3
+                        3 -> binding.achievement4
+                        4 -> binding.achievement5
+                        5 -> binding.achievement6
+                        6 -> binding.achievement7
+                        else -> binding.achievement8
+                    }
+
+                    Glide.with(binding.root.context)
+                        .load(achievement.getActualIconUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(e: GlideException?,
+                                                      model: Any?,
+                                                      target: Target<Drawable>?,
+                                                      isFirstResource: Boolean): Boolean {
+                                view.visibility = View.GONE
+                                return false
+                            }
+
+                            override fun onResourceReady(resource: Drawable?,
+                                                         model: Any?,
+                                                         target: Target<Drawable>?,
+                                                         dataSource: DataSource?,
+                                                         isFirstResource: Boolean): Boolean {
+                                view.visibility = View.VISIBLE
+                                return false
+                            }
+
+                        })
+                        .into(view)
+                }
+            }
+
             Glide.with(binding.root.context)
                 .asBitmap()
                 .load(dataItem.getImageUrl())
@@ -52,17 +102,37 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                         if (resource != null) {
                             Palette.from(resource).generate { newPalette ->
                                 palette = newPalette
-                                val vibrantRgb = newPalette?.darkVibrantSwatch?.rgb
-                                val mutedRgb = newPalette?.darkMutedSwatch?.rgb
+
+                                val darkMuted = palette?.darkMutedSwatch?.rgb
+                                val darkVibrant = palette?.darkVibrantSwatch?.rgb
+                                val muted = palette?.mutedSwatch?.rgb
+                                val lightMuted = palette?.lightMutedSwatch?.rgb
+                                val dominant = palette?.dominantSwatch?.rgb
+                                if (darkMuted != null) {
+                                    binding.gameCard.setCardBackgroundColor(darkMuted)
+                                    binding.mainCard.setCardBackgroundColor(darkMuted)
+                                } else if (muted != null) {
+                                    binding.gameCard.setCardBackgroundColor(muted)
+                                    binding.mainCard.setCardBackgroundColor(muted)
+                                }
 
                                 when {
-                                    mutedRgb != null -> mutedRgb
-                                    vibrantRgb != null -> vibrantRgb
-                                    else -> ContextCompat.getColor(binding.root.context,
-                                        R.color.colorGameViewHolderTitleBackground)
-                                }.let { color ->
-                                    binding.gameCard.setCardBackgroundColor(color)
-                                    binding.mainCard.setCardBackgroundColor(color)
+                                    darkVibrant != null -> {
+                                        binding.nameTextView.setBackgroundColor(darkVibrant)
+                                        binding.achievementContainer.setBackgroundColor(darkVibrant)
+                                    }
+                                    lightMuted != null -> {
+                                        binding.nameTextView.setBackgroundColor(lightMuted)
+                                        binding.achievementContainer.setBackgroundColor(lightMuted)
+                                    }
+                                    muted != null -> {
+                                        binding.nameTextView.setBackgroundColor(muted)
+                                        binding.achievementContainer.setBackgroundColor(muted)
+                                    }
+                                    dominant != null -> {
+                                        binding.nameTextView.setBackgroundColor(dominant)
+                                        binding.achievementContainer.setBackgroundColor(dominant)
+                                    }
                                 }
                             }
                         }
@@ -92,7 +162,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             var mFrom = progress
 
             init {
-                duration = (Math.abs(mTo - mFrom) * (animationDuration / view.max)).toLong()
+                duration = (abs(mTo - mFrom) * (animationDuration / view.max)).toLong()
             }
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation) {

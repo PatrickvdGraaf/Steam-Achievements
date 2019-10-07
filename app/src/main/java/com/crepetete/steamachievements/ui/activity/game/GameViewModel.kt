@@ -33,13 +33,13 @@ class GameViewModel @Inject constructor(
     private var index = 0
 
     private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
-        0 to Order.AchievedOrder(),
+        0 to Order.LatestAchievedOrder(),
         1 to Order.RarityOrder(),
         2 to Order.NotAchievedOrder())
 
     /* Colors */
-    val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
-    val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
     init {
         setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)

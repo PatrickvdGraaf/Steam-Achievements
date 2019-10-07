@@ -125,6 +125,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
         list_games.setHasFixedSize(true)
+        list_games.isNestedScrollingEnabled = false
 
         adapter.listener = this
         list_games.adapter = adapter

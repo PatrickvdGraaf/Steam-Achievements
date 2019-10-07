@@ -93,14 +93,103 @@
                         style="@style/AppTheme.Text.Header"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/default_margin"
-                        android:layout_marginEnd="@dimen/default_margin"
+                        android:paddingStart="@dimen/default_margin"
                         android:paddingTop="16dp"
+                        android:paddingEnd="@dimen/default_margin"
+                        android:paddingBottom="8dp"
                         android:text="@{gameData.getName()}"
-                        android:textSize="26sp"
                         android:transitionName="title"
                         app:layout_constraintTop_toBottomOf="@+id/progressContainer"
                         tools:text="Game name" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/achievementContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/default_margin_halved"
+                        android:paddingEnd="@dimen/default_margin_halved"
+                        android:paddingBottom="16dp">
+
+                        <ImageView
+                            android:id="@+id/achievement1"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement2"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement2"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement3"
+                            app:layout_constraintStart_toEndOf="@id/achievement1"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement3"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement4"
+                            app:layout_constraintStart_toEndOf="@id/achievement2"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement4"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement5"
+                            app:layout_constraintStart_toEndOf="@id/achievement3"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement5"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement6"
+                            app:layout_constraintStart_toEndOf="@id/achievement4"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement6"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement7"
+                            app:layout_constraintStart_toEndOf="@id/achievement5"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement7"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/achievement8"
+                            app:layout_constraintStart_toEndOf="@id/achievement6"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/achievement8"
+                            android:layout_width="@dimen/size_achievement_small"
+                            android:layout_height="@dimen/size_achievement_small"
+                            android:background="@color/colorPrimaryLight"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/achievement7"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/achievements_textView"
@@ -128,6 +217,7 @@
                         android:gravity="center_vertical"
                         android:text="@{gameData.getTotalPlayTimeString()}"
                         android:textColor="@color/colorAccent"
+                        android:layout_marginBottom="16dp"
                         app:layout_constraintStart_toStartOf="@id/name_textView"
                         app:layout_constraintTop_toBottomOf="@id/achievements_textView"
                         tools:text="81h 31m" />
@@ -135,8 +225,9 @@
                     <TextView
                         android:id="@+id/recently_played_textView"
                         style="@style/AppTheme.Text.Label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="8dp"
                         android:drawablePadding="@dimen/default_margin_halved"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/default_margin"

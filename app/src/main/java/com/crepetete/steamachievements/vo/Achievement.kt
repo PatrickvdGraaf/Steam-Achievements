@@ -30,7 +30,16 @@ data class Achievement(
     var unlockTime: Date?,
     var updatedAt: Date?,
     var percentage: Float = 0.0f
-) : Parcelable
+) : Parcelable {
+
+    /**
+     * Returns the actual icon url. Meaning: the unlocked ([iconUrl]) one if the Achievement is already unlocked,
+     * and the grey ([iconGrayUrl]) one otherwise.
+     */
+    fun getActualIconUrl(): String? {
+        return if (achieved) iconUrl else iconGrayUrl
+    }
+}
 
 data class AchievementKeys(
     val appId: Long,

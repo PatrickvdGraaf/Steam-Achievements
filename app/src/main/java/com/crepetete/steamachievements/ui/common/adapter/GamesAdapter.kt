@@ -61,8 +61,7 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
 
             listener.updateAchievementsForGame(game.getAppId().toString())
         } catch (e: IndexOutOfBoundsException) {
-            Timber.e(e, "Could not display BaseGameInfo in RecyclerView. " +
-                "Invalid index $position on filteredItems with size $itemCount.")
+            Timber.e(e, "Could not display GameInfo. Invalid index $position on filteredItems with size $itemCount.")
             holder.itemView.visibility = View.GONE
         }
     }
