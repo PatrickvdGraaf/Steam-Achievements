@@ -15,24 +15,33 @@ import java.util.*
     primaryKeys = ["name", "appId"])
 @Parcelize
 data class Achievement(
-    var appId: String,
+    var appId: Long,
     val name: String,
-    @Json(name = "defaultvalue")
+    @field:Json(name = "defaultvalue")
     val defaultValue: Int,
     val displayName: String,
     val hidden: Int,
     var description: String?,
-    @Json(name = "icon")
-    val iconUrl: String,
-    @Json(name = "icongray")
-    val iconGrayUrl: String,
+    @field:Json(name = "icon")
+    val iconUrl: String?,
+    @field:Json(name = "icongray")
+    val iconGrayUrl: String?,
     var achieved: Boolean = false,
     var unlockTime: Date?,
     var updatedAt: Date?,
     var percentage: Float = 0.0f
-) : Parcelable
+) : Parcelable {
+
+    /**
+     * Returns the actual icon url. Meaning: the unlocked ([iconUrl]) one if the Achievement is already unlocked,
+     * and the grey ([iconGrayUrl]) one otherwise.
+     */
+    fun getActualIconUrl(): String? {
+        return if (achieved) iconUrl else iconGrayUrl
+    }
+}
 
 data class AchievementKeys(
-    val appId: String,
+    val appId: Long,
     val name: String
 )

@@ -5,16 +5,17 @@ import android.animation.ValueAnimator
 import android.view.View
 import androidx.cardview.widget.CardView
 import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Game
+import kotlinx.coroutines.Dispatchers.Default
 import java.util.*
 
 /**
- * Sorts a list of games.
+ * Sorts a list of games using the [Default] dispatcher.
  *
  * @return A list ordered according to the passed method param,
  * or an empty list if the method was invoked on a null object.
  */
-fun List<GameWithAchievements>?.sort(method: SortingType): List<GameWithAchievements> {
+fun List<Game>?.sort(method: SortingType): List<Game> {
     if (this == null) {
         return listOf()
     }
@@ -26,7 +27,7 @@ fun List<GameWithAchievements>?.sort(method: SortingType): List<GameWithAchievem
     }
 }
 
-fun List<GameWithAchievements>.sortByCompletion(): List<GameWithAchievements> {
+fun List<Game>.sortByCompletion(): List<Game> {
     return sortedWith(Comparator { o1, o2 ->
         val o1Percentage = o1.getPercentageCompleted()
         val o2Percentage = o2.getPercentageCompleted()
@@ -38,14 +39,14 @@ fun List<GameWithAchievements>.sortByCompletion(): List<GameWithAchievements> {
     })
 }
 
-fun List<GameWithAchievements>.sortByName(): List<GameWithAchievements> {
+fun List<Game>.sortByName(): List<Game> {
     return sortedWith(Comparator { o1, o2 ->
         val gameName = o1.getName()
         gameName.compareTo(o2.getName())
     })
 }
 
-fun List<GameWithAchievements>.sortByPlaytime(): List<GameWithAchievements> {
+fun List<Game>.sortByPlaytime(): List<Game> {
     return sortedWith(Comparator { o1, o2 ->
         when {
             o1.getPlaytime() == o2.getPlaytime() -> 0

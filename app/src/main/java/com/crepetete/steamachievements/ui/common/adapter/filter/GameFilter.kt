@@ -1,13 +1,13 @@
 package com.crepetete.steamachievements.ui.common.adapter.filter
 
 import android.widget.Filter
-import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Game
 
 /**
  * Created at 25 January, 2019.
  */
 class GameFilter(
-    private var games: List<GameWithAchievements>,
+    private var games: List<Game>,
     private val listener: GameFilterListener
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -32,10 +32,10 @@ class GameFilter(
 
     @Suppress("UNCHECKED_CAST")
     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-        listener.updateFilteredData(results?.values as List<GameWithAchievements>)
+        listener.updateFilteredData(results?.values as List<Game>)
     }
 
-    fun updateGames(newGames: List<GameWithAchievements>) {
+    fun updateGames(newGames: List<Game>) {
         games = newGames
     }
 }

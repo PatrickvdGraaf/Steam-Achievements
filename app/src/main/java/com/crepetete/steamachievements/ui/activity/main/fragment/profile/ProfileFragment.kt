@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.profile
+package com.crepetete.steamachievements.ui.activity.main.fragment.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
-import com.crepetete.steamachievements.vo.Player
+import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
 import javax.inject.Inject
 
 class ProfileFragment : Fragment(), Injectable {
@@ -21,7 +21,7 @@ class ProfileFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var profileViewModel: AuthViewModel
 
     private lateinit var imageViewProfile: ImageView
     private lateinit var textViewPersona: TextView
@@ -52,21 +52,17 @@ class ProfileFragment : Fragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
 
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(ProfileViewModel::class.java)
+            .get(AuthViewModel::class.java)
 
         // Set observers
-        profileViewModel.currentUser.observe(this, Observer {
-            if (it?.data != null) {
-                onPlayerLoaded(it.data)
+        profileViewModel.currentPlayer.observe(this, Observer { player ->
+            if (player != null) {
+                textViewPersona.text = player.persona
+
+                Glide.with(requireContext())
+                    .load(player.avatarFullUrl)
+                    .into(imageViewProfile)
             }
         })
-    }
-
-    private fun onPlayerLoaded(player: Player) {
-        textViewPersona.text = player.persona
-
-        Glide.with(requireContext())
-            .load(player.avatarFullUrl)
-            .into(imageViewProfile)
     }
 }

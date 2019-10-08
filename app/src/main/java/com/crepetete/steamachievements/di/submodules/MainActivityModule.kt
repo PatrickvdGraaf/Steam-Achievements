@@ -1,14 +1,13 @@
 package com.crepetete.steamachievements.di.submodules
 
-import com.crepetete.steamachievements.ui.fragment.achievements.AchievementsFragment
-import com.crepetete.steamachievements.ui.fragment.library.LibraryFragment
-import com.crepetete.steamachievements.ui.fragment.profile.ProfileFragment
+import com.crepetete.steamachievements.ui.activity.main.fragment.achievements.AchievementsFragment
+import com.crepetete.steamachievements.ui.activity.main.fragment.library.LibraryFragment
+import com.crepetete.steamachievements.ui.activity.main.fragment.profile.ProfileFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
-@Suppress("unused")
 @Module
-abstract class MainFragmentProvider {
+abstract class MainActivityModule {
     @ContributesAndroidInjector
     abstract fun provideProfileFragmentModule(): ProfileFragment
 
