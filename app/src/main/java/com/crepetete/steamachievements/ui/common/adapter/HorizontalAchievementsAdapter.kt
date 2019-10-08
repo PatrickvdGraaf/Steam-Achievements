@@ -14,7 +14,10 @@ import com.crepetete.steamachievements.vo.Achievement
  *
  * Can sort using a [Comparator]<[Achievement]>.
  */
-class HorizontalAchievementsAdapter(private val listener: OnAchievementClickListener) : RecyclerView.Adapter<AchievementViewHolder>() {
+class HorizontalAchievementsAdapter(
+    private val listener: OnAchievementClickListener? = null,
+    var smallLayout: Boolean = false
+) : RecyclerView.Adapter<AchievementViewHolder>() {
 
     private val sortedListComparatorWrapper = AchievementSortedListImpl(this)
 
@@ -22,11 +25,16 @@ class HorizontalAchievementsAdapter(private val listener: OnAchievementClickList
         SortedList.BatchedCallback<Achievement>(sortedListComparatorWrapper))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_achievement, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(if (smallLayout) {
+            R.layout.list_achievement_small
+        } else {
+            R.layout.list_achievement
+        }, parent, false)
+
         val viewHolder = AchievementViewHolder(view)
 
         viewHolder.imageView.setOnClickListener {
-            listener.onAchievementClick(viewHolder.adapterPosition, getAchievementsAsList())
+            listener?.onAchievementClick(viewHolder.adapterPosition, getAchievementsAsList())
         }
         return viewHolder
     }

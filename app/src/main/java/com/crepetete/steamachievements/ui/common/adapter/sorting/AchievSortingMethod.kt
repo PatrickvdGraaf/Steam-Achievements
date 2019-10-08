@@ -20,7 +20,7 @@ class Order {
         fun getName(resources: Resources): String
     }
 
-    class AchievedOrder : BaseComparator<Achievement> {
+    class LatestAchievedOrder : BaseComparator<Achievement> {
 
         private val steamReleaseDate = Calendar.getInstance().apply {
             set(2003, 9, 12, 0, 0, 0)
@@ -32,34 +32,19 @@ class Order {
 
             if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(steamReleaseDate) == true) {
                 when {
-                    unlockTime1.after(unlockTime2) -> 1
-                    unlockTime1.before(unlockTime2) -> -1
+                    unlockTime1.after(unlockTime2) -> -1
+                    unlockTime1.before(unlockTime2) -> 1
                     else -> 0
                 }
             } else if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(steamReleaseDate) == false) {
-                1
-            } else if (unlockTime1?.after(steamReleaseDate) == false && unlockTime2?.after(steamReleaseDate) == true) {
                 -1
+            } else if (unlockTime1?.after(steamReleaseDate) == false && unlockTime2?.after(steamReleaseDate) == true) {
+                1
             } else {
                 0
             }
-            //            if (o1.achieved && o2.achieved) {
-            //                if (o1.unlockTime == null && o2.unlockTime != null) {
-            //                    1
-            //                } else if (o1.unlockTime == null && o2.unlockTime == null) {
-            //                    0
-            //                } else {
-            //                    -1
-            //                }
-            //            } else if (!o1.achieved && o2.achieved) {
-            //                1
-            //            } else if (!o1.achieved && !o2.achieved) {
-            //                0
-            //            } else {
-            //                -1
-            //            }
         } catch (e: Exception) {
-            Timber.e(e, "Error while comparing Achievments in AchievedOrder")
+            Timber.e(e, "Error while comparing Achievments in LatestAchievedOrder")
             0
         }
 

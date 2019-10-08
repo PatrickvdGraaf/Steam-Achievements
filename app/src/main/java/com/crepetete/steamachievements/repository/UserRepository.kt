@@ -1,85 +1,95 @@
 package com.crepetete.steamachievements.repository
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.AppExecutors
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
-import com.crepetete.steamachievements.api.response.ApiResponse
-import com.crepetete.steamachievements.api.response.user.UserResponse
+import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
+import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
-import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Player
-import com.crepetete.steamachievements.vo.Resource
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
-    private val appExecutors: AppExecutors,
     private val sharedPreferences: SharedPreferences,
     private val api: SteamApiService,
     private val dao: PlayerDao
-) {
-    private val userIdKey = "userId"
-    private val invalidUserId = "-1"
+) : BaseRepository() {
 
-    fun getCurrentPlayer(): LiveData<Resource<Player>> {
-        val playerId = getCurrentPlayerId(invalidUserId)
-
-        if (playerId != invalidUserId) {
-            return object : NetworkBoundResource<Player, UserResponse>(appExecutors) {
-                override fun saveCallResult(item: UserResponse) {
-                    val user = item.response.players.firstOrNull()
-                    if (user != null) {
-                        dao.insert(user)
-                        putCurrentPlayerId(user.steamId)
-                    } else {
-                        onFetchFailed()
-                    }
-                }
-
-                override fun shouldFetch(data: Player?) = data == null
-
-                override fun loadFromDb(): LiveData<Player> {
-                    return dao.getPlayerById(playerId)
-                }
-
-                override fun createCall(): LiveData<ApiResponse<UserResponse>> {
-                    return api.getUserInfo(playerId)
-                }
-            }.asLiveData()
-        } else {
-            return AbsentLiveData.create()
-        }
-
+    private companion object {
+        private const val PREFS_USER_ID = "userId"
     }
 
-    fun getPlayer(playerId: String): LiveData<Resource<Player>> {
-        return object : NetworkBoundResource<Player, UserResponse>(appExecutors) {
-            override fun saveCallResult(item: UserResponse) {
-                val user = item.response.players.firstOrNull()
-                if (user != null) {
-                    dao.insert(user)
-                    putCurrentPlayerId(user.steamId)
-                } else {
-                    onFetchFailed()
+    private val invalidUserId = "-1"
+
+    /**
+     * Fetches the [Player] that is currently logged in, or null if no user was found.
+     */
+    suspend fun getCurrentPlayer(): LiveResource<Player> {
+        val playerId = getCurrentPlayerId(invalidUserId)
+
+        return object : NetworkBoundResource<Player, Player?>() {
+            override suspend fun saveCallResult(data: Player?) {
+                data?.let { player ->
+                    dao.insert(player)
+                    putCurrentPlayerId(player.steamId)
+                }
+            }
+
+            override fun shouldFetch(data: Player?) = data == null
+
+            override suspend fun loadFromDb(): Player? {
+                if (playerId != invalidUserId) {
+                    return dao.getPlayerById(playerId)
+                }
+                return null
+            }
+
+            override suspend fun createCall(): Player? {
+                if (playerId != invalidUserId) {
+                    val result = api.getUserInfo(playerId)
+                    if (result is ApiSuccessResponse) {
+                        return result.body.response.players.firstOrNull()
+                    }
+                }
+                return null
+            }
+        }.asLiveResource()
+    }
+
+    suspend fun getPlayer(playerId: String): LiveResource<Player> {
+        return object : NetworkBoundResource<Player, Player?>() {
+            override suspend fun saveCallResult(data: Player?) {
+                data?.let { player ->
+                    dao.insert(player)
+                    putCurrentPlayerId(player.steamId)
                 }
             }
 
             override fun shouldFetch(data: Player?) = data == null && playerId != invalidUserId
 
-            override fun loadFromDb(): LiveData<Player> {
+            override suspend fun loadFromDb(): Player? {
                 return dao.getPlayerById(playerId)
             }
 
-            override fun createCall(): LiveData<ApiResponse<UserResponse>> {
-                return api.getUserInfo(playerId)
+            override suspend fun createCall(): Player? {
+                val response = api.getUserInfo(playerId)
+                if (response is ApiSuccessResponse) {
+                    return response.body.response.players.firstOrNull()
+                }
+                return null
             }
-        }.asLiveData()
+        }.asLiveResource()
     }
 
-    fun getCurrentPlayerId(defValue: String = "-1") = sharedPreferences.getString(userIdKey, defValue)!!
+    // TODO move to preferencesRepository
+    fun getCurrentPlayerId(defValue: String = "-1") = if (BuildConfig.DEBUG) {
+        BuildConfig.TEST_USER_ID
+    } else {
+        sharedPreferences.getString(PREFS_USER_ID, defValue)!!
+    }
 
     fun putCurrentPlayerId(userId: String) {
-        sharedPreferences.edit().putString(userIdKey, userId).apply()
+        sharedPreferences.edit().putString(PREFS_USER_ID, userId).apply()
     }
 }

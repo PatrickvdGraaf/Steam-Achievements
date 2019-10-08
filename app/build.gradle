@@ -31,11 +31,15 @@ android {
         }
     }
 
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     dataBinding {
@@ -45,9 +49,9 @@ android {
     defaultConfig {
         applicationId "com.crepetete.steamachievements"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
@@ -110,24 +114,32 @@ android {
 
 dependencies {
     def support_version = '1.0.0'
-    def lifecycle_version = "2.0.0"
-    def retrofit_version = '2.3.0'
-    def okhttp_version = '3.10.0'
+    def lifecycle_version = "2.1.0"
+    def retrofit_version = '2.6.0'
+    def okhttp_version = '4.2.0'
     def dagger_version = '2.21'
     def glide_version = '4.9.0-SNAPSHOT'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Android
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.fragment:fragment-ktx:1.1.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.palette:palette:$support_version"
     implementation "androidx.recyclerview:recyclerview:$support_version"
     implementation "androidx.cardview:cardview:$support_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     implementation 'com.google.android.material:material:1.0.0'
 
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1'
+
     // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version" // ViewModel and LiveData
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha05' // liveData
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha05' // ViewModelScope
 
     // Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -135,13 +147,13 @@ dependencies {
     //Retrofit 2
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     // Dagger 2
-    implementation "com.google.dagger:dagger:2.21"
-    implementation "com.google.dagger:dagger-android-support:2.21"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "com.google.dagger:dagger:$dagger_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
@@ -153,11 +165,12 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Room
-    implementation 'androidx.room:room-runtime:2.1.0-alpha04'
-    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
-    kapt "androidx.room:room-compiler:2.1.0-alpha04"
+    implementation "androidx.room:room-runtime:2.2.0-rc01"
+    implementation 'androidx.room:room-ktx:2.2.0-rc01'
+    kapt "androidx.room:room-compiler:2.2.0-rc01"
 
     // Glide Image Loading
+    // TODO move to Coil; https://tech.instacart.com/introducing-coil-kotlin-first-image-loading-on-android-f0fdc7a2a99e
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation "com.github.bumptech.glide:okhttp-integration:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
@@ -167,8 +180,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:16.2.3'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
 
-    // Graph Library http://www.android-graphview.org/download-getting-started/
+    // Graph Library; http://www.android-graphview.org/download-getting-started/
     implementation 'com.jjoe64:graphview:4.2.2'
+
+    // Search Bar Animation; https://github.com/UdiOshi85/libSearchToolbar
+    implementation 'com.github.udioshi85:libSearchToolbar:1.3.0'
 
     // Testing
     testImplementation 'junit:junit:4.12'

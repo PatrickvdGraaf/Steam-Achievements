@@ -6,7 +6,7 @@ import androidx.databinding.Bindable
 import com.crepetete.steamachievements.R
 import java.text.DecimalFormat
 
-class GameData(private val game: GameWithAchievements) : BaseObservable() {
+class GameData(private val game: Game) : BaseObservable() {
 
     @Bindable
     fun getName() = game.getName()

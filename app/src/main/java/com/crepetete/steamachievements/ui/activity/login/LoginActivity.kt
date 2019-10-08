@@ -18,8 +18,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
+import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
-import com.crepetete.steamachievements.vo.Status
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,18 +46,34 @@ class LoginActivity : AppCompatActivity(), Injectable {
             .get(AuthViewModel::class.java)
 
         // Set listeners
-        viewModel.currentPlayer.observe(this, Observer {
-            if (it?.status == Status.LOADING) {
-                progress.visibility = View.VISIBLE
-            } else {
-                if (it?.data != null) {
-                    startActivity(MainActivity.getInstance(this, it.data.steamId))
+        with(viewModel) {
+            currentPlayerId.observe(this@LoginActivity, Observer { id ->
+                id?.let {
+                    startActivity(MainActivity.getInstance(this@LoginActivity, it))
                     Handler().postDelayed(::finish, 1000)
                 }
+            })
 
-                progress.visibility = View.GONE
-            }
-        })
+            idLoadingState.observe(this@LoginActivity, Observer { state ->
+                when (state) {
+                    LiveResource.STATE_LOADING -> {
+                        progress.visibility = View.VISIBLE
+                    }
+                    LiveResource.STATE_SUCCESS, LiveResource.STATE_FAILED ->
+                        progress.visibility = View.GONE
+                }
+            })
+
+            idLoadingError.observe(this@LoginActivity, Observer { exception ->
+                exception?.let {
+                    Timber.e("Error while fetching user ID: ${exception.localizedMessage}")
+
+                    progress.visibility = View.GONE
+
+                    // TODO add error feedback.
+                }
+            })
+        }
 
         setupWebView()
 
@@ -93,13 +109,13 @@ class LoginActivity : AppCompatActivity(), Injectable {
             }
         }
 
-        webView.loadUrl(("https://steamcommunity.com/openid/login?" +
-            "openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&" +
-            "openid.identity=http://specs.openid.net/auth/2.0/identifier_select&" +
-            "openid.mode=checkid_setup&" +
-            "openid.ns=http://specs.openid.net/auth/2.0&" +
-            "openid.realm=https://" + realm + "&" +
-            "openid.return_to=https://" + realm + "/signin/"))
+        webView.loadUrl(("https://steamcommunity.com/openid/login" +
+            "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
+            "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
+            "&openid.mode=checkid_setup" +
+            "&openid.ns=http://specs.openid.net/auth/2.0" +
+            "&openid.realm=https://$realm" +
+            "&openid.return_to=https://$realm/signin/"))
     }
 
     // TODO move this to ViewModel once a StringManager is implemented

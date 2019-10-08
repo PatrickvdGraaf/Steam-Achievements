@@ -2,14 +2,14 @@ package com.crepetete.steamachievements.ui.common.adapter.diffutil
 
 import android.os.Bundle
 import androidx.recyclerview.widget.DiffUtil
-import com.crepetete.steamachievements.vo.GameWithAchievements
+import com.crepetete.steamachievements.vo.Game
 
 /**
  * Created at 19 January, 2019.
  */
 class GamesDiffCallback(
-    private val oldList: List<GameWithAchievements>?,
-    private val newList: List<GameWithAchievements>?
+    private val oldList: List<Game>?,
+    private val newList: List<Game>?
 ) : DiffUtil.Callback() {
 
     companion object {

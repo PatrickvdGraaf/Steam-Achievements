@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.ui.fragment.achievement.pager
+package com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
@@ -21,7 +22,6 @@ import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
-import com.crepetete.steamachievements.util.glide.GlideApp
 import com.crepetete.steamachievements.vo.Achievement
 import kotlinx.android.synthetic.main.fragment_achievement_pager.*
 import timber.log.Timber
@@ -76,7 +76,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
             achievement_icon_imageview.setOnClickListener {
                 if (!achievement.achieved) {
                     achievement_icon_imageview.setOnClickListener(null)
-                    loadIcon(achievement.iconUrl)
+                    loadIcon(achievement.iconUrl ?: "")
                 }
             }
         }
@@ -104,14 +104,14 @@ class AchievementPagerFragment : Fragment(), Injectable {
             label_global_stats.setText("${achievement.percentage}%")
         }
 
-        loadIcon(if (achievement.achieved) achievement.iconUrl else achievement.iconGrayUrl)
+        loadIcon(if (achievement.achieved) achievement.iconUrl ?: "" else achievement.iconGrayUrl ?: "")
     }
 
     private fun loadIcon(url: String) {
         pulsator.visibility = View.VISIBLE
         pulsator.start()
 
-        GlideApp.with(requireContext())
+        Glide.with(requireContext())
             .asBitmap()
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -152,7 +152,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
     private fun getDateString(achievement: Achievement): String {
         val cal = Calendar.getInstance()
-        cal.time = achievement.unlockTime
+        cal.time = achievement.unlockTime ?: Date()
 
         // Non achieved achievements will have an empty date object as their unlocktime, which results in the date being in 1970.
         // Check if the unlock time was after the year in which the development of the Steam platform was started.

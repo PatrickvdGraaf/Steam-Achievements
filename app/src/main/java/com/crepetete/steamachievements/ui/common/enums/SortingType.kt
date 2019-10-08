@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.ui.common.enums
 
 /**
- * Annotation for Game sorting type.
+ * Annotation for BaseGameInfo sorting type.
  */
 enum class SortingType { PLAYTIME, NAME, COMPLETION }

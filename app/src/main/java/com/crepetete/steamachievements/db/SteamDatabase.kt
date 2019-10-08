@@ -7,15 +7,15 @@ import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.db.dao.PlayerDao
 import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.vo.BaseGameInfo
 import com.crepetete.steamachievements.vo.Player
 
 @Database(
     entities = [
         Player::class,
-        Game::class,
+        BaseGameInfo::class,
         Achievement::class],
-    version = 4,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

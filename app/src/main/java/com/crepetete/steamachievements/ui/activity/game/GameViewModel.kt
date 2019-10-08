@@ -10,8 +10,7 @@ import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSort
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
-import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Resource
+import com.crepetete.steamachievements.vo.Game
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
@@ -22,7 +21,7 @@ class GameViewModel @Inject constructor(
     val appId: LiveData<AppId>
         get() = _appId
 
-    val game: LiveData<Resource<GameWithAchievements>> = Transformations
+    val game: LiveData<Game> = Transformations
         .switchMap(_appId) { id ->
             id.ifExists { appId ->
                 gameRepo.getGame(appId)
@@ -34,13 +33,13 @@ class GameViewModel @Inject constructor(
     private var index = 0
 
     private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
-        0 to Order.AchievedOrder(),
+        0 to Order.LatestAchievedOrder(),
         1 to Order.RarityOrder(),
         2 to Order.NotAchievedOrder())
 
     /* Colors */
-    val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
-    val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
+    private val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
     init {
         setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)
@@ -93,8 +92,8 @@ class GameViewModel @Inject constructor(
         _appId.value = AppId(appId)
     }
 
-    fun setGame(newGame: GameWithAchievements) {
-        _appId.value = AppId(newGame.getAppId())
+    fun setGame(newGame: Game) {
+        _appId.value = AppId(newGame.getAppId().toString())
     }
 
     data class AppId(val id: String) {

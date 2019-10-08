@@ -8,10 +8,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.transformer.ZoomOutPageTransformer
-import com.crepetete.steamachievements.ui.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
+import com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
 import com.crepetete.steamachievements.vo.Achievement
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -22,7 +21,7 @@ import javax.inject.Inject
 /**
  * Activity which holds a ViewPager that shows an achievement.
  */
-class TransparentPagerActivity : BaseActivity(), Injectable, HasSupportFragmentInjector {
+class TransparentPagerActivity : BaseActivity(), HasSupportFragmentInjector {
 
     companion object {
         private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"

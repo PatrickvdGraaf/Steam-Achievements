@@ -1,19 +1,19 @@
 package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.AppExecutors
+import androidx.lifecycle.liveData
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
-import com.crepetete.steamachievements.api.response.ApiResponse
-import com.crepetete.steamachievements.api.response.game.BaseGameResponse
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
+import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
 import com.crepetete.steamachievements.testing.OpenForTesting
-import com.crepetete.steamachievements.util.livedata.AbsentLiveData
+import com.crepetete.steamachievements.vo.BaseGameInfo
 import com.crepetete.steamachievements.vo.Game
-import com.crepetete.steamachievements.vo.GameWithAchievements
-import com.crepetete.steamachievements.vo.Resource
-import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,74 +21,53 @@ import javax.inject.Singleton
 @Singleton
 @OpenForTesting
 class GameRepository @Inject constructor(
-    private val appExecutors: AppExecutors,
     private val dao: GamesDao,
-    private val api: SteamApiService
-) {
-
-    var i = 0
+    private val api: SteamApiService,
+    private val achievmentsRepository: AchievementsRepository
+) : BaseRepository() {
 
     // Refresh games every day
-    private val gameListRateLimit = RateLimiter<String>(1, TimeUnit.DAYS)
+    private val gameListRateLimiter by lazy { RateLimiter<String>(1, TimeUnit.DAYS) }
+    private val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
 
-    fun getGames(userId: String): LiveData<Resource<List<GameWithAchievements>>> {
-        return object : NetworkBoundResource<List<GameWithAchievements>, BaseGameResponse>(appExecutors) {
+    /**
+     * Fetch Games from both the Database and the API.
+     * Refresh rate is set with the [gameListRateLimiter].
+     */
+    suspend fun getGames(userId: String): LiveResource<List<BaseGameInfo>> {
+        return object : NetworkBoundResource<List<BaseGameInfo>, List<BaseGameInfo>>() {
 
-            override fun saveCallResult(item: BaseGameResponse) {
-                Timber.d("Saving Games in DB")
-
-                val games = item.response.games
-                games.forEach { game ->
-                    game.userId = userId
-                }
-
-                dao.upsert(games)
+            override suspend fun saveCallResult(data: List<BaseGameInfo>) {
+                dao.insert(data)
             }
 
-            override fun shouldFetch(data: List<GameWithAchievements>?) = i == 0
-
-            override fun loadFromDb(): LiveData<List<GameWithAchievements>> = dao.getGamesWithAchievementsAsLiveData()
-
-            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = api.getGamesForUser(userId)
-
-            override fun onFetchFailed() {
-                if (userId == "-1") {
-                    Timber.e("An invalid userId was passed to GameRepository.getGames(). Are the SP empty?")
-                }
-
-                i++
-            }
-        }.asLiveData()
-    }
-
-    fun getGame(appId: String): LiveData<Resource<GameWithAchievements>> {
-        return object : NetworkBoundResource<GameWithAchievements, BaseGameResponse>(appExecutors) {
-
-            override fun saveCallResult(item: BaseGameResponse) {
-                Timber.d("Saving Games in DB")
-
-                val games = item.response.games
-                games.forEach { game ->
-                    game.userId = appId
-                }
-
-                dao.upsert(games)
+            override fun shouldFetch(data: List<BaseGameInfo>?): Boolean {
+                return gameListRateLimiter.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
             }
 
-            // At the moment, Steam offers no call to retrieve one game at the time.
-            override fun shouldFetch(data: GameWithAchievements?) = false
+            override suspend fun createCall(): List<BaseGameInfo>? {
+                return api.getGamesForUser(userId).response.games
+            }
 
-            override fun loadFromDb(): LiveData<GameWithAchievements> = dao.getGamesWithAchievementsAsLiveData(appId)
-
-            override fun createCall(): LiveData<ApiResponse<BaseGameResponse>> = AbsentLiveData.create()
-        }.asLiveData()
+            override suspend fun loadFromDb(): List<BaseGameInfo> {
+                return dao.getGamesInfo()
+            }
+        }.asLiveResource()
     }
 
-    fun update(item: Game) {
-        dao.upsert(item)
+    /**
+     * Fetch a specific [Game] form the Database.
+     * Steam API doesn't provide a call for one specific game, so the data will only be the stored value of the last API call.
+     */
+    fun getGame(appId: String): LiveData<Game> {
+        return liveData {
+            emitSource(dao.getGame(appId))
+        }
     }
 
-    fun update(item: GameWithAchievements) {
-        item.game?.let { game -> dao.upsert(game) }
+    fun update(item: BaseGameInfo) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.upsert(item)
+        }
     }
 }
