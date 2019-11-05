@@ -1,3 +1,4 @@
+//noinspection GradleDependency
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
@@ -118,28 +119,28 @@ dependencies {
     def retrofit_version = '2.6.0'
     def okhttp_version = '4.2.0'
     def dagger_version = '2.21'
-    def glide_version = '4.9.0-SNAPSHOT'
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Android
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.fragment:fragment-ktx:1.1.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:$support_version"
     implementation "androidx.palette:palette:$support_version"
     implementation "androidx.recyclerview:recyclerview:$support_version"
     implementation "androidx.cardview:cardview:$support_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta3'
     implementation 'com.google.android.material:material:1.0.0'
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version" // ViewModel and LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha05' // liveData
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha05' // ViewModelScope
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc01' // liveData
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc01' // ViewModelScope
 
     // Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -147,7 +148,7 @@ dependencies {
     //Retrofit 2
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
@@ -158,27 +159,24 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     //Rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
     /* RxAndroid adds android specific bindings for RxJava,
        Specifically AndroidSchedulers.mainThread() which provides a Scheduler that schedules
        on main thread and can be used to switch between threads in Android. */
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
     // Room
-    implementation "androidx.room:room-runtime:2.2.0-rc01"
-    implementation 'androidx.room:room-ktx:2.2.0-rc01'
-    kapt "androidx.room:room-compiler:2.2.0-rc01"
+    implementation "androidx.room:room-runtime:2.2.1"
+    implementation 'androidx.room:room-ktx:2.2.1'
+    kapt "androidx.room:room-compiler:2.2.1"
 
-    // Glide Image Loading
-    // TODO move to Coil; https://tech.instacart.com/introducing-coil-kotlin-first-image-loading-on-android-f0fdc7a2a99e
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation "com.github.bumptech.glide:okhttp-integration:$glide_version"
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
+    // Image Loading
+    implementation("io.coil-kt:coil:0.8.0")
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.google.firebase:firebase-perf:16.2.3'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-perf:19.0.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     // Graph Library; http://www.android-graphview.org/download-getting-started/
     implementation 'com.jjoe64:graphview:4.2.2'
@@ -189,17 +187,17 @@ dependencies {
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
-    testImplementation 'androidx.arch.core:core-testing:2.0.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:2.22.0'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.appcompat:appcompat:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.appcompat:appcompat:1.1.0'
     androidTestImplementation 'androidx.recyclerview:recyclerview:1.0.0'
     androidTestImplementation 'androidx.cardview:cardview:1.0.0'
     androidTestImplementation 'com.google.android.material:material:1.0.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
-    androidTestImplementation 'androidx.arch.core:core-testing:2.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
     androidTestImplementation 'org.mockito:mockito-core:2.22.0'
     androidTestImplementation 'org.mockito:mockito-android:2.22.0'
 }

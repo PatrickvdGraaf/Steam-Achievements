@@ -10,8 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil.api.load
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -168,10 +167,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
 
         // Load Banner
-        Glide.with(this)
-            .load(data.getImageUrl())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(banner)
+        banner.load(data.getImageUrl())
 
         // Prepare Achievements RecyclerView.
         recyclerViewAchievements.layoutManager = LinearLayoutManager(

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.bumptech.glide.Glide
+import coil.api.load
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
@@ -58,10 +58,7 @@ class ProfileFragment : Fragment(), Injectable {
         profileViewModel.currentPlayer.observe(this, Observer { player ->
             if (player != null) {
                 textViewPersona.text = player.persona
-
-                Glide.with(requireContext())
-                    .load(player.avatarFullUrl)
-                    .into(imageViewProfile)
+                imageViewProfile.load(player.avatarFullUrl)
             }
         })
     }

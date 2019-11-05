@@ -62,7 +62,7 @@ data class ApiSuccessResponse<T>(
             while (matcher.find()) {
                 val count = matcher.groupCount()
                 if (count == 2) {
-                    links[matcher.group(2)] = matcher.group(1)
+                    links[matcher.group(2) ?: ""] = matcher.group(1)  ?: ""
                 }
             }
             return links

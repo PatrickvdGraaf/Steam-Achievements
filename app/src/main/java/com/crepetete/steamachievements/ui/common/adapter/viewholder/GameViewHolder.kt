@@ -1,26 +1,18 @@
 package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import android.widget.ProgressBar
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.api.load
+import coil.decode.DataSource
+import coil.request.Request
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ItemGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import timber.log.Timber
-import kotlin.math.abs
 
 /**
  * Created at 19 January, 2019.
@@ -44,8 +36,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
             // Set RecyclerView adapter.
             val achievements = game.achievements
-            val latestAchievements = achievements.sortedWith(Order.LatestAchievedOrder())
-                .take(10)
+            val latestAchievements = achievements.sortedWith(Order.LatestAchievedOrder()).take(10)
 
             if (latestAchievements.isEmpty()) {
                 binding.achievementContainer.visibility = View.GONE
@@ -63,44 +54,41 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                         else -> binding.achievement8
                     }
 
-                    Glide.with(binding.root.context)
-                        .load(achievement.getActualIconUrl())
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(e: GlideException?,
-                                                      model: Any?,
-                                                      target: Target<Drawable>?,
-                                                      isFirstResource: Boolean): Boolean {
+                    view.load(achievement.getActualIconUrl()) {
+                        listener(object : Request.Listener {
+                            override fun onError(data: Any, throwable: Throwable) {
+                                super.onError(data, throwable)
+                                Timber.w(throwable, "Error while loading image from url: ${achievement.getActualIconUrl()}.")
+
                                 view.visibility = View.GONE
-                                return false
                             }
 
-                            override fun onResourceReady(resource: Drawable?,
-                                                         model: Any?,
-                                                         target: Target<Drawable>?,
-                                                         dataSource: DataSource?,
-                                                         isFirstResource: Boolean): Boolean {
+                            override fun onCancel(data: Any) {
+                                super.onCancel(data)
+
+                                view.visibility = View.GONE
+                            }
+
+                            override fun onSuccess(data: Any, source: DataSource) {
+                                super.onSuccess(data, source)
                                 view.visibility = View.VISIBLE
-                                return false
                             }
-
                         })
-                        .into(view)
+                    }
                 }
             }
 
-            Glide.with(binding.root.context)
-                .asBitmap()
-                .load(dataItem.getImageUrl())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onResourceReady(resource: Bitmap?,
-                                                 model: Any?,
-                                                 target: Target<Bitmap>?,
-                                                 dataSource: DataSource?,
-                                                 isFirstResource: Boolean): Boolean {
-                        if (resource != null) {
-                            Palette.from(resource).generate { newPalette ->
+            binding.gameBanner.load(dataItem.getImageUrl()) {
+                listener(object : Request.Listener {
+                    override fun onError(data: Any, throwable: Throwable) {
+                        super.onError(data, throwable)
+                        Timber.w(throwable, "Error while loading image from url: ${dataItem.getImageUrl()}.")
+                    }
+
+                    override fun onSuccess(data: Any, source: DataSource) {
+                        super.onSuccess(data, source)
+                        if (data is Bitmap) {
+                            Palette.from(data).generate { newPalette ->
                                 palette = newPalette
 
                                 val darkMuted = palette?.darkMutedSwatch?.rgb
@@ -136,39 +124,12 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                 }
                             }
                         }
-                        return false
-                    }
-
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                        Timber.w(e, "Error while loading image from url: ${dataItem.getImageUrl()}.")
-                        return false
                     }
                 })
-                .into(binding.gameBanner)
+            }
         }
     }
 
     fun getPalette(): Palette? = palette
 
-    /**
-     * Animates the progress from 0 to the given progress param.
-     */
-    private fun setProgressAnimated(view: ProgressBar, progress: Float) {
-        val animationDuration: Long = 1000
-        view.progress = 0
-        val percentage = progress.toInt()
-        view.startAnimation(object : Animation() {
-            var mTo = if (percentage < 0) 0 else if (percentage > view.max) view.max else percentage
-            var mFrom = progress
-
-            init {
-                duration = (abs(mTo - mFrom) * (animationDuration / view.max)).toLong()
-            }
-
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                val value = mFrom + (mTo - mFrom) * interpolatedTime
-                view.progress = value.toInt()
-            }
-        })
-    }
 }

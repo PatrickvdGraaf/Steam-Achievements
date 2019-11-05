@@ -13,12 +13,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.api.load
+import coil.decode.DataSource
+import coil.request.Request
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
@@ -108,32 +105,30 @@ class AchievementPagerFragment : Fragment(), Injectable {
     }
 
     private fun loadIcon(url: String) {
-        pulsator.visibility = View.VISIBLE
-        pulsator.start()
-
-        Glide.with(requireContext())
-            .asBitmap()
-            .load(url)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .listener(object : RequestListener<Bitmap> {
-                override fun onLoadFailed(e: GlideException?,
-                                          model: Any?,
-                                          target: Target<Bitmap>?,
-                                          isFirstResource: Boolean): Boolean {
-                    Timber.w(e, "Error while loading image from url: $url.")
-
+        achievement_icon_imageview.load(url) {
+            listener(object : Request.Listener {
+                override fun onError(data: Any, throwable: Throwable) {
+                    super.onError(data, throwable)
+                    Timber.w(throwable, "Error while loading image from url: $url.")
                     pulsator.stop()
-
-                    return false
                 }
 
-                override fun onResourceReady(resource: Bitmap?,
-                                             model: Any?,
-                                             target: Target<Bitmap>?,
-                                             dataSource: DataSource?,
-                                             isFirstResource: Boolean): Boolean {
-                    if (resource != null) {
-                        Palette.from(resource).generate { palette ->
+                override fun onCancel(data: Any) {
+                    super.onCancel(data)
+                    pulsator.stop()
+                }
+
+                override fun onStart(data: Any) {
+                    super.onStart(data)
+                    pulsator.visibility = View.VISIBLE
+                    pulsator.start()
+                }
+
+                override fun onSuccess(data: Any, source: DataSource) {
+                    super.onSuccess(data, source)
+
+                    if (data is Bitmap) {
+                        Palette.from(data).generate { palette ->
                             val defaultColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
                             val newColor = palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb ?: defaultColor
 
@@ -141,13 +136,13 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
                             backgroundColor = newColor
                         }
-
-                        pulsator.visibility = View.GONE
-                        pulsator.stop()
                     }
-                    return false
+
+                    pulsator.stop()
+                    pulsator.visibility = View.GONE
                 }
-            }).into(achievement_icon_imageview)
+            })
+        }
     }
 
     private fun getDateString(achievement: Achievement): String {

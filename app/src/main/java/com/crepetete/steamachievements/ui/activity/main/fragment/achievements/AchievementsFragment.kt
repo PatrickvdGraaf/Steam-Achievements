@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.common.view.CircularProgressBar
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
@@ -28,12 +27,11 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         const val TAG = "ACHIEVEMENTS_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
 
-        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): Fragment {
+        fun getInstance(playerId: String): Fragment {
             return AchievementsFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                //                setLoaderIndicator(loadingIndicator)
             }
         }
     }

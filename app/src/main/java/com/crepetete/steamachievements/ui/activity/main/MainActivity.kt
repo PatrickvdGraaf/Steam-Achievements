@@ -69,6 +69,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     }
 
     override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
         if (intent != null) {
             handleIntent(intent)
         }
@@ -85,8 +86,9 @@ class MainActivity : BaseActivity(), LoadingIndicator,
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            navBarListener?.onSearchQueryUpdate(query)
+            intent.getStringExtra(SearchManager.QUERY)?.let { query ->
+                navBarListener?.onSearchQueryUpdate(query)
+            }
         }
     }
 
@@ -165,7 +167,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
                 currentTag = AchievementsFragment.TAG
                 fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
-                    fragment = AchievementsFragment.getInstance(userId, this)
+                    fragment = AchievementsFragment.getInstance(userId)
                 }
             }
         }
