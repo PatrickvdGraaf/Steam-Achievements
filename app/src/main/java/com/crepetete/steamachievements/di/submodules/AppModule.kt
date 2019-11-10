@@ -8,8 +8,7 @@ import dagger.Provides
 @Module(includes = [ViewModelModule::class])
 class AppModule {
     /**
-     * Provides the Context
-     * @return the Context to be provided
+     * Provides the application Context to a ViewModel.
      */
     @Provides
     fun provideContext(application: Application): Context = application.applicationContext

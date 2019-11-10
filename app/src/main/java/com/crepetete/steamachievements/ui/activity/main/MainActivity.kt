@@ -49,8 +49,6 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     private val containerId: Int = R.id.fragment_container
     private val fragmentManager: FragmentManager = supportFragmentManager
 
-    //    private lateinit var loadingIndicator: PulsatorLayout
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

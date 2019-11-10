@@ -32,11 +32,29 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                     if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
             }
 
+            if (dataItem.isCompleted()) {
+                binding.imageViewAchievedFlag.visibility = View.VISIBLE
+            } else {
+                binding.imageViewAchievedFlag.visibility = View.GONE
+            }
+
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
+
+            binding.achievement1.visibility = View.INVISIBLE
+            binding.achievement2.visibility = View.INVISIBLE
+            binding.achievement3.visibility = View.INVISIBLE
+            binding.achievement4.visibility = View.INVISIBLE
+            binding.achievement5.visibility = View.INVISIBLE
+            binding.achievement6.visibility = View.INVISIBLE
+            binding.achievement7.visibility = View.INVISIBLE
+            binding.achievement8.visibility = View.INVISIBLE
 
             // Set RecyclerView adapter.
             val achievements = game.achievements
-            val latestAchievements = achievements.sortedWith(Order.LatestAchievedOrder()).take(10)
+            val latestAchievements = achievements
+                .filter { achievement -> achievement.achieved }
+                .sortedWith(Order.LatestAchievedOrder())
+                .take(10)
 
             if (latestAchievements.isEmpty()) {
                 binding.achievementContainer.visibility = View.GONE
@@ -129,7 +147,5 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             }
         }
     }
-
-    fun getPalette(): Palette? = palette
 
 }

@@ -17,25 +17,21 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryLight"
-        android:fitsSystemWindows="true">
+        android:background="@color/colorPrimaryLight">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/headerImageHeight"
-            android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
+                android:layout_height="match_parent"
                 android:transitionName="title"
                 app:contentScrim="@color/colorPrimary"
-                app:expandedTitleMarginEnd="@dimen/default_margin"
-                app:expandedTitleMarginStart="@dimen/default_margin"
+                app:expandedTitleTextAppearance="@style/ExpandedAppBar"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:title="@{gameData.getName()}">
 
@@ -44,7 +40,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:contentDescription="Game banner"
-                    android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     android:transitionName="banner"
                     app:layout_collapseMode="parallax"/>
@@ -52,14 +47,14 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#64000000"
-                    android:fitsSystemWindows="true"/>
+                    android:background="#64000000" />
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
+                    app:layout_scrollFlags="scroll|enterAlways"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
@@ -74,127 +69,216 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp">
+                android:paddingTop="@dimen/default_margin"
+                android:paddingBottom="@dimen/default_margin">
 
-                <TextView
-                    android:id="@+id/playtime_header_textview"
-                    style="@style/AppTheme.Text.Header"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/playTimeCardView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:text="@string/header_playtime"
-                    app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
-                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
-                    android:id="@+id/recently_played_textView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/default_margin_halved"
-                    app:label="@string/header_recent_playtime"
-                    app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
-                    app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
-                    app:valueText="1h 23m"/>
-
-                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
-                    android:id="@+id/total_played_textView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/default_margin_halved"
-                    app:label="@string/header_total_playtime"
-                    app:layout_constraintBottom_toTopOf="@+id/textViewAchievementsHeader"
-                    app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
-                    app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/recently_played_textView"
-                    app:valueText="123h 45m"/>
-
-                <TextView
-                    android:id="@+id/textViewAchievementsHeader"
-                    style="@style/AppTheme.Text.Header"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:text="@string/header_achievements"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/total_played_textView"/>
-
-                <TextView
-                    android:id="@+id/sortMethodDescription"
-                    style="@style/AppTheme.Text.Label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:text="@string/sorting_method_achieved"
-                    app:layout_constraintBottom_toTopOf="@+id/recyclerViewAchievements"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewAchievementsHeader"/>
-
-                <Button
-                    android:id="@+id/sortAchievementsButton"
-                    style="@style/AppTheme.Button.Clear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:drawableEnd="@drawable/ic_sort_24dp"
-                    android:drawablePadding="@dimen/default_margin"
-                    android:paddingStart="@dimen/default_margin"
-                    android:text="@string/action_sort"
-                    app:layout_constraintBottom_toBottomOf="@+id/sortMethodDescription"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textViewAchievementsHeader"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewAchievements"
-                    style="@style/AppTheme.Achievements.RecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="32dp"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/default_margin_halved"
-                    android:paddingEnd="@dimen/default_margin_halved"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toTopOf="@+id/graph_textView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sortMethodDescription"
-                    card_view:cardUseCompatPadding="true"
-                    tools:listitem="@layout/list_achievement"/>
-
-                <TextView
-                    android:id="@+id/graph_textView"
-                    style="@style/AppTheme.Text.Label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:labelFor="@+id/graph_textView"
-                    android:paddingStart="@dimen/default_margin"
-                    android:paddingEnd="@dimen/default_margin"
-                    android:text="@string/header_achievements_over_time"
-                    app:layout_constraintBottom_toTopOf="@+id/graph"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/graph"/>
-
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/graph"
-                    android:layout_width="match_parent"
-                    android:layout_height="260dp"
-                    android:layout_marginStart="@dimen/default_margin"
+                    android:layout_marginStart="@dimen/default_margin_halved"
                     android:layout_marginTop="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:paddingStart="@dimen/default_margin"
-                    android:paddingEnd="@dimen/default_margin"
-                    app:layout_constraintTop_toBottomOf="@+id/graph_textView"/>
+                    android:layout_marginEnd="@dimen/default_margin_halved"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:background="@color/backgroundAchievementsContainer"
+                    android:elevation="@dimen/elevation_card_large"
+                    app:cardCornerRadius="@dimen/corner_radius_medium"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintBottom_toTopOf="@+id/achievementsRecyclerView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/playTimeContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/default_margin"
+                        android:paddingBottom="@dimen/default_margin">
+
+                        <TextView
+                            android:id="@+id/playtime_header_textview"
+                            style="@style/AppTheme.Text.Header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:text="@string/header_playtime"
+                            app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                            android:id="@+id/recently_played_textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/default_margin_halved"
+                            app:label="@string/header_recent_playtime"
+                            app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
+                            app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
+                            app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
+                            app:valueText="1h 23m" />
+
+                        <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                            android:id="@+id/total_played_textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/default_margin_halved"
+                            app:label="@string/header_total_playtime"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
+                            app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
+                            app:layout_constraintTop_toBottomOf="@+id/recently_played_textView"
+                            app:valueText="123h 45m" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/achievementsRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin_halved"
+                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginEnd="@dimen/default_margin_halved"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:background="@color/backgroundAchievementsContainer"
+                    android:elevation="@dimen/elevation_card_large"
+                    app:cardCornerRadius="@dimen/corner_radius_medium"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/playTimeCardView">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/achievementContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewAchievementsHeader"
+                            style="@style/AppTheme.Text.Header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginTop="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:text="@string/header_achievements"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/sortMethodDescription"
+                            style="@style/AppTheme.Text.Label"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:text="@string/sorting_method_achieved"
+                            app:layout_constraintBottom_toTopOf="@+id/recyclerViewAchievements"
+                            app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textViewAchievementsHeader" />
+
+                        <Button
+                            android:id="@+id/sortAchievementsButton"
+                            style="@style/AppTheme.Button.Clear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:drawableEnd="@drawable/ic_sort_24dp"
+                            android:drawablePadding="@dimen/default_margin"
+                            android:paddingStart="@dimen/default_margin"
+                            android:text="@string/action_sort"
+                            app:layout_constraintBottom_toBottomOf="@+id/sortMethodDescription"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/textViewAchievementsHeader" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewAchievements"
+                            style="@style/AppTheme.Achievements.RecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/default_margin_halved"
+                            android:paddingEnd="@dimen/default_margin_halved"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/sortMethodDescription"
+                            card_view:cardUseCompatPadding="true"
+                            tools:listitem="@layout/list_achievement" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/progressCardView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin_halved"
+                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginEnd="@dimen/default_margin_halved"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:background="@color/backgroundAchievementsContainer"
+                    android:elevation="@dimen/elevation_card_large"
+                    app:cardCornerRadius="@dimen/corner_radius_medium"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/achievementsRecyclerView">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/progressContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/textViewProgressHeader"
+                            style="@style/AppTheme.Text.Header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginTop="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:text="@string/header_progress"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/graph_textView"
+                            style="@style/AppTheme.Text.Label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:labelFor="@+id/graph_textView"
+                            android:paddingStart="@dimen/default_margin"
+                            android:paddingEnd="@dimen/default_margin"
+                            android:text="@string/header_achievements_over_time"
+                            app:layout_constraintBottom_toTopOf="@+id/graph"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textViewProgressHeader" />
+
+                        <com.jjoe64.graphview.GraphView
+                            android:id="@+id/graph"
+                            android:layout_width="match_parent"
+                            android:layout_height="260dp"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginTop="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:layout_marginBottom="@dimen/default_margin"
+                            android:paddingStart="@dimen/default_margin"
+                            android:paddingEnd="@dimen/default_margin"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
