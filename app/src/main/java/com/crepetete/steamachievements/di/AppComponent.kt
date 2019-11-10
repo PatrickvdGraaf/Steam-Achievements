@@ -12,27 +12,25 @@ import javax.inject.Singleton
  * The root in our dagger graph.
  */
 @Singleton
+/* Definition of a Dagger component. */
 @Component(modules = [
     AndroidInjectionModule::class,
     ActivitiesModule::class,
     ApiModule::class,
-    AppModule::class,
     FragmentModule::class,
     RoomModule::class,
-    SharedPreferencesModule::class
+    SharedPreferencesModule::class,
+    ViewModelModule::class
 ])
-interface ApplicationComponent {
+interface AppComponent {
 
-    /* This is needed because SteamAchievementsApp has @Inject */
-    fun inject(app: SteamAchievementsApp)
-
-    @Component.Builder
-    interface Builder {
-
-        fun build(): ApplicationComponent
-
+    // Factory to create instances of the AppComponent
+    @Component.Factory
+    interface Factory {
         /* provide Application instance into DI */
-        @BindsInstance
-        fun application(application: Application): Builder
+        fun application(@BindsInstance application: Application): Factory
     }
+
+    /* This is needed because SteamAchievementsApp has @Inject. */
+    fun inject(app: SteamAchievementsApp)
 }

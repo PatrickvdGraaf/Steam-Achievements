@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.api.load
 import com.crepetete.steamachievements.R
@@ -31,28 +30,15 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
     companion object {
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
-
-        private const val INTENT_PALETTE_DARK_MUTED = "INTENT_PALETTE_DARK_MUTED"
-        private const val INTENT_PALETTE_DARK_VIBRANT = "INTENT_PALETTE_DARK_VIBRANT"
-        private const val INTENT_PALETTE_LIGHT_MUTED = "INTENT_PALETTE_LIGHT_MUTED"
-        private const val INTENT_PALETTE_LIGHT_VIBRANT = "INTENT_PALETTE_LIGHT_VIBRANT"
-        private const val INTENT_PALETTE_MUTED = "INTENT_PALETTE_MUTED"
-        private const val INTENT_PALETTE_VIBRANT = "INTENT_PALETTE_VIBRANT"
-        private const val INTENT_PALETTE_DOMINANT = "INTENT_PALETTE_DOMINANT"
+        private const val INTENT_PALETTE = "INTENT_PALETTE"
 
         private const val INVALID_ID = "-1"
 
-        fun getInstance(context: Context, game: Game, palette: Palette?) = Intent(context, GameActivity::class.java)
-            .apply {
+        fun getInstance(context: Context, game: Game): Intent {
+            return Intent(context, GameActivity::class.java).apply {
                 putExtra(INTENT_GAME, game)
-                putExtra(INTENT_PALETTE_DARK_MUTED, palette?.darkMutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_DARK_VIBRANT, palette?.darkVibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_LIGHT_MUTED, palette?.lightMutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_LIGHT_VIBRANT, palette?.lightVibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_MUTED, palette?.mutedSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_VIBRANT, palette?.vibrantSwatch?.rgb ?: -1)
-                putExtra(INTENT_PALETTE_DOMINANT, palette?.dominantSwatch?.rgb ?: -1)
             }
+        }
     }
 
     @Inject
@@ -81,14 +67,9 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
 
         // Retrieve data.
-        val id = intent.getStringExtra(INTENT_GAME_ID) ?: INVALID_ID
-        if (id != INVALID_ID) {
-            viewModel.setAppId(id)
-        } else {
-            intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
-                setGameInfo(game)
-                viewModel.setGame(game)
-            }
+        intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
+            setGameInfo(game)
+            viewModel.setGame(game)
         }
 
         // Set observers
@@ -107,36 +88,9 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
             achievementsAdapter.updateSortingMethod(method)
         })
 
-        setColorsWithIntent(intent)
-
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
-        }
-    }
-
-    private fun setColorsWithIntent(intent: Intent?) {
-        val darkMuted = intent?.getIntExtra(INTENT_PALETTE_DARK_VIBRANT, -1) ?: -1
-        val darkVibrant = intent?.getIntExtra(INTENT_PALETTE_DARK_MUTED, -1) ?: -1
-        val lightMuted = intent?.getIntExtra(INTENT_PALETTE_LIGHT_MUTED, -1) ?: -1
-        val lightVibrant = intent?.getIntExtra(INTENT_PALETTE_LIGHT_VIBRANT, -1) ?: -1
-        val muted = intent?.getIntExtra(INTENT_PALETTE_MUTED, -1) ?: -1
-        val vibrant = intent?.getIntExtra(INTENT_PALETTE_VIBRANT, -1) ?: -1
-        val dominant = intent?.getIntExtra(INTENT_PALETTE_DOMINANT, -1) ?: -1
-
-        if (darkMuted != -1) {
-            collapsingToolbar.setContentScrimColor(darkMuted)
-            collapsingToolbar.setStatusBarScrimColor(darkMuted)
-        } else if (muted != -1) {
-            collapsingToolbar.setContentScrimColor(muted)
-            collapsingToolbar.setStatusBarScrimColor(muted)
-        }
-
-        when {
-            darkVibrant != -1 -> scrollView.setBackgroundColor(darkVibrant)
-            lightMuted != -1 -> scrollView.setBackgroundColor(lightMuted)
-            muted != -1 -> scrollView.setBackgroundColor(muted)
-            dominant != -1 -> scrollView.setBackgroundColor(dominant)
         }
     }
 

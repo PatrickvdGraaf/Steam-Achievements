@@ -1,24 +1,20 @@
 package com.crepetete.steamachievements.repository
 
-import android.content.SharedPreferences
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
+import com.crepetete.steamachievements.repository.storage.Storage
 import com.crepetete.steamachievements.vo.Player
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
+    private val storage: Storage,
     private val api: SteamApiService,
     private val dao: PlayerDao
 ) : BaseRepository() {
-
-    private companion object {
-        private const val PREFS_USER_ID = "userId"
-    }
 
     private val invalidUserId = "-1"
 
@@ -26,7 +22,7 @@ class UserRepository @Inject constructor(
      * Fetches the [Player] that is currently logged in, or null if no user was found.
      */
     suspend fun getCurrentPlayer(): LiveResource<Player> {
-        val playerId = getCurrentPlayerId(invalidUserId)
+        val playerId = getCurrentPlayerId()
 
         return object : NetworkBoundResource<Player, Player?>() {
             override suspend fun saveCallResult(data: Player?) {
@@ -82,14 +78,13 @@ class UserRepository @Inject constructor(
         }.asLiveResource()
     }
 
-    // TODO move to preferencesRepository
-    fun getCurrentPlayerId(defValue: String = "-1") = if (BuildConfig.DEBUG) {
+    fun getCurrentPlayerId() = if (BuildConfig.DEBUG) {
         BuildConfig.TEST_USER_ID
     } else {
-        sharedPreferences.getString(PREFS_USER_ID, defValue)!!
+        storage.getPlayerId(invalidUserId)
     }
 
-    fun putCurrentPlayerId(userId: String) {
-        sharedPreferences.edit().putString(PREFS_USER_ID, userId).apply()
+    fun putCurrentPlayerId(playerId: String) {
+        storage.setPlayerId(playerId)
     }
 }
