@@ -15,18 +15,17 @@ import javax.inject.Singleton
 class RoomModule {
     @Provides
     @Singleton
-    internal fun providePlayerDatabase(application: Application) = Room
-        .databaseBuilder(application, SteamDatabase::class.java, BuildConfig.DB_NAME)
-        // TODO remove this before releasing.
-        .fallbackToDestructiveMigration()
+    internal fun providePlayerDatabase(context: Application) = Room.databaseBuilder(
+        context,
+        SteamDatabase::class.java,
+        BuildConfig.DB_NAME
+    ).fallbackToDestructiveMigration() // TODO remove this before releasing.
         .build()
 
     @Provides
-    @Singleton
     internal fun providePlayerDao(database: SteamDatabase): PlayerDao = database.playerDao()
 
     @Provides
-    @Singleton
     internal fun provideGamesDao(database: SteamDatabase): GamesDao = database.gamesDao()
 
     @Provides
