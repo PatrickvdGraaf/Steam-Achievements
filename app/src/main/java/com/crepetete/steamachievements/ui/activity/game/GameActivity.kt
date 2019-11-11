@@ -6,11 +6,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.api.load
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
@@ -41,16 +40,15 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         }
     }
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
     lateinit var binding: ActivityGameBinding
 
-    private lateinit var viewModel: GameViewModel
+    @Inject
+    lateinit var viewModel: GameViewModel
 
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
 
         // Inflate view and obtain an instance of the binding class.
@@ -62,9 +60,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         // Prepare view.
         setContentView(binding.root)
         setSupportActionBar(toolbar)
-
-        // Init view model
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(GameViewModel::class.java)
 
         // Retrieve data.
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->

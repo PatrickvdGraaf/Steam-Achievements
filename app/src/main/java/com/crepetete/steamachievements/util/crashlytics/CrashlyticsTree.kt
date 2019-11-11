@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.util.crashlytics
 
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import timber.log.Timber
 
 /**
@@ -9,7 +10,13 @@ import timber.log.Timber
 class CrashlyticsTree : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, throwable: Throwable?) {
         if (priority != Log.VERBOSE && priority != Log.DEBUG) {
-            CrashLibrary.log(priority, tag ?: "", message, throwable ?: Exception(message))
+            Crashlytics.setInt("priority", priority)
+            Crashlytics.setString("message", message)
+            tag?.let {
+                Crashlytics.setString("tag", tag)
+            }
+
+            Crashlytics.logException(throwable ?: Exception(message))
         }
     }
 }

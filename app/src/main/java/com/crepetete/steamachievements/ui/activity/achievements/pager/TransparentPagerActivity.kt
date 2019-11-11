@@ -3,25 +3,20 @@ package com.crepetete.steamachievements.ui.activity.achievements.pager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.transformer.ZoomOutPageTransformer
 import com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
 import com.crepetete.steamachievements.vo.Achievement
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_pager.*
 import javax.inject.Inject
 
 /**
  * Activity which holds a ViewPager that shows an achievement.
  */
-class TransparentPagerActivity : BaseActivity(), HasSupportFragmentInjector {
+class TransparentPagerActivity : BaseActivity() {
 
     companion object {
         private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"
@@ -36,16 +31,12 @@ class TransparentPagerActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-
-    private lateinit var viewModel: TransparentPagerViewModel
+    lateinit var viewModel: TransparentPagerViewModel
 
     private val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pager)
 
@@ -57,9 +48,6 @@ class TransparentPagerActivity : BaseActivity(), HasSupportFragmentInjector {
 
         // Set ViewPager settings.
         pager.setPageTransformer(true, ZoomOutPageTransformer())
-
-        // Get ViewModel and observe.
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(TransparentPagerViewModel::class.java)
 
         viewModel.achievementData.observe(this, Observer {
             pagerAdapter.updateAchievements(it)
@@ -78,6 +66,4 @@ class TransparentPagerActivity : BaseActivity(), HasSupportFragmentInjector {
             pager.setCurrentItem(index, false)
         })
     }
-
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
 }

@@ -19,24 +19,17 @@ import com.crepetete.steamachievements.ui.activity.main.fragment.profile.Profile
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
-import javax.inject.Inject
 
 /**
  *
  */
-class MainActivity : BaseActivity(), LoadingIndicator,
-    BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
+class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         fun getInstance(context: Context, userId: String) = Intent(context, MainActivity::class.java).apply {
             putExtra(INTENT_USER_ID, userId)
         }
     }
-
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     @IdRes
     private var selectedNavItem = R.id.menu_library
@@ -211,6 +204,4 @@ class MainActivity : BaseActivity(), LoadingIndicator,
         //        loadingIndicator.stop()
         //        loadingIndicator.visibility = View.GONE
     }
-
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
 }

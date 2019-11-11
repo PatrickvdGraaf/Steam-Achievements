@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +9,10 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -27,10 +27,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModel: LibraryViewModel
+    @Inject
+    lateinit var viewModel: LibraryViewModel
 
     private var hasShownPrivateProfileMessage = false
 
@@ -55,16 +54,13 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Provide ViewModel.
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
-
 
         with(viewModel) {
-            viewModel.data.observe(this@LibraryFragment, Observer {
+            viewModel.data.observe(viewLifecycleOwner, Observer {
                 setGamesData(it)
             })
 
-            gamesLoadingState.observe(this@LibraryFragment, Observer { state ->
+            gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
                 state?.let {
                     when (state) {
                         LiveResource.STATE_LOADING -> {
@@ -79,7 +75,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 }
             })
 
-            gamesLoadingError.observe(this@LibraryFragment, Observer { error ->
+            gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
                 Timber.e("Error while loading Games: $error")
 
                 if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
@@ -99,6 +95,12 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     override fun updateAchievementsForGame(appId: String) {
         viewModel.updateAchievementsForGame(appId)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     private fun setGamesData(games: List<Game>) {

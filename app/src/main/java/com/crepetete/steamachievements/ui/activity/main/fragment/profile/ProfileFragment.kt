@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import coil.api.load
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
 import javax.inject.Inject
@@ -19,9 +19,7 @@ import javax.inject.Inject
 class ProfileFragment : Fragment(), Injectable {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private lateinit var profileViewModel: AuthViewModel
+    lateinit var profileViewModel: AuthViewModel
 
     private lateinit var imageViewProfile: ImageView
     private lateinit var textViewPersona: TextView
@@ -51,15 +49,18 @@ class ProfileFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(AuthViewModel::class.java)
-
         // Set observers
-        profileViewModel.currentPlayer.observe(this, Observer { player ->
+        profileViewModel.currentPlayer.observe(viewLifecycleOwner, Observer { player ->
             if (player != null) {
                 textViewPersona.text = player.persona
                 imageViewProfile.load(player.avatarFullUrl)
             }
         })
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 }

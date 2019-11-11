@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.game.fragment.achievement.pager
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -10,13 +11,12 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import coil.api.load
 import coil.decode.DataSource
 import coil.request.Request
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.util.extensions.setBackgroundColorAnimated
 import com.crepetete.steamachievements.vo.Achievement
@@ -43,9 +43,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private lateinit var viewModel: PagerFragmentViewModel
+    lateinit var viewModel: PagerFragmentViewModel
 
     @ColorInt
     private var backgroundColor: Int? = null
@@ -56,11 +54,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Get ViewModel and set observers.
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(PagerFragmentViewModel::class.java)
-
-        viewModel.getAchievement().observe(this, Observer { achievement ->
+        viewModel.getAchievement().observe(viewLifecycleOwner, Observer { achievement ->
             if (achievement != null) {
                 setAchievementInfo(achievement)
             }
@@ -81,6 +75,12 @@ class AchievementPagerFragment : Fragment(), Injectable {
         content.setOnClickListener {
             activity?.onBackPressed()
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     /**

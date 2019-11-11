@@ -31,11 +31,10 @@ class LibraryViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    // Jobs
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
     private val ioScope = CoroutineScope(Dispatchers.IO + mainJob)
-
-    private var sortingType = MutableLiveData<SortingType>()
     private var gamesFetchJob: Job? = null
 
     // Games
@@ -43,6 +42,9 @@ class LibraryViewModel @Inject constructor(
     private val _games = MediatorLiveData<List<BaseGameInfo>?>()
     private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _gamesLoadingError = MediatorLiveData<Exception?>()
+
+    private var sortingType = MutableLiveData<SortingType>()
+
     val games: LiveData<List<BaseGameInfo>?> = _games
     val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
     val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
