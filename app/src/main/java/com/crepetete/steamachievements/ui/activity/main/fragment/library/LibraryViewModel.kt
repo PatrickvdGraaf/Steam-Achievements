@@ -75,20 +75,16 @@ class LibraryViewModel @Inject constructor(
             return
         }
 
-        uiScope.launch {
-            gameRepo.getGames(userRepository.getCurrentPlayerId())
-                .apply {
-                    gamesLiveResource = this
-                    gamesFetchJob = this.job
-                    bindObserver(_games, this.data)
-                    bindObserver(_gamesLoadingState, this.state)
-                    bindObserver(_gamesLoadingError, this.error)
+        gameRepo.getGames(userRepository.getCurrentPlayerId())
+            .let { resource ->
+                uiScope.launch {
+                    gamesLiveResource = resource
+                    gamesFetchJob = resource.job
+                    bindObserver(_games, resource.data)
+                    bindObserver(_gamesLoadingState, resource.state)
+                    bindObserver(_gamesLoadingError, resource.error)
                 }
-        }
-
-    }
-
-    fun refresh() {
+            }
 
     }
 

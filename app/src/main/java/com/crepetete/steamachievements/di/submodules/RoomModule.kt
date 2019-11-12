@@ -19,7 +19,7 @@ class RoomModule {
         context,
         SteamDatabase::class.java,
         BuildConfig.DB_NAME
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     @Provides
     internal fun providePlayerDao(database: SteamDatabase): PlayerDao = database.playerDao()

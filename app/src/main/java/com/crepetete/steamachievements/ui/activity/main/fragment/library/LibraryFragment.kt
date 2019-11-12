@@ -54,43 +54,50 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        // Update the view with new data.
+        viewModel.data.observe(viewLifecycleOwner, Observer { games ->
+            adapter.updateGames(games)
+        })
 
-        with(viewModel) {
-            viewModel.data.observe(viewLifecycleOwner, Observer {
-                setGamesData(it)
-            })
-
-            gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
-                state?.let {
-                    when (state) {
-                        LiveResource.STATE_LOADING -> {
-                            pulsator.visibility = View.VISIBLE
-                            pulsator.start()
-                        }
-                        LiveResource.STATE_FAILED, LiveResource.STATE_SUCCESS -> {
-                            pulsator.visibility = View.GONE
-                            pulsator.stop()
-                        }
+        // Hide or show the pulsating loading view.
+        viewModel.gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
+            state?.let {
+                when (state) {
+                    LiveResource.STATE_LOADING -> {
+                        pulsator.visibility = View.VISIBLE
+                        pulsator.start()
+                    }
+                    LiveResource.STATE_SUCCESS -> {
+                        pulsator.stop()
+                        pulsator.visibility = View.GONE
+                    }
+                    LiveResource.STATE_FAILED -> {
+                        pulsator.stop()
                     }
                 }
-            })
+            }
+        })
 
-            gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
-                Timber.e("Error while loading Games: $error")
+        // Handle errors when updating the games list.
+        viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
+            Timber.e("Error while loading Games: $error")
 
-                if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
-                    Snackbar.make(
-                        coordinator,
-                        "Could not update games, are you connected to the internet?",
-                        Snackbar.LENGTH_LONG).show()
-                }
-            })
-
-            fetchGames()
-        }
+            if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
+                Snackbar.make(
+                    coordinator,
+                    "Could not update games, are you connected to the internet?",
+                    Snackbar.LENGTH_LONG).show()
+            } else if (viewModel.data.value?.isEmpty() != false) { // If the  list is null or empty, we assume fetching has failed for the player.
+                Snackbar.make(coordinator, "We couldn't find any games in your library.", Snackbar.LENGTH_LONG)
+                    .setAction("Retry") {
+                    }.show()
+            }
+        })
 
         initScrollFab()
         initRecyclerView()
+
+        viewModel.fetchGames()
     }
 
     override fun updateAchievementsForGame(appId: String) {
@@ -101,20 +108,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
         super.onAttach(context)
 
         (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
-    }
-
-    private fun setGamesData(games: List<Game>) {
-        if (games.isEmpty()) {
-            pulsator.visibility = View.VISIBLE
-
-            Snackbar.make(coordinator, "We couldn't find any games in your library.", Snackbar.LENGTH_LONG).setAction("Retry") {
-                viewModel.refresh()
-            }.show()
-        } else {
-            pulsator.visibility = View.GONE
-        }
-
-        adapter.updateGames(games)
     }
 
     private fun initScrollFab() {
@@ -163,7 +156,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        adapter.setQuery(query)
+        adapter.updateQuery(query)
     }
 
     /**
