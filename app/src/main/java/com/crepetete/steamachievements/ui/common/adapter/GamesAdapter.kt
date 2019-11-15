@@ -102,10 +102,8 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
      * Sorts the list with the current sorting method before submitting.
      */
     fun updateGames(games: List<Game>) {
-        if (games.isNotEmpty()) {
-            newItems = games
-            filter.filter(query)
-        }
+        newItems = games
+        filter.filter(query)
     }
 
     /**

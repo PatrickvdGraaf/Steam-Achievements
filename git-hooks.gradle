@@ -1,0 +1,61 @@
+/**
+ * This script contains gradle commands to automatically install git hooks into a git repository.
+ * Hooks usually need to be installed manually by the user, which is unreliable.
+ * This script can automate the process for us.
+ *
+ * The following setup is required to automatically install git hooks:
+ *  1. Make sure the Android Studio project root is equal to the git repository root.
+ *  2. Place this file in the repository root.
+ *  3. Add the required hooks to a folder named `git-hooks` in the repository root. They must be `.sh` files, not executables.
+ *  4. Add the following lines to the root `build.gradle`:
+ *
+ *      apply from: 'git-hooks.gradle'
+ *      afterEvaluate {
+ *          getTasksByName('clean', true).forEach { task ->
+ *              task.dependsOn installGitHooks
+ *          }
+ *          getTasksByName('build', true).forEach { task ->
+ *              task.dependsOn installGitHooks
+ *          }
+ *      }
+ */
+
+/**
+ * Task to copy the git hooks from the shared `git-hooks` folder to the `.git/hooks` folder
+ * where they are automatically picked up by git. Files in that directory are not under source control,
+ * which is why we need to place them there with this task. We remove the `.sh` extension which made them
+ * readable as a shell script.
+ */
+task copyGitHooks(type: Copy) {
+    description 'Copies the git hooks from `git-hooks` to the `.git/hooks` folder.'
+    from("${rootDir}/git-hooks/") {
+        include '**/*.sh'
+        rename '(.*).sh', '$1'
+    }
+    into "${rootDir}/.git/hooks"
+}
+
+/**
+ * Task to turn newly placed hooks in the `.git/hooks` folder into executables.
+ * This is required to enable them in git. On Windows, this step is not required.
+ */
+task installGitHooks(type: Exec) {
+    description 'Installs the git hooks now placed in the `.git/hooks` folder.'
+    group 'git hooks'
+    workingDir rootDir
+    commandLine 'chmod'
+    args '-R', '+x', '.git/hooks/'
+    dependsOn copyGitHooks
+    onlyIf { isLinuxOrMacOs() }
+    doLast {
+        logger.info('Git hooks installed successfully.')
+    }
+}
+
+/**
+ * Indicates whether the underlying OS is linux or mac.
+ */
+static def isLinuxOrMacOs() {
+    def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+    return osName.contains('linux') || osName.contains('mac os') || osName.contains('macos')
+}

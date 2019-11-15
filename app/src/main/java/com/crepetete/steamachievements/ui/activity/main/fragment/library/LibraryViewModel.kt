@@ -31,6 +31,10 @@ class LibraryViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    private companion object {
+        val DEFAULT_SORT_METHOD = SortingType.PLAYTIME
+    }
+
     // Jobs
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
@@ -62,12 +66,12 @@ class LibraryViewModel @Inject constructor(
                 achievement.appId == gameInfo.appId
             } ?: listOf()))
         }
-        games.sort(sortingType.value ?: SortingType.PLAYTIME)
+        games.sort(sortingType.value ?: DEFAULT_SORT_METHOD)
 
     }
 
     init {
-        sortingType.value = SortingType.PLAYTIME
+        sortingType.value = DEFAULT_SORT_METHOD
     }
 
     fun fetchGames() {

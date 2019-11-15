@@ -56,7 +56,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
         // Update the view with new data.
         viewModel.data.observe(viewLifecycleOwner, Observer { games ->
-            adapter.updateGames(games)
+            if (games.isNotEmpty()) {
+                adapter.updateGames(games)
+            }
         })
 
         // Hide or show the pulsating loading view.

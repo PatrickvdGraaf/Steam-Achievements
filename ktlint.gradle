@@ -1,0 +1,40 @@
+/**
+ * This script contains gradle commands to run ktlint: https://github.com/pinterest/ktlint.
+ *
+ * The following setup is required to enable ktlint:
+ *  1. Place this file in the repository root.
+ *  2. Add the following lines to each module (app / libs) `build.gradle`:
+ *
+ *      apply from: '../ktlint.gradle'
+ *      check.dependsOn ktlint
+ */
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.34.2"
+}
+
+/**
+ * This task performs the ktlint validations.
+ * Can be executed separately with: ./gradlew ktlint.
+ **/
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+}
+
+/**
+ * This task allows automatic fixing of some ktlint validations.
+ * Can be executed with: ./gradlew ktlintFormat.
+ **/
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "-F", "src/**/*.kt"
+}

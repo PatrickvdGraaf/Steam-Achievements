@@ -24,10 +24,6 @@ abstract class GamesDao : BaseDao<BaseGameInfo>() {
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
     abstract fun getGame(appId: String): LiveData<Game>
 
-    @Transaction
-    @Query("SELECT * FROM games")
-    abstract suspend fun getGames(): List<Game>
-
     @Query("SELECT * FROM games")
     abstract suspend fun getGamesInfo(): List<BaseGameInfo>
 

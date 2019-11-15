@@ -86,7 +86,3 @@ class AchievementsRepository @Inject constructor(
         return dao.getAchievements()
     }
 }
-
-interface AchievementsErrorListener {
-    fun onPrivateProfileErrorMessage()
-}
