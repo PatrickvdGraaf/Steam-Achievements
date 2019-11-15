@@ -57,11 +57,16 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     // Achievements over Time Graph
     private lateinit var achievementsOverTimeGraph: GraphView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievements, container,
-            false)
+        val view = inflater.inflate(
+            R.layout.fragment_achievements, container,
+            false
+        )
 
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
@@ -75,8 +80,10 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
 
         recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewAchievements)
         recyclerViewLatestAchievements.adapter = achievementsAdapter
-        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
-            LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.HORIZONTAL, false
+        )
 
         return view
     }
@@ -125,13 +132,18 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     /**
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
-    private fun showLatestAchievements(achievements: List<Achievement>,
-                               allAchievements: List<Achievement>) {
+    private fun showLatestAchievements(
+        achievements: List<Achievement>,
+        allAchievements: List<Achievement>
+    ) {
         this.achievements = achievements
         this.allAchievements = allAchievements
         achievementsAdapter.setAchievements(achievements)
 
-        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, allAchievements)
+        AchievementsGraphViewUtil.setAchievementsOverTime(
+            achievementsOverTimeGraph,
+            allAchievements
+        )
     }
 
     /**
@@ -145,7 +157,9 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         } else {
             "#,###"
         }
-        textViewCompletion.text = String.format(getString(R.string.percentage),
-            DecimalFormat(pattern).format(percentage))
+        textViewCompletion.text = String.format(
+            getString(R.string.percentage),
+            DecimalFormat(pattern).format(percentage)
+        )
     }
 }

@@ -48,8 +48,11 @@ class AchievementPagerFragment : Fragment(), Injectable {
     @ColorInt
     private var backgroundColor: Int? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_achievement_pager, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,7 +104,9 @@ class AchievementPagerFragment : Fragment(), Injectable {
             label_global_stats.setText("${achievement.percentage}%")
         }
 
-        loadIcon(if (achievement.achieved) achievement.iconUrl ?: "" else achievement.iconGrayUrl ?: "")
+        loadIcon(
+            if (achievement.achieved) achievement.iconUrl ?: "" else achievement.iconGrayUrl ?: ""
+        )
     }
 
     private fun loadIcon(url: String) {
@@ -129,10 +134,15 @@ class AchievementPagerFragment : Fragment(), Injectable {
 
                     if (data is Bitmap) {
                         Palette.from(data).generate { palette ->
-                            val defaultColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
-                            val newColor = palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb ?: defaultColor
+                            val defaultColor =
+                                ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+                            val newColor =
+                                palette?.darkMutedSwatch?.rgb ?: palette?.darkVibrantSwatch?.rgb
+                                ?: defaultColor
 
-                            achievement_cardview.setBackgroundColorAnimated(backgroundColor ?: defaultColor, newColor)
+                            achievement_cardview.setBackgroundColorAnimated(
+                                backgroundColor ?: defaultColor, newColor
+                            )
 
                             backgroundColor = newColor
                         }
@@ -152,7 +162,8 @@ class AchievementPagerFragment : Fragment(), Injectable {
         // Non achieved achievements will have an empty date object as their unlocktime, which results in the date being in 1970.
         // Check if the unlock time was after the year in which the development of the Steam platform was started.
         return if (cal.get(Calendar.YEAR) > 2002) {
-            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString().replace("\n", " - ")
+            DateFormat.format("HH:mm\ndd-MM-yyyy", achievement.unlockTime).toString()
+                .replace("\n", " - ")
         } else {
             "Locked"
         }

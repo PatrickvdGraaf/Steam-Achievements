@@ -23,7 +23,8 @@ import java.util.*
 /**
  * Adapter that shows Games in a (vertical) List.
  */
-class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<GameViewHolder>(), Filterable {
+class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<GameViewHolder>(),
+    Filterable {
     private var items = listOf<Game>()
     private var newItems = listOf<Game>()
 
@@ -36,7 +37,12 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
-            listener.onGameClicked(newItems[viewHolder.adapterPosition], binding.gameBanner, binding.background, binding.gameBanner)
+            listener.onGameClicked(
+                newItems[viewHolder.adapterPosition],
+                binding.gameBanner,
+                binding.background,
+                binding.gameBanner
+            )
         }
 
         return viewHolder
@@ -58,7 +64,10 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
 
             listener.updateAchievementsForGame(game.getAppId().toString())
         } catch (e: IndexOutOfBoundsException) {
-            Timber.e(e, "Could not display GameInfo. Invalid index $position on newItems with size $itemCount.")
+            Timber.e(
+                e,
+                "Could not display GameInfo. Invalid index $position on newItems with size $itemCount."
+            )
             holder.itemView.visibility = View.GONE
         }
     }
@@ -93,7 +102,6 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 showNewItems(results?.values as List<Game>? ?: listOf())
             }
-
         }
     }
 
@@ -114,11 +122,13 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
         filter.filter(query)
     }
 
-    private fun showNewItems(newItems
-                             : List<Game>) {
+    private fun showNewItems(newItems: List<Game>) {
         this.newItems = newItems.sort(sortMethod)
 
-        val diffResult = DiffUtil.calculateDiff(GamesDiffCallback(items, this.newItems))
+        val diffResult = DiffUtil.calculateDiff(
+            GamesDiffCallback(items, this.newItems)
+        )
+
         items = newItems
         CoroutineScope(Dispatchers.Main).launch {
             diffResult.dispatchUpdatesTo(this@GamesAdapter)

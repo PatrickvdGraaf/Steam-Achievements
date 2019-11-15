@@ -71,8 +71,6 @@ class LoginActivity : AppCompatActivity(), Injectable {
         }
 
         setupWebView()
-
-
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -89,8 +87,11 @@ class LoginActivity : AppCompatActivity(), Injectable {
                 }
             }
 
-            override fun onReceivedError(view: WebView?, request: WebResourceRequest?,
-                                         error: WebResourceError?) {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
                 super.onReceivedError(view, request, error)
                 Timber.e(error?.toString())
 
@@ -104,13 +105,15 @@ class LoginActivity : AppCompatActivity(), Injectable {
             }
         }
 
-        webView.loadUrl(("https://steamcommunity.com/openid/login" +
-            "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
-            "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
-            "&openid.mode=checkid_setup" +
-            "&openid.ns=http://specs.openid.net/auth/2.0" +
-            "&openid.realm=https://$realm" +
-            "&openid.return_to=https://$realm/signin/"))
+        webView.loadUrl(
+            ("https://steamcommunity.com/openid/login" +
+                    "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
+                    "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
+                    "&openid.mode=checkid_setup" +
+                    "&openid.ns=http://specs.openid.net/auth/2.0" +
+                    "&openid.realm=https://$realm" +
+                    "&openid.return_to=https://$realm/signin/")
+        )
     }
 
     // TODO move this to ViewModel once a StringManager is implemented

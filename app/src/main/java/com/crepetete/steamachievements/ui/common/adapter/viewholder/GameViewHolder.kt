@@ -29,7 +29,8 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             with(binding.achievementsTextView) {
                 compoundDrawablePadding = 16
                 setCompoundDrawablesWithIntrinsicBounds(
-                    if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0)
+                    if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0
+                )
             }
 
             if (dataItem.isCompleted()) {
@@ -76,7 +77,10 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                         listener(object : Request.Listener {
                             override fun onError(data: Any, throwable: Throwable) {
                                 super.onError(data, throwable)
-                                Timber.w(throwable, "Error while loading image from url: ${achievement.getActualIconUrl()}.")
+                                Timber.w(
+                                    throwable,
+                                    "Error while loading image from url: ${achievement.getActualIconUrl()}."
+                                )
 
                                 view.visibility = View.GONE
                             }
@@ -100,7 +104,10 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 listener(object : Request.Listener {
                     override fun onError(data: Any, throwable: Throwable) {
                         super.onError(data, throwable)
-                        Timber.w(throwable, "Error while loading image from url: ${dataItem.getImageUrl()}.")
+                        Timber.w(
+                            throwable,
+                            "Error while loading image from url: ${dataItem.getImageUrl()}."
+                        )
                     }
 
                     override fun onSuccess(data: Any, source: DataSource) {
@@ -147,5 +154,4 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
             }
         }
     }
-
 }

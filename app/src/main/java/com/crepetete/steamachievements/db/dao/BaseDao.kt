@@ -76,6 +76,4 @@ abstract class BaseDao<T> {
         insert(objList)
         update(objList)
     }
-
-
 }

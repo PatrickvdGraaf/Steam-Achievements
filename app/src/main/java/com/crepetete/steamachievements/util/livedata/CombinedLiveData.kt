@@ -11,9 +11,11 @@ import androidx.lifecycle.Observer
  * @author: Patrick van de Graaf.
  * @date: Fri 04 Oct, 2019; 19:18.
  */
-class CombinedLiveData<T, K, S>(source1: LiveData<T?>,
-                                source2: LiveData<K?>,
-                                private val combine: (data1: T?, data2: K?) -> S) : MediatorLiveData<S>() {
+class CombinedLiveData<T, K, S>(
+    source1: LiveData<T?>,
+    source2: LiveData<K?>,
+    private val combine: (data1: T?, data2: K?) -> S
+) : MediatorLiveData<S>() {
 
     private var data1: T? = null
     private var data2: K? = null

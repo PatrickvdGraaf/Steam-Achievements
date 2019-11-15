@@ -58,8 +58,8 @@ class LibraryViewModel @Inject constructor(
 
     // Combined data
     val data: CombinedLiveData<List<BaseGameInfo>,
-        List<Achievement>,
-        List<Game>> = CombinedLiveData(_games, _achievements) { gamesInfo, achievements ->
+            List<Achievement>,
+            List<Game>> = CombinedLiveData(_games, _achievements) { gamesInfo, achievements ->
         val games = mutableListOf<Game>()
         gamesInfo?.forEach { gameInfo ->
             games.add(Game(gameInfo, achievements?.filter { achievement ->
@@ -67,7 +67,6 @@ class LibraryViewModel @Inject constructor(
             } ?: listOf()))
         }
         games.sort(sortingType.value ?: DEFAULT_SORT_METHOD)
-
     }
 
     init {
@@ -89,7 +88,6 @@ class LibraryViewModel @Inject constructor(
                     bindObserver(_gamesLoadingError, resource.error)
                 }
             }
-
     }
 
     fun updateAchievementsForGame(appId: String) {

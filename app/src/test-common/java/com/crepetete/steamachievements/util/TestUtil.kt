@@ -1,3 +1,5 @@
+package com.crepetete.steamachievements.util
+
 import com.crepetete.steamachievements.vo.Player
 
 object TestUtil {
@@ -21,5 +23,4 @@ object TestUtil {
         cityId = null,
         stateCode = null
     )
-
 }

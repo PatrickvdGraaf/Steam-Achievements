@@ -5,7 +5,8 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 
 abstract class SortedListComparatorWrapper<T>(
     adapter: RecyclerView.Adapter<*>,
-    private var comparator: Comparator<T>?) : SortedListAdapterCallback<T>(adapter) {
+    private var comparator: Comparator<T>?
+) : SortedListAdapterCallback<T>(adapter) {
 
     fun setComparator(comparator: Comparator<T>) {
         if (comparator == this.comparator) {

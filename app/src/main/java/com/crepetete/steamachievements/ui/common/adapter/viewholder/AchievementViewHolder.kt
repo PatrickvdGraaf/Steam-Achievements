@@ -12,8 +12,7 @@ import com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
 import com.crepetete.steamachievements.vo.Achievement
 import timber.log.Timber
 
-class AchievementViewHolder(private val view: View)
-    : RecyclerView.ViewHolder(view) {
+class AchievementViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
     private val textViewTitle = view.findViewById<TextView>(R.id.textViewTitle)
     private val pulsator = view.findViewById<PulsatorLayout>(R.id.pulsator)
@@ -31,15 +30,20 @@ class AchievementViewHolder(private val view: View)
             pulsator.visibility = View.VISIBLE
             pulsator.start()
 
-            imageView.load(if (achievement.achieved) {
-                achievement.iconUrl
-            } else {
-                achievement.iconGrayUrl
-            }) {
+            imageView.load(
+                if (achievement.achieved) {
+                    achievement.iconUrl
+                } else {
+                    achievement.iconGrayUrl
+                }
+            ) {
                 listener(object : Request.Listener {
                     override fun onError(data: Any, throwable: Throwable) {
                         super.onError(data, throwable)
-                        Timber.w(throwable, "Error while loading image from url: ${achievement.iconUrl}.")
+                        Timber.w(
+                            throwable,
+                            "Error while loading image from url: ${achievement.iconUrl}."
+                        )
                         pulsator.stop()
                     }
 

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
+import kotlin.math.roundToInt
 
 class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context, attrs) {
     /**
@@ -34,16 +35,19 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
 
     init {
         val typedArray = context.theme.obtainStyledAttributes(
-                attrs,
-                R.styleable.CircleProgressBar,
-                0, 0)
+            attrs,
+            R.styleable.CircleProgressBar,
+            0, 0
+        )
 
-        //Reading values from the XML layout
+        // Reading values from the XML layout
         try {
             strokeWidth = typedArray.getDimension(
-                    R.styleable.CircleProgressBar_progressBarThickness,
-                    strokeWidth)
-            progress = typedArray.getFloat(R.styleable.CircleProgressBar_progressInPercentage, progress)
+                R.styleable.CircleProgressBar_progressBarThickness,
+                strokeWidth
+            )
+            progress =
+                typedArray.getFloat(R.styleable.CircleProgressBar_progressInPercentage, progress)
             color = typedArray.getInt(R.styleable.CircleProgressBar_progressbarColor, color)
             min = typedArray.getInt(R.styleable.CircleProgressBar_min, min)
             max = typedArray.getInt(R.styleable.CircleProgressBar_max, max)
@@ -76,10 +80,12 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
         val width = getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
         val min = Math.min(width, height)
         setMeasuredDimension(min, min)
-        rectF.set(0 + strokeWidth / 2,
-                0 + strokeWidth / 2,
-                min - strokeWidth / 2,
-                min - strokeWidth / 2)
+        rectF.set(
+            0 + strokeWidth / 2,
+            0 + strokeWidth / 2,
+            min - strokeWidth / 2,
+            min - strokeWidth / 2
+        )
     }
 
     fun addListener(listener: ValueAnimator.AnimatorUpdateListener) {
@@ -93,7 +99,8 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
      */
     fun setProgressWithAnimation(progress: Float) {
         val valueAnimator = ValueAnimator.ofFloat(this.progress, progress)
-        valueAnimator.interpolator = DecelerateInterpolator() // increase the speed first and then decrease
+        valueAnimator.interpolator =
+            DecelerateInterpolator() // increase the speed first and then decrease
         valueAnimator.duration = 800
         valueAnimator.addUpdateListener { animation ->
             val p = animation.animatedValue as Float
@@ -108,7 +115,8 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
 
     private fun startBackgroundAnimation() {
         val valueAnimator = ValueAnimator.ofFloat(totalProgress, max.toFloat())
-        valueAnimator.interpolator = DecelerateInterpolator() // increase the speed first and then decrease
+        valueAnimator.interpolator =
+            DecelerateInterpolator() // increase the speed first and then decrease
         valueAnimator.duration = 0
         valueAnimator.addUpdateListener { animation ->
             val p = animation.animatedValue as Float
@@ -121,12 +129,12 @@ class CircularProgressBar(context: Context, attrs: AttributeSet) : View(context,
      * Transparent the given color by the factor
      * The more the factor closer to zero the more the color gets transparent
      *
-     * @param color  The color to transparent
+     * @param color The color to transparent
      * @param factor 1.0f to 0.0f
      * @return int - A transplanted color
      */
     private fun adjustAlpha(color: Int, factor: Float): Int {
-        val alpha = Math.round(Color.alpha(color) * factor)
+        val alpha = (Color.alpha(color) * factor).roundToInt()
         val red = Color.red(color)
         val green = Color.green(color)
         val blue = Color.blue(color)

@@ -85,7 +85,6 @@ class GameViewModel @Inject constructor(
             mutedColor.postValue(palette.lightVibrantSwatch)
             vibrantColor.postValue(palette.lightMutedSwatch)
         }
-
     }
 
     fun setAppId(appId: String) {

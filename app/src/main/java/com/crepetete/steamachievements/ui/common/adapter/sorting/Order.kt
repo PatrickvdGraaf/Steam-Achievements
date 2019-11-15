@@ -36,9 +36,15 @@ class Order {
                     unlockTime1.before(unlockTime2) -> 1
                     else -> 0
                 }
-            } else if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(steamReleaseDate) == false) {
+            } else if (unlockTime1?.after(steamReleaseDate) == true && unlockTime2?.after(
+                    steamReleaseDate
+                ) == false
+            ) {
                 -1
-            } else if (unlockTime1?.after(steamReleaseDate) == false && unlockTime2?.after(steamReleaseDate) == true) {
+            } else if (unlockTime1?.after(steamReleaseDate) == false && unlockTime2?.after(
+                    steamReleaseDate
+                ) == true
+            ) {
                 1
             } else {
                 0
@@ -48,7 +54,8 @@ class Order {
             0
         }
 
-        override fun getName(resources: Resources): String = resources.getString(R.string.sorting_order_achieved_name)
+        override fun getName(resources: Resources): String =
+            resources.getString(R.string.sorting_order_achieved_name)
     }
 
     class NotAchievedOrder : BaseComparator<Achievement> {
@@ -73,7 +80,8 @@ class Order {
             0
         }
 
-        override fun getName(resources: Resources): String = resources.getString(R.string.sorting_order_not_achieved)
+        override fun getName(resources: Resources): String =
+            resources.getString(R.string.sorting_order_not_achieved)
     }
 
     class RarityOrder : BaseComparator<Achievement> {
@@ -83,6 +91,7 @@ class Order {
             else -> 0
         }
 
-        override fun getName(resources: Resources): String = resources.getString(R.string.sorting_order_rarity)
+        override fun getName(resources: Resources): String =
+            resources.getString(R.string.sorting_order_rarity)
     }
 }

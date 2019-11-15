@@ -26,7 +26,8 @@ import kotlinx.android.synthetic.main.fragment_library.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
+    GamesAdapter.GamesAdapterCallback {
 
     @Inject
     lateinit var viewModel: LibraryViewModel
@@ -39,7 +40,11 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private var dataBindingComponent = FragmentDataBindingComponent()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_library,
@@ -88,9 +93,14 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
                 Snackbar.make(
                     coordinator,
                     "Could not update games, are you connected to the internet?",
-                    Snackbar.LENGTH_LONG).show()
+                    Snackbar.LENGTH_LONG
+                ).show()
             } else if (viewModel.data.value?.isEmpty() != false) { // If the  list is null or empty, we assume fetching has failed for the player.
-                Snackbar.make(coordinator, "We couldn't find any games in your library.", Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    coordinator,
+                    "We couldn't find any games in your library.",
+                    Snackbar.LENGTH_LONG
+                )
                     .setAction("Retry") {
                     }.show()
             }
@@ -181,5 +191,4 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
             }
         }
     }
-
 }

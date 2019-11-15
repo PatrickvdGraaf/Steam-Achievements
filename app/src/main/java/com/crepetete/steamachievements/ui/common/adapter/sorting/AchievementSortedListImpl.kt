@@ -16,10 +16,13 @@ class AchievementSortedListImpl(
         val DEFAULT_ORDER = Order.LatestAchievedOrder()
     }
 
-    override fun areContentsTheSame(oldItem: Achievement,
-                                    newItem: Achievement) = oldItem == newItem
+    override fun areContentsTheSame(
+        oldItem: Achievement,
+        newItem: Achievement
+    ) = oldItem == newItem
 
-    override fun areItemsTheSame(item1: Achievement,
-                                 item2: Achievement) = item1.name == item2.name
-        && item1.appId == item2.appId
+    override fun areItemsTheSame(
+        item1: Achievement,
+        item2: Achievement
+    ) = item1.name == item2.name && item1.appId == item2.appId
 }

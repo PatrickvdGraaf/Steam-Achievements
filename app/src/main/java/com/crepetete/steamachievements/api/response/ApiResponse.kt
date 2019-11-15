@@ -44,12 +44,12 @@ sealed class ApiResponse<T> {
 class ApiEmptyResponse<T> : ApiResponse<T>()
 
 data class ApiSuccessResponse<T>(
-        val body: T,
-        val links: Map<String, String>
+    val body: T,
+    val links: Map<String, String>
 ) : ApiResponse<T>() {
     constructor(body: T, linkHeader: String?) : this(
-            body = body,
-            links = linkHeader?.extractLinks() ?: emptyMap()
+        body = body,
+        links = linkHeader?.extractLinks() ?: emptyMap()
     )
 
     companion object {
@@ -62,12 +62,11 @@ data class ApiSuccessResponse<T>(
             while (matcher.find()) {
                 val count = matcher.groupCount()
                 if (count == 2) {
-                    links[matcher.group(2) ?: ""] = matcher.group(1)  ?: ""
+                    links[matcher.group(2) ?: ""] = matcher.group(1) ?: ""
                 }
             }
             return links
         }
-
     }
 }
 
