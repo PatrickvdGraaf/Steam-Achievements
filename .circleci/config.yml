@@ -3,19 +3,20 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: circleci/android:api-25-alpha
+      - image: circleci/android:api-28
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
-      - run:
-          name: Install licenses
-          command: cp licenses/* /opt/android/sdk/licenses/
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       #      - run:
       #         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
       #         command: sudo chmod +x ./gradlew
+
+      - run:
+          name: Install licenses
+          command: cp licenses/* /opt/android/sdk/licenses/
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
