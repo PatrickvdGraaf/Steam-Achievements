@@ -58,18 +58,12 @@ android {
         buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
         buildConfigField STRING, DB_NAME, '"players.db"'
 
-        /* Define the following values in your local.properties for safety, or declare here in the empty defaultValue param. */
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-        def steam_api_key = properties.getProperty("steam_api_key", "")
-        def test_user_id = properties.getProperty("test_user_id", "")
-
         /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
-        buildConfigField STRING, STEAM_API_KEY, steam_api_key
+        buildConfigField STRING, STEAM_API_KEY, System.getenv('steam_api_key') ?: '"32659F51CEE07835F06372AA09CF467D"'
 
         /* It's recommended to use your own steam ID, which can be found in your profile URL,
          or can be found with tools like https://steamidfinder.com. */
-        buildConfigField STRING, TEST_USER_ID, test_user_id
+        buildConfigField STRING, TEST_USER_ID, System.getenv('test_user_id') ?: '"76561198053621803"'
     }
 
     // Specifies one flavor dimension.
