@@ -63,3 +63,5 @@ hs_err_pid*
 
 # include the gradle-wrapper.jar
 !gradle-wrapper.jar
+
+/keys.properties

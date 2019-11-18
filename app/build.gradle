@@ -5,6 +5,10 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
+def apikeyPropertiesFile = rootProject.file("keys.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     def STRING = 'String'
     def API_URL = 'API_URL'
@@ -59,11 +63,11 @@ android {
         buildConfigField STRING, DB_NAME, '"players.db"'
 
         /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
-        buildConfigField STRING, STEAM_API_KEY, System.getenv('steam_api_key') ?: '"32659F51CEE07835F06372AA09CF467D"'
+        buildConfigField STRING, STEAM_API_KEY, System.getenv('steam_api_key') ?: apikeyProperties['steam_api_key']
 
         /* It's recommended to use your own steam ID, which can be found in your profile URL,
          or can be found with tools like https://steamidfinder.com. */
-        buildConfigField STRING, TEST_USER_ID, System.getenv('test_user_id') ?: '"76561198053621803"'
+        buildConfigField STRING, TEST_USER_ID, System.getenv('test_user_id') ?: apikeyProperties['test_user_id']
     }
 
     // Specifies one flavor dimension.
@@ -101,8 +105,6 @@ android {
             dimension "version"
         }
     }
-
-
 
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
