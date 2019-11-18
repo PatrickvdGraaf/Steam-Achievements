@@ -29,21 +29,21 @@ class AchievementsGraphHelper {
             //                    .filter { it.unlockTime != null && it.unlockTime != Date() && it.unlockTime!!.after(steamReleaseDate) }
 
             val pairs = achievements
-                    .map { achievement ->
-                        val achievementsBeforeAchievement = achievements
-                                .filter(Achievement::achieved)
-                                .filter {
-                                    it.unlockTime!!.before(achievement.unlockTime)
-                                }
+                .map { achievement ->
+                    val achievementsBeforeAchievement = achievements
+                        .filter(Achievement::achieved)
+                        .filter {
+                            it.unlockTime!!.before(achievement.unlockTime)
+                        }
 
-                        val completionPercentage = (achievementsBeforeAchievement.size.toDouble()
-                                / achievements.size.toDouble())
+                    val completionPercentage = (achievementsBeforeAchievement.size.toDouble() / achievements.size.toDouble())
 
-                        // Declaring nonnull because we checked earlier.
-                        Pair(achievement.unlockTime!!, completionPercentage * 100)
-                    }
+                    // Declaring nonnull because we checked earlier.
+                    Pair(achievement.unlockTime!!, completionPercentage * 100)
+                }
 
-            val dataPoints = pairs.sortedBy { it.first }.map { DataPoint(it.first, it.second) }
+            val dataPoints = pairs.sortedBy { it.first }
+                .map { DataPoint(it.first, it.second) }
 
             // You can directly pass Date objects to DataPoint-Constructor
             // This will convert the Date to double via Date#getTime()
@@ -56,12 +56,18 @@ class AchievementsGraphHelper {
                 // Set manual x bounds to have nice steps in the graph
                 graphView.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(context)
                 graphView.gridLabelRenderer.numHorizontalLabels = 3
-                graphView.gridLabelRenderer.horizontalLabelsColor = ContextCompat.getColor(context,
-                        R.color.colorTextLabel)
-                graphView.gridLabelRenderer.verticalLabelsColor = ContextCompat.getColor(context,
-                        R.color.colorTextLabel)
-                graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(context,
-                        R.color.colorPrimary)
+                graphView.gridLabelRenderer.horizontalLabelsColor = ContextCompat.getColor(
+                    context,
+                    R.color.colorTextLabel
+                )
+                graphView.gridLabelRenderer.verticalLabelsColor = ContextCompat.getColor(
+                    context,
+                    R.color.colorTextLabel
+                )
+                graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
+                    context,
+                    R.color.colorPrimary
+                )
 
                 // Styling series
                 val paint = Paint()

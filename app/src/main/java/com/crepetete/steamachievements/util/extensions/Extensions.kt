@@ -21,9 +21,9 @@ fun List<Game>?.sort(method: SortingType): List<Game> {
     }
 
     return when (method) {
-        SortingType.PLAYTIME -> this.sortByPlaytime()
-        SortingType.COMPLETION -> this.sortByCompletion()
-        SortingType.NAME -> this.sortByName()
+        SortingType.PLAYTIME -> sortByPlaytime()
+        SortingType.COMPLETION -> sortByCompletion()
+        SortingType.NAME -> sortByName()
     }
 }
 

@@ -1,5 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,10 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
@@ -27,11 +26,11 @@ import kotlinx.android.synthetic.main.fragment_library.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
+    GamesAdapter.GamesAdapterCallback {
 
-    private lateinit var viewModel: LibraryViewModel
+    @Inject
+    lateinit var viewModel: LibraryViewModel
 
     private var hasShownPrivateProfileMessage = false
 
@@ -41,7 +40,11 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
 
     private var dataBindingComponent = FragmentDataBindingComponent()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_library,
@@ -56,64 +59,67 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // Provide ViewModel.
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LibraryViewModel::class.java)
+        // Update the view with new data.
+        viewModel.data.observe(viewLifecycleOwner, Observer { games ->
+            if (games.isNotEmpty()) {
+                adapter.updateGames(games)
+            }
+        })
 
-
-        with(viewModel) {
-            viewModel.data.observe(this@LibraryFragment, Observer {
-                setGamesData(it)
-            })
-
-            gamesLoadingState.observe(this@LibraryFragment, Observer { state ->
-                state?.let {
-                    when (state) {
-                        LiveResource.STATE_LOADING -> {
-                            pulsator.visibility = View.VISIBLE
-                            pulsator.start()
-                        }
-                        LiveResource.STATE_FAILED, LiveResource.STATE_SUCCESS -> {
-                            pulsator.visibility = View.GONE
-                            pulsator.stop()
-                        }
+        // Hide or show the pulsating loading view.
+        viewModel.gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
+            state?.let {
+                when (state) {
+                    LiveResource.STATE_LOADING -> {
+                        pulsator.visibility = View.VISIBLE
+                        pulsator.start()
+                    }
+                    LiveResource.STATE_SUCCESS -> {
+                        pulsator.stop()
+                        pulsator.visibility = View.GONE
+                    }
+                    LiveResource.STATE_FAILED -> {
+                        pulsator.stop()
                     }
                 }
-            })
+            }
+        })
 
-            gamesLoadingError.observe(this@LibraryFragment, Observer { error ->
-                Timber.e("Error while loading Games: $error")
+        // Handle errors when updating the games list.
+        viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
+            Timber.e("Error while loading Games: $error")
 
-                if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
-                    Snackbar.make(
-                        coordinator,
-                        "Could not update games, are you connected to the internet?",
-                        Snackbar.LENGTH_LONG).show()
-                }
-            })
-
-            fetchGames()
-        }
+            if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
+                Snackbar.make(
+                    coordinator,
+                    "Could not update games, are you connected to the internet?",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            } else if (viewModel.data.value?.isEmpty() != false) { // If the  list is null or empty, we assume fetching has failed for the player.
+                Snackbar.make(
+                    coordinator,
+                    "We couldn't find any games in your library.",
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction("Retry") {
+                    }.show()
+            }
+        })
 
         initScrollFab()
         initRecyclerView()
+
+        viewModel.fetchGames()
     }
 
     override fun updateAchievementsForGame(appId: String) {
         viewModel.updateAchievementsForGame(appId)
     }
 
-    private fun setGamesData(games: List<Game>) {
-        if (games.isEmpty()) {
-            pulsator.visibility = View.VISIBLE
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
-            Snackbar.make(coordinator, "We couldn't find any games in your library.", Snackbar.LENGTH_LONG).setAction("Retry") {
-                viewModel.refresh()
-            }.show()
-        } else {
-            pulsator.visibility = View.GONE
-        }
-
-        adapter.updateGames(games)
+        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     private fun initScrollFab() {
@@ -146,8 +152,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      *
      * Opens GameActivity and handles animation.
      */
-    override fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View, palette: Palette?) {
-        startActivity(GameActivity.getInstance(requireContext(), game, palette))
+    override fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View) {
+        startActivity(GameActivity.getInstance(requireContext(), game))
     }
 
     /**
@@ -162,7 +168,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
      * Listener method for an updated search query. Updates the displayed games in the adapter.
      */
     override fun onSearchQueryUpdate(query: String) {
-        adapter.setQuery(query)
+        adapter.updateQuery(query)
     }
 
     /**
@@ -185,5 +191,4 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener, Games
             }
         }
     }
-
 }

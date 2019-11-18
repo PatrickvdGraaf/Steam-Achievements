@@ -44,7 +44,7 @@ class AuthViewModel @Inject constructor(
                         userRepository.getPlayer(id).apply {
                             _playerLiveResource = this
                             fetchPlayerJob = this.job
-                            bindObserver(_player, this.data as LiveData<Player?>)
+                            bindObserver(_player, this.data)
                             bindObserver(_playerLoadingState, this.state)
                             bindObserver(_playerLoadingError, this.error)
                         }

@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
-//import com.crepetete.steamachievements.util.extensions.sortByLastAchieved
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
@@ -24,31 +23,32 @@ class AchievementsGraphViewUtil {
         }.time
 
         /**
-         * Shows a Graph where a line indicates the total completion percentage for a game over time.
+         * Shows a Graph where a line indicates the total completion percentage for a game over
+         * time.
          */
-        fun setAchievementsOverTime(graphView: GraphView, achievements: List<Achievement>,
-                                    onTapListener: OnGraphDateTappedListener? = null) {
+        fun setAchievementsOverTime(
+            graphView: GraphView,
+            achievements: List<Achievement>,
+            onTapListener: OnGraphDateTappedListener? = null
+        ) {
             val context = graphView.context
             if (context != null) {
                 val pairs = achievements
-                        .filter {
-                            it.achieved && it.unlockTime != null && it.unlockTime != Date()
-                                    && it.unlockTime!!.after(steamReleaseDate)
-                        }
-                        .map { achievement ->
-                            val achievementsBeforeAchievement = achievements
-                                    .filter(Achievement::achieved)
-                                    .filter {
-                                        it.unlockTime!!.before(achievement.unlockTime)
-                                                || it.unlockTime!! == achievement.unlockTime
-                                    }
+                    .filter {
+                        it.achieved && it.unlockTime != null && it.unlockTime != Date() && it.unlockTime!!.after(steamReleaseDate)
+                    }
+                    .map { achievement ->
+                        val achievementsBeforeAchievement = achievements
+                            .filter(Achievement::achieved)
+                            .filter {
+                                it.unlockTime!!.before(achievement.unlockTime) || it.unlockTime!! == achievement.unlockTime
+                            }
 
-                            val completionPercentage = (achievementsBeforeAchievement.size.toDouble()
-                                    / achievements.size.toDouble())
+                        val completionPercentage = (achievementsBeforeAchievement.size.toDouble() / achievements.size.toDouble())
 
-                            // Declaring nonnull because we checked earlier.
-                            Pair(achievement.unlockTime!!, completionPercentage * 100)
-                        }
+                        // Declaring nonnull because we checked earlier.
+                        Pair(achievement.unlockTime!!, completionPercentage * 100)
+                    }
 
                 // Set date label formatter
                 if (pairs.isNotEmpty()) {
@@ -63,12 +63,18 @@ class AchievementsGraphViewUtil {
                     // Set manual x bounds to have nice steps in the graph
                     graphView.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(context)
                     graphView.gridLabelRenderer.numHorizontalLabels = 3
-                    graphView.gridLabelRenderer.horizontalLabelsColor = ContextCompat.getColor(context,
-                            R.color.colorTextLabel)
-                    graphView.gridLabelRenderer.verticalLabelsColor = ContextCompat.getColor(context,
-                            R.color.colorTextLabel)
-                    graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(context,
-                            R.color.colorPrimary)
+                    graphView.gridLabelRenderer.horizontalLabelsColor = ContextCompat.getColor(
+                        context,
+                        R.color.colorTextLabel
+                    )
+                    graphView.gridLabelRenderer.verticalLabelsColor = ContextCompat.getColor(
+                        context,
+                        R.color.colorTextLabel
+                    )
+                    graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
+                        context,
+                        R.color.colorPrimary
+                    )
 
                     // Styling series
                     val paint = Paint()

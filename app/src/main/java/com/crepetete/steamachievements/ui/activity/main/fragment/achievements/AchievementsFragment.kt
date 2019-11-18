@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.achievements
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
-import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.crepetete.steamachievements.ui.common.view.CircularProgressBar
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
@@ -28,12 +29,11 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         const val TAG = "ACHIEVEMENTS_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
 
-        fun getInstance(playerId: String, loadingIndicator: LoadingIndicator): Fragment {
+        fun getInstance(playerId: String): Fragment {
             return AchievementsFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
                 }
-                //                setLoaderIndicator(loadingIndicator)
             }
         }
     }
@@ -57,11 +57,16 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     // Achievements over Time Graph
     private lateinit var achievementsOverTimeGraph: GraphView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_achievements, container,
-            false)
+        val view = inflater.inflate(
+            R.layout.fragment_achievements, container,
+            false
+        )
 
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
@@ -75,8 +80,10 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
 
         recyclerViewLatestAchievements = view.findViewById(R.id.recyclerViewAchievements)
         recyclerViewLatestAchievements.adapter = achievementsAdapter
-        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(context,
-            LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewLatestAchievements.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.HORIZONTAL, false
+        )
 
         return view
     }
@@ -91,6 +98,12 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         if (achievements.isNotEmpty()) {
             showLatestAchievements(achievements, allAchievements)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     /**
@@ -119,13 +132,18 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     /**
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
-    private fun showLatestAchievements(achievements: List<Achievement>,
-                               allAchievements: List<Achievement>) {
+    private fun showLatestAchievements(
+        achievements: List<Achievement>,
+        allAchievements: List<Achievement>
+    ) {
         this.achievements = achievements
         this.allAchievements = allAchievements
         achievementsAdapter.setAchievements(achievements)
 
-        AchievementsGraphViewUtil.setAchievementsOverTime(achievementsOverTimeGraph, allAchievements)
+        AchievementsGraphViewUtil.setAchievementsOverTime(
+            achievementsOverTimeGraph,
+            allAchievements
+        )
     }
 
     /**
@@ -139,7 +157,9 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         } else {
             "#,###"
         }
-        textViewCompletion.text = String.format(getString(R.string.percentage),
-            DecimalFormat(pattern).format(percentage))
+        textViewCompletion.text = String.format(
+            getString(R.string.percentage),
+            DecimalFormat(pattern).format(percentage)
+        )
     }
 }

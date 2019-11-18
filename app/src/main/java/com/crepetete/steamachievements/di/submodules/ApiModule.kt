@@ -85,10 +85,4 @@ class ApiModule {
 
         return MoshiConverterFactory.create(moshi)
     }
-
-    //    @Provides
-    //    @Singleton
-    //    fun providesRxJavaCallAdapterFactory(): RxJava2CallAdapterFactory {
-    //        return RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())
-    //    }
 }

@@ -11,7 +11,7 @@ import com.crepetete.steamachievements.vo.Achievement
  *
  * Creates [AchievementPagerFragment]s for each Achievement.
  */
-class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private var achievementData: List<Achievement> = listOf()
 
     /**

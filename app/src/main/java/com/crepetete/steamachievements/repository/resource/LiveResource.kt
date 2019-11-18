@@ -14,9 +14,11 @@ import kotlinx.coroutines.Job
  * @author: Patrick van de Graaf.
  * @date: Tue 24 Sep, 2019; 21:50.
  */
-@Target(AnnotationTarget.TYPE,
+@Target(
+    AnnotationTarget.TYPE,
     AnnotationTarget.VALUE_PARAMETER,
-    AnnotationTarget.PROPERTY)
+    AnnotationTarget.PROPERTY
+)
 @Retention(AnnotationRetention.SOURCE)
 @IntDef(STATE_LOADING, STATE_SUCCESS, STATE_FAILED)
 annotation class ResourceState
@@ -31,6 +33,5 @@ data class LiveResource<T>(
         const val STATE_LOADING = 1
         const val STATE_SUCCESS = 2
         const val STATE_FAILED = 0
-
     }
 }

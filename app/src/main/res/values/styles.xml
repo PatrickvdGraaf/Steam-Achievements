@@ -52,7 +52,7 @@
     <!-- TEXT -->
     <style name="AppTheme.Text.Header" parent="AppTheme">
         <item name="android:textColor">@color/colorAccent</item>
-        <item name="android:textSize">26sp</item>
+        <item name="android:textSize">@dimen/text_header_five</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -99,5 +99,17 @@
         <item name="android:clipToPadding">false</item>
         <item name="paddingStart">@dimen/default_margin</item>
         <item name="paddingEnd">@dimen/default_margin</item>
+    </style>
+
+    <style name="ExpandedAppBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">@dimen/text_header_four</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

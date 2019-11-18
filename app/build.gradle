@@ -54,10 +54,11 @@ android {
         versionName "0.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        /* Open Source API for steam: https://steamcommunity.com/dev. */
         buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
         buildConfigField STRING, DB_NAME, '"players.db"'
 
-        /* Define the following values in your local.properties. */
+        /* Define the following values in your local.properties for safety, or declare here in the empty defaultValue param. */
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
         def steam_api_key = properties.getProperty("steam_api_key", "")
@@ -73,8 +74,9 @@ android {
 
     // Specifies one flavor dimension.
     flavorDimensions "version"
-    lintOptions {
-        lintConfig rootProject.file('lint.xml')
+
+    packagingOptions {
+        pickFirst 'META-INF/core_release.kotlin_module'
     }
 
     productFlavors {
@@ -106,6 +108,8 @@ android {
         }
     }
 
+
+
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
         test.java.srcDirs += "src/test-common/java"
@@ -113,43 +117,48 @@ android {
 }
 
 dependencies {
-    def support_version = '1.0.0'
-    def lifecycle_version = "2.1.0"
-    def retrofit_version = '2.6.0'
+    def appcompat_version = '1.1.0'
+    def cardview_version = '1.0.0'
+    def crashlytics_version = '2.10.1'
+    def coil_version = '0.8.0'
+    def coroutines_version = '1.3.2'
+    def constraint_layout_version = '1.1.3'
+    def dagger_version = '2.25.2'
+    def firebase_core_version = '17.2.1'
+    def firebase_pref_version = '19.0.1'
+    def fragment_version = '1.2.0-rc02'
+    def graphview_version = '4.2.2'
+    def legacy_support_version = '1.0.0'
+    def lifecycle_version = '2.2.0-rc02'
+    def material_version = '1.0.0'
     def okhttp_version = '4.2.0'
-    def dagger_version = '2.21'
-    def glide_version = '4.9.0-SNAPSHOT'
+    def palette_version = '1.0.0'
+    def recyclerview_version = '1.0.0'
+    def retrofit_version = '2.6.0'
+    def room_version = '2.2.1'
+    def rxandroid_verion = '2.1.1'
+    def rxjava_version = '2.2.14'
+    def searchbar_version = '1.3.0'
+    def timber_version = '4.7.1'
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Android
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.fragment:fragment-ktx:1.1.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation "androidx.palette:palette:$support_version"
-    implementation "androidx.recyclerview:recyclerview:$support_version"
-    implementation "androidx.cardview:cardview:$support_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.cardview:cardview:$cardview_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
+    implementation "androidx.palette:palette:$palette_version"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
-    // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version" // ViewModel and LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha05' // liveData
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha05' // ViewModelScope
-
-    // Logging
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
-    //Retrofit 2
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    // Coil Image Loading
+    implementation "io.coil-kt:coil:$coil_version"
 
     // Dagger 2
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -157,51 +166,64 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
-    //Rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
-    /* RxAndroid adds android specific bindings for RxJava,
-       Specifically AndroidSchedulers.mainThread() which provides a Scheduler that schedules
-       on main thread and can be used to switch between threads in Android. */
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-
-    // Room
-    implementation "androidx.room:room-runtime:2.2.0-rc01"
-    implementation 'androidx.room:room-ktx:2.2.0-rc01'
-    kapt "androidx.room:room-compiler:2.2.0-rc01"
-
-    // Glide Image Loading
-    // TODO move to Coil; https://tech.instacart.com/introducing-coil-kotlin-first-image-loading-on-android-f0fdc7a2a99e
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation "com.github.bumptech.glide:okhttp-integration:$glide_version"
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
-
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.google.firebase:firebase-perf:16.2.3'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+    implementation "com.google.firebase:firebase-core:$firebase_core_version"
+    implementation "com.google.firebase:firebase-perf:$firebase_pref_version"
+    implementation "com.crashlytics.sdk.android:crashlytics:$crashlytics_version"
 
     // Graph Library; http://www.android-graphview.org/download-getting-started/
-    implementation 'com.jjoe64:graphview:4.2.2'
+    implementation "com.jjoe64:graphview:$graphview_version"
+
+    // Material Components
+    implementation "com.google.android.material:material:$material_version"
+
+    // Timber Logging
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    // Retrofit 2
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    /* RxAndroid & RxJava
+        RxAndroid adds android specific bindings for RxJava (specifically AndroidSchedulers.mainThread())
+        */
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_verion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version" // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"// liveData
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version" // ViewModelScope
 
     // Search Bar Animation; https://github.com/UdiOshi85/libSearchToolbar
-    implementation 'com.github.udioshi85:libSearchToolbar:1.3.0'
+    implementation "com.github.udioshi85:libSearchToolbar:$searchbar_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
-    testImplementation 'androidx.arch.core:core-testing:2.0.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:2.22.0'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.appcompat:appcompat:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.appcompat:appcompat:1.1.0'
     androidTestImplementation 'androidx.recyclerview:recyclerview:1.0.0'
     androidTestImplementation 'androidx.cardview:cardview:1.0.0'
     androidTestImplementation 'com.google.android.material:material:1.0.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
-    androidTestImplementation 'androidx.arch.core:core-testing:2.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
     androidTestImplementation 'org.mockito:mockito-core:2.22.0'
     androidTestImplementation 'org.mockito:mockito-android:2.22.0'
 }
+
+apply from: '../ktlint.gradle'
+check.dependsOn ktlint
 
 apply plugin: 'com.google.gms.google-services'

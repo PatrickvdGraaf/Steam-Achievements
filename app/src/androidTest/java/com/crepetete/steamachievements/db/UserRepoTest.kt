@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.db
 
-import TestUtil
+import com.crepetete.steamachievements.util.TestUtil
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.runner.AndroidJUnit4
 import com.crepetete.steamachievements.BuildConfig.TEST_USER_ID

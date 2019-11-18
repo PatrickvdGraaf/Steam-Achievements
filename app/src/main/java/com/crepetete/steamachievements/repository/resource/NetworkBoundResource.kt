@@ -87,7 +87,6 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             }
 
             state.postValue(STATE_SUCCESS)
-
         } catch (e: Exception) {
             assert(result.value == dbSource)
             state.postValue(STATE_FAILED)

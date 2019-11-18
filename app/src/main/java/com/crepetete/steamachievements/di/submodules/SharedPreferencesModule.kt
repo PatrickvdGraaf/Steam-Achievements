@@ -1,17 +1,12 @@
 package com.crepetete.steamachievements.di.submodules
 
-import android.content.Context
-import android.content.SharedPreferences
+import com.crepetete.steamachievements.repository.storage.SharedPreferencesStorage
+import com.crepetete.steamachievements.repository.storage.Storage
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
 
 @Module
-class SharedPreferencesModule {
-    @Provides
-    @Singleton
-    fun getSharedPreferences(context: Context): SharedPreferences = context.getSharedPreferences(
-        "UserPrefs",
-        Context.MODE_PRIVATE
-    )
+abstract class SharedPreferencesModule {
+    @Binds
+    abstract fun provideStorage(storage: SharedPreferencesStorage): Storage
 }

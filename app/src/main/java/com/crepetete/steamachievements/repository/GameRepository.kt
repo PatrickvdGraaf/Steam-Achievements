@@ -2,7 +2,6 @@ package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
@@ -22,19 +21,21 @@ import javax.inject.Singleton
 @OpenForTesting
 class GameRepository @Inject constructor(
     private val dao: GamesDao,
-    private val api: SteamApiService,
-    private val achievmentsRepository: AchievementsRepository
+    private val api: SteamApiService
 ) : BaseRepository() {
+
+    private companion object {
+        const val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
+    }
 
     // Refresh games every day
     private val gameListRateLimiter by lazy { RateLimiter<String>(1, TimeUnit.DAYS) }
-    private val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
 
     /**
      * Fetch Games from both the Database and the API.
      * Refresh rate is set with the [gameListRateLimiter].
      */
-    suspend fun getGames(userId: String): LiveResource<List<BaseGameInfo>> {
+    fun getGames(userId: String): LiveResource<List<BaseGameInfo>> {
         return object : NetworkBoundResource<List<BaseGameInfo>, List<BaseGameInfo>>() {
 
             override suspend fun saveCallResult(data: List<BaseGameInfo>) {
@@ -42,7 +43,7 @@ class GameRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<BaseGameInfo>?): Boolean {
-                return gameListRateLimiter.shouldFetch(FETCH_GAMES_KEY) || BuildConfig.DEBUG
+                return gameListRateLimiter.shouldFetch(FETCH_GAMES_KEY)
             }
 
             override suspend fun createCall(): List<BaseGameInfo>? {

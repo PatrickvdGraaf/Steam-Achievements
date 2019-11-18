@@ -28,4 +28,5 @@
     <string name="sorting_order_achieved_name">Latest</string>
     <string name="sorting_order_not_achieved">Chronological</string>
     <string name="sorting_order_rarity">Rarity</string>
+    <string name="header_progress">Progress</string>
 </resources>

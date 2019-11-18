@@ -31,11 +31,14 @@ class LibraryViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    private companion object {
+        val DEFAULT_SORT_METHOD = SortingType.PLAYTIME
+    }
+
+    // Jobs
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
     private val ioScope = CoroutineScope(Dispatchers.IO + mainJob)
-
-    private var sortingType = MutableLiveData<SortingType>()
     private var gamesFetchJob: Job? = null
 
     // Games
@@ -43,6 +46,9 @@ class LibraryViewModel @Inject constructor(
     private val _games = MediatorLiveData<List<BaseGameInfo>?>()
     private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _gamesLoadingError = MediatorLiveData<Exception?>()
+
+    private var sortingType = MutableLiveData<SortingType>()
+
     val games: LiveData<List<BaseGameInfo>?> = _games
     val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
     val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
@@ -52,20 +58,19 @@ class LibraryViewModel @Inject constructor(
 
     // Combined data
     val data: CombinedLiveData<List<BaseGameInfo>,
-        List<Achievement>,
-        List<Game>> = CombinedLiveData(_games, _achievements) { gamesInfo, achievements ->
+            List<Achievement>,
+            List<Game>> = CombinedLiveData(_games, _achievements) { gamesInfo, achievements ->
         val games = mutableListOf<Game>()
         gamesInfo?.forEach { gameInfo ->
             games.add(Game(gameInfo, achievements?.filter { achievement ->
                 achievement.appId == gameInfo.appId
             } ?: listOf()))
         }
-        games.sort(sortingType.value ?: SortingType.PLAYTIME)
-
+        games.sort(sortingType.value ?: DEFAULT_SORT_METHOD)
     }
 
     init {
-        sortingType.value = SortingType.PLAYTIME
+        sortingType.value = DEFAULT_SORT_METHOD
     }
 
     fun fetchGames() {
@@ -73,21 +78,16 @@ class LibraryViewModel @Inject constructor(
             return
         }
 
-        uiScope.launch {
-            gameRepo.getGames(userRepository.getCurrentPlayerId())
-                .apply {
-                    gamesLiveResource = this
-                    gamesFetchJob = this.job
-                    bindObserver(_games, this.data)
-                    bindObserver(_gamesLoadingState, this.state)
-                    bindObserver(_gamesLoadingError, this.error)
+        gameRepo.getGames(userRepository.getCurrentPlayerId())
+            .let { resource ->
+                uiScope.launch {
+                    gamesLiveResource = resource
+                    gamesFetchJob = resource.job
+                    bindObserver(_games, resource.data)
+                    bindObserver(_gamesLoadingState, resource.state)
+                    bindObserver(_gamesLoadingError, resource.error)
                 }
-        }
-
-    }
-
-    fun refresh() {
-
+            }
     }
 
     fun updateAchievementsForGame(appId: String) {

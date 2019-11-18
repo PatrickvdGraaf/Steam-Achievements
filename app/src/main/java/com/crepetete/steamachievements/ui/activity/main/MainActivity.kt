@@ -19,24 +19,17 @@ import com.crepetete.steamachievements.ui.activity.main.fragment.profile.Profile
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.ui.common.helper.LoadingIndicator
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
-import javax.inject.Inject
 
 /**
  *
  */
-class MainActivity : BaseActivity(), LoadingIndicator,
-    BottomNavigationView.OnNavigationItemSelectedListener, HasSupportFragmentInjector {
+class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         fun getInstance(context: Context, userId: String) = Intent(context, MainActivity::class.java).apply {
             putExtra(INTENT_USER_ID, userId)
         }
     }
-
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     @IdRes
     private var selectedNavItem = R.id.menu_library
@@ -48,8 +41,6 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     @IdRes
     private val containerId: Int = R.id.fragment_container
     private val fragmentManager: FragmentManager = supportFragmentManager
-
-    //    private lateinit var loadingIndicator: PulsatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +60,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
     }
 
     override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
         if (intent != null) {
             handleIntent(intent)
         }
@@ -85,8 +77,9 @@ class MainActivity : BaseActivity(), LoadingIndicator,
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            navBarListener?.onSearchQueryUpdate(query)
+            intent.getStringExtra(SearchManager.QUERY)?.let { query ->
+                navBarListener?.onSearchQueryUpdate(query)
+            }
         }
     }
 
@@ -165,7 +158,7 @@ class MainActivity : BaseActivity(), LoadingIndicator,
                 currentTag = AchievementsFragment.TAG
                 fragment = fragmentManager.findFragmentByTag(currentTag)
                 if (fragment == null) {
-                    fragment = AchievementsFragment.getInstance(userId, this)
+                    fragment = AchievementsFragment.getInstance(userId)
                 }
             }
         }
@@ -211,6 +204,4 @@ class MainActivity : BaseActivity(), LoadingIndicator,
         //        loadingIndicator.stop()
         //        loadingIndicator.visibility = View.GONE
     }
-
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
 }

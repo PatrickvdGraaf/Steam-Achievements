@@ -14,9 +14,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
@@ -34,16 +33,12 @@ class LoginActivity : AppCompatActivity(), Injectable {
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private lateinit var viewModel: AuthViewModel
+    lateinit var viewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(AuthViewModel::class.java)
 
         // Set listeners
         with(viewModel) {
@@ -76,8 +71,6 @@ class LoginActivity : AppCompatActivity(), Injectable {
         }
 
         setupWebView()
-
-
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -94,8 +87,11 @@ class LoginActivity : AppCompatActivity(), Injectable {
                 }
             }
 
-            override fun onReceivedError(view: WebView?, request: WebResourceRequest?,
-                                         error: WebResourceError?) {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
                 super.onReceivedError(view, request, error)
                 Timber.e(error?.toString())
 
@@ -109,13 +105,15 @@ class LoginActivity : AppCompatActivity(), Injectable {
             }
         }
 
-        webView.loadUrl(("https://steamcommunity.com/openid/login" +
-            "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
-            "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
-            "&openid.mode=checkid_setup" +
-            "&openid.ns=http://specs.openid.net/auth/2.0" +
-            "&openid.realm=https://$realm" +
-            "&openid.return_to=https://$realm/signin/"))
+        webView.loadUrl(
+            ("https://steamcommunity.com/openid/login" +
+                    "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
+                    "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
+                    "&openid.mode=checkid_setup" +
+                    "&openid.ns=http://specs.openid.net/auth/2.0" +
+                    "&openid.realm=https://$realm" +
+                    "&openid.return_to=https://$realm/signin/")
+        )
     }
 
     // TODO move this to ViewModel once a StringManager is implemented

@@ -45,7 +45,8 @@ class Game(
     fun getAppId(): Long = game?.appId ?: INVALID_ID
     fun getName() = game?.name ?: ""
     fun getPlaytime() = game?.playTime ?: 0L
-    fun getBannerUrl() = "http://media.steampowered.com/steamcommunity/public/images/apps/${game?.appId ?: "0"}/${game?.logoUrl
-        ?: ""}.jpg"
-
+    fun getBannerUrl() =
+        "http://media.steampowered.com/steamcommunity/public/images/apps" +
+                "/${game?.appId ?: "0"}" +
+                "/${game?.logoUrl ?: ""}.jpg"
 }
