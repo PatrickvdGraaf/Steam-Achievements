@@ -8,23 +8,24 @@ import android.widget.Filterable
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.Game
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
 /**
  * Adapter that shows Games in a (vertical) List.
  */
-class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<GameViewHolder>(),
-    Filterable {
+class GamesAdapter(
+    private val imageLoader: ImageLoader,
+    var listener: GamesAdapterCallback
+) : RecyclerView.Adapter<GameViewHolder>(), Filterable {
+
     private var items = listOf<Game>()
     private var newItems = listOf<Game>()
 
@@ -143,9 +144,7 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
         )
 
         items = newItems
-        CoroutineScope(Dispatchers.Main).launch {
-            diffResult.dispatchUpdatesTo(this@GamesAdapter)
-        }
+        diffResult.dispatchUpdatesTo(this@GamesAdapter)
     }
 
     interface GamesAdapterCallback {
