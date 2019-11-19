@@ -8,7 +8,7 @@ import android.widget.Filterable
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.ui.common.enums.SortingType
@@ -33,15 +33,18 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
     private var query: String? = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
-        val binding = ItemGameBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ViewHolderGameBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
         val viewHolder = GameViewHolder(binding)
 
         binding.root.setOnClickListener {
             listener.onGameClicked(
                 newItems[viewHolder.adapterPosition],
-                binding.gameBanner,
-                binding.background,
-                binding.gameBanner
+                binding.imageViewGameBanner,
+                binding.imageViewGameBanner,
+                binding.imageViewGameBanner
             )
         }
 

@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.crepetete.steamachievements.R
-import kotlinx.android.synthetic.main.component_text_value.view.*
+import kotlinx.android.synthetic.main.view_labelled_value.view.*
 
 class ValueWithLabelTextView @JvmOverloads constructor(
     context: Context,
@@ -15,13 +15,30 @@ class ValueWithLabelTextView @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyle, defStyleRes) {
     init {
-        LayoutInflater.from(context).inflate(R.layout.component_text_value, this, true)
+        LayoutInflater.from(context)
+            .inflate(R.layout.view_labelled_value, this, true)
         orientation = VERTICAL
 
         attrs?.let { attr ->
-            val typedArray = context.obtainStyledAttributes(attr, R.styleable.ValueWithLabelTextView, 0, 0)
-            val label = resources.getText(typedArray.getResourceId(R.styleable.ValueWithLabelTextView_label, R.string.label_placeholder))
-            val value = resources.getText(typedArray.getResourceId(R.styleable.ValueWithLabelTextView_valueText, R.string.value_placeholder))
+            val typedArray =
+                context.obtainStyledAttributes(
+                    attr,
+                    R.styleable.ValueWithLabelTextView,
+                    0,
+                    0
+                )
+            val label = resources.getText(
+                typedArray.getResourceId(
+                    R.styleable.ValueWithLabelTextView_label,
+                    R.string.label_placeholder
+                )
+            )
+            val value = resources.getText(
+                typedArray.getResourceId(
+                    R.styleable.ValueWithLabelTextView_valueText,
+                    R.string.value_placeholder
+                )
+            )
 
             setValueText(value.toString())
             setLabel(label.toString())
@@ -46,11 +63,7 @@ class ValueWithLabelTextView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Public access point for whenever you want to programmatically change the label.
-     */
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun setLabel(text: String?) {
+    private fun setLabel(text: String?) {
         if (text.isNullOrBlank() || text == context.getString(R.string.label_placeholder)) {
             textview_label.visibility = View.GONE
         } else {

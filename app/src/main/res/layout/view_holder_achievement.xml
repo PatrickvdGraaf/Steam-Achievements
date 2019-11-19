@@ -44,8 +44,8 @@
 
             <ImageButton
                 android:id="@+id/imageViewIcon"
-                android:layout_width="@dimen/loader_image_icon_size"
-                android:layout_height="@dimen/loader_image_icon_size"
+                android:layout_width="@dimen/default_icon_size"
+                android:layout_height="@dimen/default_icon_size"
                 android:layout_centerInParent="true"
                 android:background="@color/transparent"
                 android:scaleType="fitCenter"

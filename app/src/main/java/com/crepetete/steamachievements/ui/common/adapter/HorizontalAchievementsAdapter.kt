@@ -26,9 +26,9 @@ class HorizontalAchievementsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AchievementViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(if (smallLayout) {
-            R.layout.list_achievement_small
+            R.layout.view_holder_achievement_small
         } else {
-            R.layout.list_achievement
+            R.layout.view_holder_achievement
         }, parent, false)
 
         val viewHolder = AchievementViewHolder(view)

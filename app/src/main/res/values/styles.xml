@@ -59,6 +59,7 @@
     <style name="AppTheme.Text.Label" parent="AppTheme">
         <item name="android:textColor">@color/colorTextLabel</item>
         <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <style name="AppTheme.Text.Value" parent="AppTheme">

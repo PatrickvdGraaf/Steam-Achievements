@@ -8,7 +8,7 @@ import coil.api.load
 import coil.decode.DataSource
 import coil.request.Request
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
@@ -17,7 +17,8 @@ import timber.log.Timber
 /**
  * Created at 19 January, 2019.
  */
-class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHolder(binding.root) {
+class GameViewHolder(private val binding: ViewHolderGameBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     private var palette: Palette? = null
 
@@ -79,7 +80,7 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 }
             }
 
-            binding.gameBanner.load(dataItem.getImageUrl()) {
+            binding.imageViewGameBanner.load(dataItem.getImageUrl()) {
                 listener(object : Request.Listener {
                     override fun onError(data: Any, throwable: Throwable) {
                         super.onError(data, throwable)
@@ -101,29 +102,29 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                 val lightMuted = palette?.lightMutedSwatch?.rgb
                                 val dominant = palette?.dominantSwatch?.rgb
                                 if (darkMuted != null) {
-                                    binding.gameCard.setCardBackgroundColor(darkMuted)
-                                    binding.mainCard.setCardBackgroundColor(darkMuted)
+                                    binding.cardViewGame.setCardBackgroundColor(darkMuted)
+                                    binding.cardViewGame.setCardBackgroundColor(darkMuted)
                                 } else if (muted != null) {
-                                    binding.gameCard.setCardBackgroundColor(muted)
-                                    binding.mainCard.setCardBackgroundColor(muted)
+                                    binding.cardViewGame.setCardBackgroundColor(muted)
+                                    binding.cardViewGame.setCardBackgroundColor(muted)
                                 }
 
                                 when {
                                     darkVibrant != null -> {
-                                        binding.nameTextView.setBackgroundColor(darkVibrant)
-                                        binding.achievementContainer.setBackgroundColor(darkVibrant)
+                                        binding.textViewGameName.setBackgroundColor(darkVibrant)
+                                        binding.containerAchievement.setBackgroundColor(darkVibrant)
                                     }
                                     lightMuted != null -> {
-                                        binding.nameTextView.setBackgroundColor(lightMuted)
-                                        binding.achievementContainer.setBackgroundColor(lightMuted)
+                                        binding.textViewGameName.setBackgroundColor(lightMuted)
+                                        binding.containerAchievement.setBackgroundColor(lightMuted)
                                     }
                                     muted != null -> {
-                                        binding.nameTextView.setBackgroundColor(muted)
-                                        binding.achievementContainer.setBackgroundColor(muted)
+                                        binding.textViewGameName.setBackgroundColor(muted)
+                                        binding.containerAchievement.setBackgroundColor(muted)
                                     }
                                     dominant != null -> {
-                                        binding.nameTextView.setBackgroundColor(dominant)
-                                        binding.achievementContainer.setBackgroundColor(dominant)
+                                        binding.textViewGameName.setBackgroundColor(dominant)
+                                        binding.containerAchievement.setBackgroundColor(dominant)
                                     }
                                 }
                             }

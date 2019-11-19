@@ -52,7 +52,7 @@
     <dimen name="elevation_button_large">8dp</dimen>
     <dimen name="elevation_dialog_default">24dp</dimen>
     <dimen name="corner_radius_small">4dp</dimen>
-    <dimen name="loader_image_icon_size">24dp</dimen>
+    <dimen name="default_icon_size">24dp</dimen>
     <dimen name="corner_radius_medium">8dp</dimen>
     <dimen name="size_achievement_small">36dp</dimen>
     <dimen name="corner_radius_large">16dp</dimen>
