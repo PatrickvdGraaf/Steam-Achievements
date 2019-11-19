@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
-import com.crepetete.steamachievements.binding.FragmentDataBindingComponent
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.resource.LiveResource
@@ -32,13 +31,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
     @Inject
     lateinit var viewModel: LibraryViewModel
 
-    private var hasShownPrivateProfileMessage = false
-
     var adapter = GamesAdapter(this)
 
     lateinit var binding: FragmentLibraryBinding
-
-    private var dataBindingComponent = FragmentDataBindingComponent()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,8 +44,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
             inflater,
             R.layout.fragment_library,
             container,
-            false,
-            dataBindingComponent
+            false
         )
 
         return binding.root

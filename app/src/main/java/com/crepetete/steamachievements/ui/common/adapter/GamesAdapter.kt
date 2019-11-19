@@ -100,7 +100,17 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                showNewItems(results?.values as List<Game>? ?: listOf())
+                val games = mutableListOf<Game>()
+                val resultsValue = results?.values
+                if (resultsValue is List<*>) {
+                    for (item in resultsValue) {
+                        if (item is Game) {
+                            games.add(item)
+                        }
+                    }
+                }
+
+                showNewItems(games)
             }
         }
     }

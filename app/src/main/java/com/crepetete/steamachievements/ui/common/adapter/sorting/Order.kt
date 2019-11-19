@@ -59,7 +59,7 @@ class Order {
     }
 
     class NotAchievedOrder : BaseComparator<Achievement> {
-        override fun compare(o1: Achievement?, o2: Achievement?) = try {
+        override fun compare(o1: Achievement?, o2: Achievement?) =
             if (o1 != null && o2 != null) {
                 when {
                     o1.achieved && !o2.achieved -> 1
@@ -75,10 +75,6 @@ class Order {
             } else {
                 1
             }
-        } catch (e: Exception) {
-            Timber.e(e, "Error while comparing Achievments in NotAchievedOrder")
-            0
-        }
 
         override fun getName(resources: Resources): String =
             resources.getString(R.string.sorting_order_not_achieved)

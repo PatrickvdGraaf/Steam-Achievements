@@ -6,11 +6,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
 android {
-    def STRING = 'String'
-    def API_URL = 'API_URL'
-    def DB_NAME = 'DB_NAME'
-    def STEAM_API_KEY = 'STEAM_API_KEY'
-    def TEST_USER_ID = 'TEST_USER_ID'
 
     androidExtensions {
         experimental = true
@@ -20,10 +15,12 @@ android {
 
     buildTypes {
         debug {
-            ext.enableCrashlytics = false
+            // ext.enableCrashlytics = false
             aaptOptions.cruncherEnabled = false
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+
+            versionNameSuffix "-dev"
         }
         release {
             minifyEnabled false
@@ -54,22 +51,14 @@ android {
         versionName "0.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        /* Open Source API for steam: https://steamcommunity.com/dev. */
-        buildConfigField STRING, API_URL, '"https://api.steampowered.com"'
-        buildConfigField STRING, DB_NAME, '"players.db"'
-
-        /* Define the following values in your local.properties for safety, or declare here in the empty defaultValue param. */
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-        def steam_api_key = properties.getProperty("steam_api_key", "")
-        def test_user_id = properties.getProperty("test_user_id", "")
+        buildConfigField 'String', 'DB_NAME', '"players.db"'
 
         /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
-        buildConfigField STRING, STEAM_API_KEY, steam_api_key
+        buildConfigField 'String', 'STEAM_API_KEY', System.getenv('STEAM_API_KEY') ?: STEAM_API_KEY
 
         /* It's recommended to use your own steam ID, which can be found in your profile URL,
-         or can be found with tools like https://steamidfinder.com. */
-        buildConfigField STRING, TEST_USER_ID, test_user_id
+         or with tools like https://steamidfinder.com. */
+        buildConfigField 'String', 'TEST_USER_ID', System.getenv('TEST_USER_ID') ?: TEST_USER_ID
     }
 
     // Specifies one flavor dimension.
@@ -80,35 +69,13 @@ android {
     }
 
     productFlavors {
-        // When building a variant that uses this flavor, the following configurations
-        // override those in the defaultConfig block.
-        dev {
-            applicationIdSuffix '.dev'
-            versionNameSuffix "-dev"
-
-            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
-            ext.alwaysUpdateBuildId = false
-
-            // Assigns this product flavor to the "version" flavor dimension.
-            // This property is optional if you are using only one dimension.
-            dimension "version"
-
-            // The following configuration limits the "dev" flavor to using
-            // English string resources and xxhdpi screen-density resources.
-            resConfigs "en", "xxhdpi"
-        }
-
         prod {
-            // If you've configured the defaultConfig block for the release version of
-            // your app, you can leave this block empty and Gradle uses configurations in
-            // the defaultConfig block instead. You still need to create this flavor.
-            // Otherwise, all variants use the "dev" flavor configurations.
-
             dimension "version"
+
+            /* Open Source API for steam: https://steamcommunity.com/dev. */
+            buildConfigField 'String', 'API_URL', '"https://api.steampowered.com"'
         }
     }
-
-
 
     sourceSets {
         androidTest.java.srcDirs += "src/test-common/java"
@@ -125,16 +92,16 @@ dependencies {
     def constraint_layout_version = '1.1.3'
     def dagger_version = '2.25.2'
     def firebase_core_version = '17.2.1'
-    def firebase_pref_version = '19.0.1'
+    def firebase_pref_version = '19.0.2'
     def fragment_version = '1.2.0-rc02'
     def graphview_version = '4.2.2'
     def legacy_support_version = '1.0.0'
     def lifecycle_version = '2.2.0-rc02'
     def material_version = '1.0.0'
-    def okhttp_version = '4.2.0'
+    def okhttp_version = '4.2.2'
     def palette_version = '1.0.0'
     def recyclerview_version = '1.0.0'
-    def retrofit_version = '2.6.0'
+    def retrofit_version = '2.6.2'
     def room_version = '2.2.1'
     def rxandroid_verion = '2.1.1'
     def rxjava_version = '2.2.14'
@@ -207,7 +174,7 @@ dependencies {
 
     // Testing
     testImplementation 'junit:junit:4.12'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.2.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:2.22.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'

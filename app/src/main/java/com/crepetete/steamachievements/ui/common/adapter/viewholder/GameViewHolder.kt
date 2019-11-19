@@ -41,15 +41,6 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
-            binding.achievement1.visibility = View.INVISIBLE
-            binding.achievement2.visibility = View.INVISIBLE
-            binding.achievement3.visibility = View.INVISIBLE
-            binding.achievement4.visibility = View.INVISIBLE
-            binding.achievement5.visibility = View.INVISIBLE
-            binding.achievement6.visibility = View.INVISIBLE
-            binding.achievement7.visibility = View.INVISIBLE
-            binding.achievement8.visibility = View.INVISIBLE
-
             // Set RecyclerView adapter.
             val achievements = game.achievements
             val latestAchievements = achievements
@@ -81,19 +72,6 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                                     throwable,
                                     "Error while loading image from url: ${achievement.getActualIconUrl()}."
                                 )
-
-                                view.visibility = View.GONE
-                            }
-
-                            override fun onCancel(data: Any) {
-                                super.onCancel(data)
-
-                                view.visibility = View.GONE
-                            }
-
-                            override fun onSuccess(data: Any, source: DataSource) {
-                                super.onSuccess(data, source)
-                                view.visibility = View.VISIBLE
                             }
                         })
                     }

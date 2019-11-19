@@ -44,7 +44,6 @@ vcs.xml
 calabash
 
 /build
-/app/google-services.json
 
 # Package Files #
 *.jar

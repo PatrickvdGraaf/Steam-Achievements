@@ -13,9 +13,11 @@ import retrofit2.http.Query
 /**
  * Interface containing all possible calls that we need from the Steam API.
  *
- * The [BuildConfig.STEAM_API_KEY] is set up in the build.gradle file, which in its turn uses the local.properties file.
+ * The [BuildConfig.STEAM_API_KEY] is set up in the build.gradle file, which in its turn uses the
+ * gradle.properties file.
  * This file should not be included in version control.
- * Details on how to obtain these values for yourself are described in build.gradle.
+ * Details on how to obtain these values for yourself are described in the README.md and
+ * in the build.gradle.
  */
 interface SteamApiService {
     @GET("/ISteamUser/GetPlayerSummaries/v0002/")
