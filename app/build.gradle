@@ -15,10 +15,13 @@ android {
 
     buildTypes {
         debug {
-            ext.enableCrashlytics = false
+            // ext.enableCrashlytics = false
             aaptOptions.cruncherEnabled = false
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+
+            applicationIdSuffix '.dev'
+            versionNameSuffix "-dev"
         }
         release {
             minifyEnabled false
@@ -49,8 +52,6 @@ android {
         versionName "0.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        /* Open Source API for steam: https://steamcommunity.com/dev. */
-        buildConfigField 'String', 'API_URL', '"https://api.steampowered.com"'
         buildConfigField 'String', 'DB_NAME', '"players.db"'
 
         /* An API key can be obtained from https://steamcommunity.com/dev/apikey. */
@@ -69,31 +70,11 @@ android {
     }
 
     productFlavors {
-        // When building a variant that uses this flavor, the following configurations
-        // override those in the defaultConfig block.
-        dev {
-            applicationIdSuffix '.dev'
-            versionNameSuffix "-dev"
-
-            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
-            ext.alwaysUpdateBuildId = false
-
-            // Assigns this product flavor to the "version" flavor dimension.
-            // This property is optional if you are using only one dimension.
-            dimension "version"
-
-            // The following configuration limits the "dev" flavor to using
-            // English string resources and xxhdpi screen-density resources.
-            resConfigs "en", "xxhdpi"
-        }
-
         prod {
-            // If you've configured the defaultConfig block for the release version of
-            // your app, you can leave this block empty and Gradle uses configurations in
-            // the defaultConfig block instead. You still need to create this flavor.
-            // Otherwise, all variants use the "dev" flavor configurations.
-
             dimension "version"
+
+            /* Open Source API for steam: https://steamcommunity.com/dev. */
+            buildConfigField 'String', 'API_URL', '"https://api.steampowered.com"'
         }
     }
 
