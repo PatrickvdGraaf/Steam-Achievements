@@ -48,33 +48,34 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                 .sortedWith(Order.LatestAchievedOrder())
                 .take(10)
 
-            if (latestAchievements.isEmpty()) {
-                binding.achievementContainer.visibility = View.GONE
+            val showAchievements = if (latestAchievements.isEmpty()) {
+                achievements
             } else {
-                binding.achievementContainer.visibility = View.VISIBLE
-                latestAchievements.forEachIndexed { index, achievement ->
-                    val view = when (index) {
-                        0 -> binding.achievement1
-                        1 -> binding.achievement2
-                        2 -> binding.achievement3
-                        3 -> binding.achievement4
-                        4 -> binding.achievement5
-                        5 -> binding.achievement6
-                        6 -> binding.achievement7
-                        else -> binding.achievement8
-                    }
+                latestAchievements
+            }
 
-                    view.load(achievement.getActualIconUrl()) {
-                        listener(object : Request.Listener {
-                            override fun onError(data: Any, throwable: Throwable) {
-                                super.onError(data, throwable)
-                                Timber.w(
-                                    throwable,
-                                    "Error while loading image from url: ${achievement.getActualIconUrl()}."
-                                )
-                            }
-                        })
-                    }
+            showAchievements.forEachIndexed { index, achievement ->
+                val view = when (index) {
+                    0 -> binding.achievement1
+                    1 -> binding.achievement2
+                    2 -> binding.achievement3
+                    3 -> binding.achievement4
+                    4 -> binding.achievement5
+                    5 -> binding.achievement6
+                    6 -> binding.achievement7
+                    else -> binding.achievement8
+                }
+
+                view.load(achievement.getActualIconUrl()) {
+                    listener(object : Request.Listener {
+                        override fun onError(data: Any, throwable: Throwable) {
+                            super.onError(data, throwable)
+                            Timber.w(
+                                throwable,
+                                "Error while loading image from url: ${achievement.getActualIconUrl()}."
+                            )
+                        }
+                    })
                 }
             }
 
