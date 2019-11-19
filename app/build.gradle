@@ -20,7 +20,6 @@ android {
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
 
-            applicationIdSuffix '.dev'
             versionNameSuffix "-dev"
         }
         release {
