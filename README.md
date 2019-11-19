@@ -1,13 +1,24 @@
 # Steam-Achievements
 
 This is the repo for my hobby project Steam Achievements (name under construction). The general 
+purpose of this app is simply to provide a cleaner UI for viewing your Games and Achievements than
+the original Steam App provides. Besides that, it is also a coding playground where I try to 
+incorporate some best practices and new libraries. 
+
+The app uses several tools provided by the [Android JetPack](https://developer.android.com/jetpack), 
+including Room, LiveData, ViewModels and Data Binding. It also uses [Dagger](https://developer.android.com/training/dependency-injection/dagger-android)
+for dependency injection. The setup should be relatively simple, as Dagger has quite a steep 
+learning curve and this project might serve as a reference/boilerplate for other projects. 
+
+The app is hooked up to [CircleCI](https://circleci.com/) for Continuous Integration and helps us
+test our code and keep the code-quality nice and controlled.
 
 ## CI build status
 
-<strong>Master</strong>
+<strong>Master:</strong>
 [![CircleCI](https://circleci.com/gh/PatrickvdGraaf/Steam-Achievements/tree/master.svg?style=svg)](https://circleci.com/gh/PatrickvdGraaf/Steam-Achievements/tree/master)
 
-<strong>Develop</strong>
+<strong>Develop:</strong>
 [![CircleCI](https://circleci.com/gh/PatrickvdGraaf/Steam-Achievements/tree/develop.svg?style=svg)](https://circleci.com/gh/PatrickvdGraaf/Steam-Achievements/tree/develop)
 
 
@@ -18,8 +29,8 @@ app/gradle.properties. <strong>Make sure that this file is added to your .gitign
 accidentally committed.</strong>
 
 Your app/gradle.properties should look like this; 
-STEAM_API_KEY="your_api_key"
-TEST_USER_ID="your_test_id"
+- STEAM_API_KEY="your_api_key"
+- TEST_USER_ID="your_test_id"
 
 An API key can be obtained from https://steamcommunity.com/dev/apikey.
 You can find your own Steam ID with tools like https://steamidfinder.com.
