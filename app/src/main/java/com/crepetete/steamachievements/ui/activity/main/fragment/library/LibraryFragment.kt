@@ -31,8 +31,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
     @Inject
     lateinit var viewModel: LibraryViewModel
 
-    private var hasShownPrivateProfileMessage = false
-
     var adapter = GamesAdapter(this)
 
     lateinit var binding: FragmentLibraryBinding
