@@ -60,9 +60,21 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         adapter = GamesAdapter(imageLoader, this)
 
         // Update the view with new data.
-        viewModel.data.observe(viewLifecycleOwner, Observer { games ->
-            if (games.isNotEmpty()) {
+        viewModel.games.observe(viewLifecycleOwner, Observer { games ->
+            if (games?.isNotEmpty() == true) {
                 adapter.updateGames(games)
+
+                pulsator.stop()
+                pulsator.visibility = View.GONE
+
+                if (games.flatMap { game -> game.achievements }.isEmpty()) {
+                    showSnackBar(
+                        "Fetching all achievements. This might take a while",
+                        Snackbar.LENGTH_SHORT,
+                        "",
+                        null
+                    )
+                }
             }
         })
 
@@ -89,20 +101,26 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
             Timber.e("Error while loading Games: $error")
 
-            if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
-                Snackbar.make(
-                    coordinator,
+            when {
+                error?.localizedMessage?.contains("Unable to resolve host") == true -> showSnackBar(
                     "Could not update games, are you connected to the internet?",
-                    Snackbar.LENGTH_LONG
-                ).show()
-            } else if (viewModel.data.value?.isEmpty() != false) { // If the  list is null or empty, we assume fetching has failed for the player.
-                Snackbar.make(
-                    coordinator,
-                    "We couldn't find any games in your library.",
-                    Snackbar.LENGTH_LONG
+                    Snackbar.LENGTH_LONG,
+                    "",
+                    null
                 )
-                    .setAction("Retry") {
-                    }.show()
+                // If the  list is null or empty, we assume fetching has failed for the player.
+                viewModel.games.value?.isEmpty() == true ->
+                    showSnackBar(
+                        "We couldn't find any games in your library.",
+                        Snackbar.LENGTH_LONG,
+                        "Retry",
+                        View.OnClickListener { viewModel.fetchGames() }
+                    )
+                viewModel.games.value == null -> showSnackBar(
+                    "Error while fetching games.",
+                    Snackbar.LENGTH_LONG,
+                    "Retry",
+                    View.OnClickListener { viewModel.fetchGames() })
             }
         })
 
@@ -110,10 +128,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         initRecyclerView()
 
         viewModel.fetchGames()
-    }
-
-    override fun updateAchievementsForGame(appId: String) {
-        viewModel.updateAchievementsForGame(appId)
     }
 
     override fun onAttach(context: Context) {
@@ -146,6 +160,17 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
                 }
             }
         })
+    }
+
+    private fun showSnackBar(
+        message: String,
+        duration: Int,
+        actionMessage: String,
+        clickListener: View.OnClickListener?
+    ) {
+        Snackbar.make(coordinator, message, duration)
+            .setAction(actionMessage, clickListener)
+            .show()
     }
 
     /**
