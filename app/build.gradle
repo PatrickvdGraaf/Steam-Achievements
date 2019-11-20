@@ -94,6 +94,7 @@ dependencies {
     def firebase_core_version = '17.2.1'
     def firebase_pref_version = '19.0.2'
     def fragment_version = '1.2.0-rc02'
+    def glide_version = '4.10.0'
     def graphview_version = '4.2.2'
     def legacy_support_version = '1.0.0'
     def lifecycle_version = '2.2.0-rc02'
@@ -137,6 +138,10 @@ dependencies {
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-perf:$firebase_pref_version"
     implementation "com.crashlytics.sdk.android:crashlytics:$crashlytics_version"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     // Graph Library; http://www.android-graphview.org/download-getting-started/
     implementation "com.jjoe64:graphview:$graphview_version"

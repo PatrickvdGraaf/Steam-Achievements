@@ -104,13 +104,13 @@
                             android:layout_marginStart="@dimen/default_margin"
                             android:layout_marginEnd="@dimen/default_margin"
                             android:text="@string/header_playtime"
-                            app:layout_constraintBottom_toTopOf="@+id/recently_played_textView"
+                            app:layout_constraintBottom_toTopOf="@+id/text_view_recently_played"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
-                            android:id="@+id/recently_played_textView"
+                            android:id="@+id/text_view_recently_played"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/default_margin_halved"
@@ -129,7 +129,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
                             app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                            app:layout_constraintTop_toBottomOf="@+id/recently_played_textView"
+                            app:layout_constraintTop_toBottomOf="@+id/text_view_recently_played"
                             app:valueText="123h 45m" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -152,7 +152,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/playTimeCardView">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/achievementContainer"
+                        android:id="@+id/container_achievement"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -211,13 +211,13 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/sortMethodDescription"
                             card_view:cardUseCompatPadding="true"
-                            tools:listitem="@layout/list_achievement" />
+                            tools:listitem="@layout/view_holder_achievement" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/progressCardView"
+                    android:id="@+id/container_progress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/default_margin_halved"

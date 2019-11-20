@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorAccent">@color/white</color>
     <color name="colorPrimary">#171a21</color>
     <color name="colorPrimaryDark">#1B1B1B</color>
     <color name="colorPrimaryLight">#212227</color>
-    <color name="colorAccent">@color/white</color>
-
-    <color name="colorTextLabel">#a3a3a3</color>
+    <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
+    <color name="colorTextLabel">@color/colorAccent</color>
 
     <color name="transparent_overlay">#80000000</color>
 
-    <color name="colorGameViewHolderTitleBackground">@color/colorPrimary</color>
     <color name="statusbar_translucent">#64000000</color>
     <color name="backgroundAchievementsContainer">@color/colorPrimaryDark</color>
 
     <color name="transparent">#00000000</color>
     <color name="white">#ffffff</color>
+    <color name="grey">#555555</color>
 </resources>

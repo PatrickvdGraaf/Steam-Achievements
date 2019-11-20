@@ -24,7 +24,8 @@ import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
-class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, HorizontalAchievementsAdapter.OnAchievementClickListener {
+class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
+    HorizontalAchievementsAdapter.OnAchievementClickListener {
 
     companion object {
         private const val INTENT_GAME_ID = "INTENT_GAME_ID"
@@ -104,13 +105,12 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
 
         // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
-        //        title = game.getName()
 
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {
-            binding.recentlyPlayedTextView.setText(data.getRecentPlaytimeString())
+            binding.textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
         } else {
-            binding.recentlyPlayedTextView.visibility = View.GONE
+            binding.textViewRecentlyPlayed.visibility = View.GONE
         }
 
         binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
@@ -122,7 +122,8 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
         recyclerViewAchievements.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.HORIZONTAL,
-            false)
+            false
+        )
 
         // Set RecyclerView adapter.
         recyclerViewAchievements.adapter = achievementsAdapter
@@ -139,27 +140,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener, Hori
      * GraphView was clicked
      */
     override fun onDateTapped(date: Date) {
-        //        val achievements = viewModel.finalAchievements.value?.data?.filter {
-        //            it.achieved
-        //        }
-
-        //        if (achievements != null) {
-        //            setSortingMethod(AchievSortingMethod.NOT_ACHIEVED)
-        //
-        //            val calTapped = Calendar.getInstance()
-        //            calTapped.time = date
-        //            achievements.forEachIndexed { index, achievement ->
-        //                val calAchievement = Calendar.getInstance()
-        //                calAchievement.time = achievement.unlockTime
-        //
-        //                if (calAchievement.get(Calendar.YEAR) == calTapped.get(Calendar.YEAR)
-        //                    && calAchievement.get(Calendar.MONTH) == calTapped.get(Calendar.MONTH)
-        //                    && calAchievement.get(Calendar.DAY_OF_MONTH) == calTapped.get(
-        //                        Calendar.DAY_OF_MONTH)) {
-        //                    recyclerViewLatestAchievements.smoothScrollToPosition(achievements.size
-        //                        - index)
-        //                }
-        //            }
-        //        }
+        // TODO write implementation.
     }
 }

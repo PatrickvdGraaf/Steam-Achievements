@@ -4,11 +4,11 @@ import android.graphics.Bitmap
 import android.view.View
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
-import coil.decode.DataSource
-import coil.request.Request
-import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.databinding.ItemGameBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
@@ -17,31 +17,33 @@ import timber.log.Timber
 /**
  * Created at 19 January, 2019.
  */
-class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHolder(binding.root) {
-
-    private var palette: Palette? = null
+class GameViewHolder(
+    private val binding: ViewHolderGameBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(game: Game?) {
         if (game != null) {
             val dataItem = GameData(game)
             binding.gameData = dataItem
 
-            with(binding.achievementsTextView) {
-                compoundDrawablePadding = 16
-                setCompoundDrawablesWithIntrinsicBounds(
-                    if (dataItem.isCompleted()) R.drawable.ic_completed_24dp else 0, 0, 0, 0
-                )
-            }
-
-            if (dataItem.isCompleted()) {
-                binding.imageViewAchievedFlag.visibility = View.VISIBLE
+            binding.imageViewAchievedFlag.visibility = if (dataItem.isCompleted()) {
+                View.VISIBLE
             } else {
-                binding.imageViewAchievedFlag.visibility = View.GONE
+                View.GONE
             }
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
-            // Set RecyclerView adapter.
+            // Set Achievements images.
+            binding.achievement1.setImageDrawable(null)
+            binding.achievement2.setImageDrawable(null)
+            binding.achievement3.setImageDrawable(null)
+            binding.achievement4.setImageDrawable(null)
+            binding.achievement5.setImageDrawable(null)
+            binding.achievement6.setImageDrawable(null)
+            binding.achievement7.setImageDrawable(null)
+            binding.achievement8.setImageDrawable(null)
+
             val achievements = game.achievements
             val latestAchievements = achievements
                 .filter { achievement -> achievement.achieved }
@@ -66,71 +68,51 @@ class GameViewHolder(private val binding: ItemGameBinding) : RecyclerView.ViewHo
                     else -> binding.achievement8
                 }
 
-                view.load(achievement.getActualIconUrl()) {
-                    listener(object : Request.Listener {
-                        override fun onError(data: Any, throwable: Throwable) {
-                            super.onError(data, throwable)
-                            Timber.w(
-                                throwable,
-                                "Error while loading image from url: ${achievement.getActualIconUrl()}."
-                            )
-                        }
-                    })
-                }
+                Glide.with(view)
+                    .load(achievement.getActualIconUrl())
+                    .override(36)
+                    .into(view)
             }
 
-            binding.gameBanner.load(dataItem.getImageUrl()) {
-                listener(object : Request.Listener {
-                    override fun onError(data: Any, throwable: Throwable) {
-                        super.onError(data, throwable)
+            // Set Game Banner.
+            Glide.with(binding.imageViewGameBanner)
+                .asBitmap()
+                .load(dataItem.getImageUrl())
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         Timber.w(
-                            throwable,
+                            e,
                             "Error while loading image from url: ${dataItem.getImageUrl()}."
                         )
+
+                        return false
                     }
 
-                    override fun onSuccess(data: Any, source: DataSource) {
-                        super.onSuccess(data, source)
-                        if (data is Bitmap) {
-                            Palette.from(data).generate { newPalette ->
-                                palette = newPalette
-
-                                val darkMuted = palette?.darkMutedSwatch?.rgb
-                                val darkVibrant = palette?.darkVibrantSwatch?.rgb
-                                val muted = palette?.mutedSwatch?.rgb
-                                val lightMuted = palette?.lightMutedSwatch?.rgb
-                                val dominant = palette?.dominantSwatch?.rgb
-                                if (darkMuted != null) {
-                                    binding.gameCard.setCardBackgroundColor(darkMuted)
-                                    binding.mainCard.setCardBackgroundColor(darkMuted)
-                                } else if (muted != null) {
-                                    binding.gameCard.setCardBackgroundColor(muted)
-                                    binding.mainCard.setCardBackgroundColor(muted)
-                                }
-
-                                when {
-                                    darkVibrant != null -> {
-                                        binding.nameTextView.setBackgroundColor(darkVibrant)
-                                        binding.achievementContainer.setBackgroundColor(darkVibrant)
-                                    }
-                                    lightMuted != null -> {
-                                        binding.nameTextView.setBackgroundColor(lightMuted)
-                                        binding.achievementContainer.setBackgroundColor(lightMuted)
-                                    }
-                                    muted != null -> {
-                                        binding.nameTextView.setBackgroundColor(muted)
-                                        binding.achievementContainer.setBackgroundColor(muted)
-                                    }
-                                    dominant != null -> {
-                                        binding.nameTextView.setBackgroundColor(dominant)
-                                        binding.achievementContainer.setBackgroundColor(dominant)
-                                    }
+                    override fun onResourceReady(
+                        resource: Bitmap?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        dataSource: com.bumptech.glide.load.DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        resource?.let { bitmap ->
+                            Palette.from(bitmap).generate { palette ->
+                                palette?.darkMutedSwatch?.rgb?.let { rgb ->
+                                    binding.cardViewGame.setCardBackgroundColor(rgb)
+                                    binding.cardViewGame.setCardBackgroundColor(rgb)
                                 }
                             }
                         }
+
+                        return false
                     }
                 })
-            }
+                .into(binding.imageViewGameBanner)
         }
     }
 }

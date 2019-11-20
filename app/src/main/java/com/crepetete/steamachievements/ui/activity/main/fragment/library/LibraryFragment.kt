@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
@@ -31,7 +32,10 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
     @Inject
     lateinit var viewModel: LibraryViewModel
 
-    var adapter = GamesAdapter(this)
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
+    lateinit var adapter: GamesAdapter
 
     lateinit var binding: FragmentLibraryBinding
 
@@ -52,6 +56,8 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        adapter = GamesAdapter(imageLoader, this)
 
         // Update the view with new data.
         viewModel.data.observe(viewLifecycleOwner, Observer { games ->
@@ -124,8 +130,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     private fun initRecyclerView() {
         list_games.layoutManager = LinearLayoutManager(context)
-        list_games.setHasFixedSize(true)
         list_games.isNestedScrollingEnabled = false
+        list_games.setHasFixedSize(true)
+        list_games.setItemViewCacheSize(10)
 
         adapter.listener = this
         list_games.adapter = adapter
