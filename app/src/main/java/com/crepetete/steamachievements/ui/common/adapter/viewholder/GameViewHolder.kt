@@ -34,7 +34,16 @@ class GameViewHolder(
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
-            // Set RecyclerView adapter.
+            // Set Achievements images.
+            binding.achievement1.setImageDrawable(null)
+            binding.achievement2.setImageDrawable(null)
+            binding.achievement3.setImageDrawable(null)
+            binding.achievement4.setImageDrawable(null)
+            binding.achievement5.setImageDrawable(null)
+            binding.achievement6.setImageDrawable(null)
+            binding.achievement7.setImageDrawable(null)
+            binding.achievement8.setImageDrawable(null)
+
             val achievements = game.achievements
             val latestAchievements = achievements
                 .filter { achievement -> achievement.achieved }
@@ -65,6 +74,7 @@ class GameViewHolder(
                     .into(view)
             }
 
+            // Set Game Banner.
             Glide.with(binding.imageViewGameBanner)
                 .asBitmap()
                 .load(dataItem.getImageUrl())
