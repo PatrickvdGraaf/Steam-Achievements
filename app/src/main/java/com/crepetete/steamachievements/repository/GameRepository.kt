@@ -43,12 +43,6 @@ class GameRepository @Inject constructor(
         return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
             override suspend fun saveCallResult(data: List<Game>) {
-                val baseGameInfo = mutableListOf<BaseGameInfo>()
-                data.map { game -> game.game }
-                    .forEach { gameInfo -> gameInfo?.let { baseGameInfo.add(gameInfo) } }
-                gamesDao.insert(baseGameInfo)
-
-                achievementsDao.insert(data.flatMap { game -> game.achievements })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
@@ -60,11 +54,16 @@ class GameRepository @Inject constructor(
                 val gamesResponse = api.getGamesForUser(userId).response.games
 
                 gamesResponse?.let { baseGameInfo ->
-                    saveCallResult(baseGameInfo.map { baseInfo -> Game(baseInfo) })
+                    gamesDao.insert(baseGameInfo)
 
                     baseGameInfo.forEach { baseGame ->
                         val achievements =
-                            fetchAchievementsFromApi(userId, baseGame.appId.toString())
+                            if (rateLimiter.shouldFetch("achievements_${baseGame.appId}")) {
+                                fetchAchievementsFromApi(userId, baseGame.appId.toString())
+                            } else {
+                                achievementsDao.getAchievements(baseGame.appId.toString())
+                            }
+
                         games.add(Game(baseGame, achievements ?: listOf()))
                     }
                 }
@@ -76,14 +75,11 @@ class GameRepository @Inject constructor(
                 val baseGameInfo = gamesDao.getGamesInfo()
 
                 baseGameInfo.forEach { gameInfo ->
-                    if (rateLimiter.shouldFetch("achievements_${gameInfo.appId}")) {
-                        val achievements = achievementsDao.getAchievements(
-                            gameInfo.appId.toString()
-                        )
-                        games.add(Game(gameInfo, achievements))
-                    } else {
-                        games.add(Game(gameInfo))
-                    }
+                    val achievements = achievementsDao.getAchievements(
+                        gameInfo.appId.toString()
+                    )
+                    val game = Game(gameInfo, achievements)
+                    games.add(game)
                 }
 
                 return games
@@ -96,50 +92,44 @@ class GameRepository @Inject constructor(
             val baseResponse = api.getSchemaForGame(appId)
 
             /* Reference to base achievements list. */
-            val responseAchievements =
-                baseResponse.game.availableGameStats?.achievements ?: mutableListOf()
+            val responseAchievements = baseResponse.game.availableGameStats?.achievements
 
             /* Iterate over all object in the response.  */
-            try {
-                val achievedResponse =
-                    api.getAchievementsForPlayer(appId, userId)
-                achievedResponse.playerStats?.achievements?.forEach { response ->
+            if (responseAchievements?.isNotEmpty() == true) {
+                try {
+                    val achievedResponse = api.getAchievementsForPlayer(appId, userId)
 
-                    /* For each one, find the corresponding achievement in the responseAchievements list
-                     and update the information. */
-                    responseAchievements.filter { achievement -> achievement.name == response.apiName }
-                        .forEach { resultAchievement ->
+                    achievedResponse.playerStats?.achievements?.forEach { response ->
+                        /* For each one, find the corresponding achievement in the
+                           responseAchievements list and update the information. */
+                        responseAchievements.filter { achievement ->
+                            achievement.name == response.apiName
+                        }.forEach { resultAchievement ->
+                            resultAchievement.appId = appId.toLong()
                             resultAchievement.unlockTime = response.getUnlockDate()
                             resultAchievement.achieved = response.achieved != 0
                             response.description?.let { desc ->
                                 resultAchievement.description = desc
                             }
                         }
-                }
-            } catch (e: Exception) {
-                Timber.d(e)
-            }
+                    }
 
-            try {
-                val globalResponse = api.getGlobalAchievementStats(appId)
-                globalResponse.achievementpercentages.achievements.forEach { response ->
-                    responseAchievements.filter { game -> game.name == response.name }
-                        .forEach { game ->
-                            game.percentage = response.percent
+                    val globalResponse = api.getGlobalAchievementStats(appId)
+
+                    globalResponse.achievementpercentages.achievements.forEach { response ->
+                        responseAchievements.filter { achievement ->
+                            achievement.name == response.name
                         }
+                            .forEach { game ->
+                                game.percentage = response.percent
+                            }
+                    }
+                } catch (e: Exception) {
+                    Timber.d(e)
                 }
-            } catch (e: Exception) {
-                Timber.d(e)
             }
 
-            responseAchievements.forEach { achievement ->
-                try {
-                    achievement.appId = appId.toLong()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e)
-                }
-                Timber.d(achievement.toString())
-            }
+            responseAchievements?.let { achievementsDao.insert(it) }
             return responseAchievements
         } catch (e: Exception) {
             Timber.d(e)

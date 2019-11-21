@@ -15,13 +15,11 @@ android {
 
     buildTypes {
         debug {
-            // ext.enableCrashlytics = false
             aaptOptions.cruncherEnabled = false
             debuggable true
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
-
-            versionNameSuffix "-dev"
         }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

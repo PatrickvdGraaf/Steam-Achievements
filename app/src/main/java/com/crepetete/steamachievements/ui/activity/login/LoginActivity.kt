@@ -21,6 +21,7 @@ import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), Injectable {
@@ -118,6 +119,6 @@ class LoginActivity : AppCompatActivity(), Injectable {
 
     // TODO move this to ViewModel once a StringManager is implemented
     private fun getRealm(): String {
-        return getString(R.string.app_name).toLowerCase()
+        return getString(R.string.app_name).toLowerCase(Locale.ENGLISH)
     }
 }

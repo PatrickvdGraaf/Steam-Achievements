@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -57,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/default_margin_quarter"
-                    tools:text="Achievement Title"/>
+                    tools:text="Achievement Title" />
 
                 <TextView
                     android:id="@+id/achievement_date_textview"
@@ -65,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/default_margin_halved"
-                    tools:text="11-01-1995"/>
+                    tools:text="11-01-1995" />
 
                 <TextView
                     android:id="@+id/achievement_desc_textview"
@@ -74,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     android:layout_marginBottom="@dimen/default_margin_halved"
-                    tools:text="Description on how to achieve this achievement."/>
+                    tools:text="Description on how to achieve this achievement." />
 
                 <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
                     android:id="@+id/label_global_stats"
@@ -82,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     app:label="@string/label_global_achievement_rate"
-                    app:valueText="100%"/>
+                    app:valueText="100%" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -106,7 +105,8 @@
                 android:layout_height="match_parent"
                 android:background="@color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY"
+                tools:targetApi="m" />
 
             <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
                 android:id="@+id/pulsator"
@@ -127,7 +127,7 @@
                     android:layout_centerInParent="true"
                     android:background="@color/transparent"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_steam_round"/>
+                    android:src="@drawable/ic_steam_round" />
 
             </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
         </androidx.cardview.widget.CardView>

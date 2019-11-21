@@ -47,6 +47,7 @@ class Game(
     fun getPlaytime() = game?.playTime ?: 0L
     fun getBannerUrl() =
         "http://media.steampowered.com/steamcommunity/public/images/apps" +
-                "/${game?.appId ?: "0"}" +
-                "/${game?.logoUrl ?: ""}.jpg"
+                "/${game?.appId}" +
+                "/${game?.logoUrl}" +
+                ".jpg"
 }
