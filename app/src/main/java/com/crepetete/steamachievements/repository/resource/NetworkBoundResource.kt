@@ -25,39 +25,35 @@ import kotlinx.coroutines.launch
  *    event is sent upstream
  *
  * You can read more about it in the [Architecture Guide](https://developer.android.com/arch).
- * @param <ResultType>
- * @param <RequestType>
- * </RequestType></ResultType>
  *
  * Updated to coroutines with https://medium.com/ideas-by-idean/android-adventure-512bbd78b05f.
  */
 abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    /**
-     * The final result LiveData
-     */
+    // The final result LiveData.
     private val result = MutableLiveData<ResultType>()
 
+    // Loading state of the job.
     private val state = MutableLiveData<@ResourceState Int?>()
 
+    // Optional error for when the API call fails.
     private val error = MutableLiveData<Exception?>()
 
     private val job = Job()
 
     /**
-     * In the init block, an instance of CoroutineScope is created and launched in the IO context as background task to get the data
-     * from Network and/or local database.
+     * In the init block, an instance of CoroutineScope is created and launched in the IO context
+     * as background task to get the data from Network and/or local database.
      */
     init {
         val ioDispatcher = Dispatchers.IO
         ioDispatcher + job
 
         CoroutineScope(ioDispatcher).launch {
-            /* Send loading state to UI */
             state.postValue(STATE_LOADING)
-            /* If the data in the original source changes, this observer gets notified */
+
             val dbSource = loadFromDb()
-            /* Check if the data should be refreshed with an API call. */
+
             if (shouldFetch(dbSource)) {
                 fetchFromNetwork(dbSource)
             } else {
@@ -76,10 +72,8 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
         dbSource?.let(result::postValue)
 
         try {
-            val apiResponse = createCall()
-
-            apiResponse?.let {
-                saveCallResult(it)
+            createCall()?.let { apiResponse ->
+                saveCallResult(apiResponse)
                 result.postValue(loadFromDb())
             } ?: run {
                 if (dbSource == null)
@@ -94,16 +88,25 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
         }
     }
 
-    /* Returns an optional result from the Room Database. */
+    /**
+     * Returns an optional result from the Room Database.
+     */
     protected abstract suspend fun loadFromDb(): ResultType?
 
-    /* Called after fetching data in the database to decide whether it should be updated from the network. */
+    /**
+     * Called after fetching data in the database to decide whether it should be updated from the
+     * network.
+     */
     protected abstract fun shouldFetch(data: ResultType?): Boolean
 
-    /* Returns an optional API result. */
+    /**
+     * Returns an optional API result.
+     */
     protected abstract suspend fun createCall(): RequestType?
 
-    /* Called to save the result of the API response into the database. */
+    /**
+     * Called to save the result of the API response into the database.
+     */
     protected abstract suspend fun saveCallResult(data: RequestType)
 
     fun asLiveResource() = LiveResource(result, state, error, job)

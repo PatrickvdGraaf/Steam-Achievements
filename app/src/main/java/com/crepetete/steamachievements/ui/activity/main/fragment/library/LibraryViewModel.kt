@@ -1,9 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource.Companion.STATE_LOADING
@@ -30,7 +27,7 @@ class LibraryViewModel @Inject constructor(
 
     // Jobs
     private val mainJob = Job()
-    private val ioScope = CoroutineScope(Dispatchers.IO + mainJob)
+    private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
 
     private var gamesFetchJob: Job? = null
 
@@ -58,18 +55,20 @@ class LibraryViewModel @Inject constructor(
             return
         }
 
-        gameRepo.getGames(userRepository.getCurrentPlayerId()).let { resource ->
-            gamesFetchJob = resource.job
-            bindObserver(_games, resource.data)
-            bindObserver(_gamesLoadingState, resource.state)
-            bindObserver(_gamesLoadingError, resource.error)
+        uiScope.launch {
+            gameRepo.getGames(userRepository.getCurrentPlayerId()).let { resource ->
+                gamesFetchJob = resource.job
+                bindObserver(_games, resource.data)
+                bindObserver(_gamesLoadingState, resource.state)
+                bindObserver(_gamesLoadingError, resource.error)
+            }
         }
     }
 
     fun updatePrimaryColorForGame(game: Game, rgb: Int) {
         game.setPrimaryColor(rgb)
         game.game?.let { gameData ->
-            ioScope.launch {
+            viewModelScope.launch {
                 gameRepo.update(gameData)
             }
         }
@@ -78,7 +77,6 @@ class LibraryViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         mainJob.cancel()
-        gamesFetchJob?.cancel()
     }
 
     private fun <R> bindObserver(observer: MediatorLiveData<R>, source: LiveData<R>) {

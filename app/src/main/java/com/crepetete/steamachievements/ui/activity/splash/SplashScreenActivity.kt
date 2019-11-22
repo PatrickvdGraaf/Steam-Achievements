@@ -7,6 +7,7 @@ import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.login.AuthViewModel
 import com.crepetete.steamachievements.ui.activity.login.LoginActivity
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
+import com.crepetete.steamachievements.vo.Player
 import javax.inject.Inject
 
 class SplashScreenActivity : BaseActivity() {
@@ -20,7 +21,7 @@ class SplashScreenActivity : BaseActivity() {
 
         // Set listeners
         viewModel.currentPlayerId.observe(this, Observer { id ->
-            if (id == viewModel.invalidUserId) {
+            if (id == Player.INVALID_ID) {
                 startActivity(LoginActivity.getInstance(this))
                 finish()
             } else if (!id.isNullOrBlank()) {

@@ -19,6 +19,7 @@ import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
+import com.crepetete.steamachievements.vo.Player
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import java.util.*
@@ -45,8 +46,10 @@ class LoginActivity : AppCompatActivity(), Injectable {
         with(viewModel) {
             currentPlayerId.observe(this@LoginActivity, Observer { id ->
                 id?.let {
-                    startActivity(MainActivity.getInstance(this@LoginActivity, it))
-                    Handler().postDelayed(::finish, 1000)
+                    if (id != Player.INVALID_ID) {
+                        startActivity(MainActivity.getInstance(this@LoginActivity, it))
+                        Handler().postDelayed(::finish, 1000)
+                    }
                 }
             })
 

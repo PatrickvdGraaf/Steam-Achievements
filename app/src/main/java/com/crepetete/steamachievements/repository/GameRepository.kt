@@ -43,7 +43,6 @@ class GameRepository @Inject constructor(
         return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
             override suspend fun saveCallResult(data: List<Game>) {
-                achievementsDao.upsert(data.flatMap { game -> game.achievements })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
@@ -65,6 +64,7 @@ class GameRepository @Inject constructor(
                                 achievementsDao.getAchievements(baseGame.appId.toString())
                             }
 
+                        achievementsDao.upsert(achievements ?: listOf())
                         games.add(Game(baseGame, achievements ?: listOf()))
                     }
                 }

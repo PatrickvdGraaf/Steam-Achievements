@@ -49,4 +49,21 @@ class Game(
                 "/${game?.appId}" +
                 "/${game?.logoUrl}" +
                 ".jpg"
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is Game) {
+            (other.getName() == getName() &&
+                    other.getBannerUrl() == getBannerUrl() &&
+                    other.getAmountOfAchievements() == getAmountOfAchievements() &&
+                    other.getPercentageCompleted() == getPercentageCompleted() &&
+                    other.getPlaytime() == getPlaytime() &&
+                    other.getRecentPlaytime() == getRecentPlaytime())
+        } else {
+            false
+        }
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
 }

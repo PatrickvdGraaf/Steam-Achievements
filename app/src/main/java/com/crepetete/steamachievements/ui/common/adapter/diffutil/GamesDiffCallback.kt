@@ -26,8 +26,9 @@ class GamesDiffCallback(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = newList
         ?.get(newItemPosition)?.getAppId() == oldList?.get(oldItemPosition)?.getAppId()
 
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = newList
-        ?.get(newItemPosition)?.equals(oldList?.get(oldItemPosition)) ?: false
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return newList?.get(newItemPosition) == oldList?.get(oldItemPosition)
+    }
 
     /**
      *  This method is called when the areItemsTheSame() returns true, but areContentsTheSame()

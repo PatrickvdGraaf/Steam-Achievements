@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.repository
 
-import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
@@ -41,11 +40,7 @@ class UserRepository @Inject constructor(
         }.asLiveResource()
     }
 
-    fun getCurrentPlayerId() = if (BuildConfig.DEBUG) {
-        BuildConfig.TEST_USER_ID
-    } else {
-        storage.getPlayerId()
-    }
+    fun getCurrentPlayerId() = storage.getPlayerId()
 
     fun putCurrentPlayerId(playerId: String) {
         storage.setPlayerId(playerId)

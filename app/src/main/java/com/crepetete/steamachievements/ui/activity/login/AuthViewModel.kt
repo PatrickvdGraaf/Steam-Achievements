@@ -16,12 +16,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel responsible for handling User login status.
+ * It's used by the [LoginActivity] for logging in to the Steam
+ */
 @OpenForTesting
 class AuthViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
-
-    val invalidUserId = "-1"
 
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
@@ -35,7 +37,10 @@ class AuthViewModel @Inject constructor(
     private val _currentPlayerId = MediatorLiveData<String?>()
     val currentPlayerId: LiveData<String?> = _currentPlayerId
 
-    /* The way the switchmap set up comes from https://developer.android.com/topic/libraries/architecture/coroutines. */
+    /*
+     * More information on this setup:
+     * https://developer.android.com/topic/libraries/architecture/coroutines.
+     */
     val currentPlayer: LiveData<Player?>
         get() {
             Transformations.map(_currentPlayerId) { id ->
@@ -75,13 +80,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Extracts the playerId from the Steam url intercepted from the WebView.
+     * It saves the ID to the SharedPreferences via the [userRepository] and also updates the
+     * [_currentPlayerId] LiveData value.
+     *
+     * TODO Make the SharedPreferences return LiveData and let the _currentPlayerId listen to that.
+     */
     fun parseIdFromUri(uri: Uri?) {
-        // Extracts user id.
-        val userAccountUrl = Uri.parse(uri?.getQueryParameter("openid.identity"))
+        val userAccountUrl = Uri.parse(uri?.getQueryParameter("openid.identity") ?: "")
         val playerId = userAccountUrl.lastPathSegment
 
         if (!playerId.isNullOrBlank()) {
-            // Save the new Id
             _currentPlayerId.value = playerId
             userRepository.putCurrentPlayerId(playerId)
         }
