@@ -57,11 +57,15 @@ class GameData(private val game: Game) : BaseObservable() {
     /**
      * @return whether the player has collected all achievements.
      */
-    fun isCompleted() = getAmountOfAchievements() == getAchievedAchievements().size && getAmountOfAchievements() > 0
+    fun isCompleted() =
+        getAmountOfAchievements() == getAchievedAchievements().size && getAmountOfAchievements() > 0
+
+    fun getAchievements() = game.achievements
 
     private fun getAmountOfAchievements() = game.achievements.size
 
-    private fun getAchievedAchievements() = game.achievements.filter { achievement -> achievement.achieved }
+    private fun getAchievedAchievements() =
+        game.achievements.filter { achievement -> achievement.achieved }
 
     /**
      * Getter for a list of all achieved achievements.

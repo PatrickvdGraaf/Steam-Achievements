@@ -61,7 +61,15 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
         // Update the view with new data.
         viewModel.games.observe(viewLifecycleOwner, Observer { games ->
-            if (games?.isNotEmpty() == true) {
+            if (games == null) {
+                if (viewModel.gamesLoadingState.value == LiveResource.STATE_LOADING) {
+                    // TODO add a better onboarding experience
+                    showSnackBar(
+                        "Loading your Library. This might take a while",
+                        Snackbar.LENGTH_LONG
+                    )
+                }
+            } else if (games.isNotEmpty()) {
                 adapter.updateGames(games)
 
                 pulsator.stop()
@@ -70,11 +78,16 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
                 if (games.flatMap { game -> game.achievements }.isEmpty()) {
                     showSnackBar(
                         "Fetching all achievements. This might take a while",
-                        Snackbar.LENGTH_SHORT,
-                        "",
-                        null
+                        Snackbar.LENGTH_SHORT
                     )
                 }
+            } else {
+                showSnackBar(
+                    "We couldn't find any games in your library.",
+                    Snackbar.LENGTH_LONG,
+                    "Retry",
+                    View.OnClickListener { viewModel.fetchGames() }
+                )
             }
         })
 
@@ -138,19 +151,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     private fun initScrollFab() {
         fab.setOnClickListener {
-            list_games.scrollToPosition(0)
+            recycler_view_games.scrollToPosition(0)
         }
     }
 
     private fun initRecyclerView() {
-        list_games.layoutManager = LinearLayoutManager(context)
-        list_games.isNestedScrollingEnabled = false
-        list_games.setHasFixedSize(true)
-        list_games.setItemViewCacheSize(10)
+        recycler_view_games.layoutManager = LinearLayoutManager(context)
+        recycler_view_games.isNestedScrollingEnabled = false
+        recycler_view_games.setHasFixedSize(true)
+        recycler_view_games.setItemViewCacheSize(10)
 
         adapter.listener = this
-        list_games.adapter = adapter
-        list_games.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        recycler_view_games.adapter = adapter
+        recycler_view_games.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= 0) {
@@ -165,12 +178,14 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
     private fun showSnackBar(
         message: String,
         duration: Int,
-        actionMessage: String,
-        clickListener: View.OnClickListener?
+        actionMessage: String = "",
+        clickListener: View.OnClickListener? = null
     ) {
-        Snackbar.make(coordinator, message, duration)
-            .setAction(actionMessage, clickListener)
-            .show()
+        view?.let {
+            Snackbar.make(it, message, duration)
+                .setAction(actionMessage, clickListener)
+                .show()
+        }
     }
 
     /**
