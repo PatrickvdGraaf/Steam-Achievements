@@ -16,7 +16,6 @@ import kotlinx.android.parcel.Parcelize
 class Game(
     @Embedded
     var game: BaseGameInfo? = null,
-
     @Relation(parentColumn = "appId", entityColumn = "appId", entity = Achievement::class)
     var achievements: List<Achievement> = listOf()
 ) : Parcelable {

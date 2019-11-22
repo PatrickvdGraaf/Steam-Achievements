@@ -26,7 +26,7 @@ class GameRepository @Inject constructor(
     private val achievementsDao: AchievementsDao,
     private val api: SteamApiService,
     private val gamesDao: GamesDao
-) : BaseRepository() {
+) {
 
     private companion object {
         const val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
@@ -43,6 +43,7 @@ class GameRepository @Inject constructor(
         return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
             override suspend fun saveCallResult(data: List<Game>) {
+                achievementsDao.upsert(data.flatMap { game -> game.achievements })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
@@ -54,7 +55,7 @@ class GameRepository @Inject constructor(
                 val gamesResponse = api.getGamesForUser(userId).response.games
 
                 gamesResponse?.let { baseGameInfo ->
-                    gamesDao.insert(baseGameInfo)
+                    gamesDao.upsert(baseGameInfo)
 
                     baseGameInfo.forEach { baseGame ->
                         val achievements =
@@ -71,18 +72,7 @@ class GameRepository @Inject constructor(
             }
 
             override suspend fun loadFromDb(): List<Game> {
-                val games = mutableListOf<Game>()
-                val baseGameInfo = gamesDao.getGamesInfo()
-
-                baseGameInfo.forEach { gameInfo ->
-                    val achievements = achievementsDao.getAchievements(
-                        gameInfo.appId.toString()
-                    )
-                    val game = Game(gameInfo, achievements)
-                    games.add(game)
-                }
-
-                return games
+                return gamesDao.getGames()
             }
         }.asLiveResource()
     }
@@ -128,8 +118,6 @@ class GameRepository @Inject constructor(
                     Timber.d(e)
                 }
             }
-
-            responseAchievements?.let { achievementsDao.insert(it) }
             return responseAchievements
         } catch (e: Exception) {
             Timber.d(e)
@@ -139,7 +127,8 @@ class GameRepository @Inject constructor(
 
     /**
      * Fetch a specific [Game] form the Database.
-     * Steam API doesn't provide a call for one specific game, so the data will only be the stored value of the last API call.
+     * Steam API doesn't provide a call for one specific game, so the data will only be the stored
+     * value of the last API call.
      */
     fun getGame(appId: String): LiveData<Game> {
         return liveData {
