@@ -43,4 +43,8 @@ data class Player(
     val stateCode: String?,
     @Json(name = "loccityid")
     val cityId: Int?
-)
+) {
+    companion object {
+        const val INVALID_ID = "-1"
+    }
+}

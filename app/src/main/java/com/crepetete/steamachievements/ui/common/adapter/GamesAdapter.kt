@@ -65,8 +65,6 @@ class GamesAdapter(
             val game = newItems[position]
             holder.bind(game)
             holder.itemView.visibility = View.VISIBLE
-
-            listener.updateAchievementsForGame(game.getAppId().toString())
         } catch (e: IndexOutOfBoundsException) {
             Timber.e(
                 e,
@@ -150,6 +148,5 @@ class GamesAdapter(
     interface GamesAdapterCallback {
         fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View)
         fun onPrimaryGameColorCreated(game: Game, rgb: Int)
-        fun updateAchievementsForGame(appId: String)
     }
 }

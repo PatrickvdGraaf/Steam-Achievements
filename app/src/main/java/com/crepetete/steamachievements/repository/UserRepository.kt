@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.repository
 
-import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.db.dao.PlayerDao
@@ -14,44 +13,7 @@ class UserRepository @Inject constructor(
     private val storage: Storage,
     private val api: SteamApiService,
     private val dao: PlayerDao
-) : BaseRepository() {
-
-    private val invalidUserId = "-1"
-
-    /**
-     * Fetches the [Player] that is currently logged in, or null if no user was found.
-     */
-    suspend fun getCurrentPlayer(): LiveResource<Player> {
-        val playerId = getCurrentPlayerId()
-
-        return object : NetworkBoundResource<Player, Player?>() {
-            override suspend fun saveCallResult(data: Player?) {
-                data?.let { player ->
-                    dao.insert(player)
-                    putCurrentPlayerId(player.steamId)
-                }
-            }
-
-            override fun shouldFetch(data: Player?) = data == null
-
-            override suspend fun loadFromDb(): Player? {
-                if (playerId != invalidUserId) {
-                    return dao.getPlayerById(playerId)
-                }
-                return null
-            }
-
-            override suspend fun createCall(): Player? {
-                if (playerId != invalidUserId) {
-                    val result = api.getUserInfo(playerId)
-                    if (result is ApiSuccessResponse) {
-                        return result.body.response.players.firstOrNull()
-                    }
-                }
-                return null
-            }
-        }.asLiveResource()
-    }
+) {
 
     suspend fun getPlayer(playerId: String): LiveResource<Player> {
         return object : NetworkBoundResource<Player, Player?>() {
@@ -62,7 +24,7 @@ class UserRepository @Inject constructor(
                 }
             }
 
-            override fun shouldFetch(data: Player?) = data == null && playerId != invalidUserId
+            override fun shouldFetch(data: Player?) = data == null && playerId != Player.INVALID_ID
 
             override suspend fun loadFromDb(): Player? {
                 return dao.getPlayerById(playerId)
@@ -78,11 +40,7 @@ class UserRepository @Inject constructor(
         }.asLiveResource()
     }
 
-    fun getCurrentPlayerId() = if (BuildConfig.DEBUG) {
-        BuildConfig.TEST_USER_ID
-    } else {
-        storage.getPlayerId(invalidUserId)
-    }
+    fun getCurrentPlayerId() = storage.getPlayerId()
 
     fun putCurrentPlayerId(playerId: String) {
         storage.setPlayerId(playerId)

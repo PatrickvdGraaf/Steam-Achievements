@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <!-- Games List-->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_games"
+            android:id="@+id/recycler_view_games"
             android:layout_width="0dp"
+            android:layout_height="0dp"
             android:paddingStart="@dimen/default_padding"
             android:paddingEnd="@dimen/default_padding"
-            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- LOADER -->
         <!-- Progress Bar -->
@@ -46,7 +44,8 @@
                 android:background="@color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_steam_round"/>
+                android:src="@drawable/ic_steam_round"
+                tools:targetApi="m" />
 
         </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
 
@@ -64,6 +63,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:rippleColor="@color/colorPrimary"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

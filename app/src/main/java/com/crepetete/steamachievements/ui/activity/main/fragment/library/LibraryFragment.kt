@@ -60,9 +60,34 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         adapter = GamesAdapter(imageLoader, this)
 
         // Update the view with new data.
-        viewModel.data.observe(viewLifecycleOwner, Observer { games ->
-            if (games.isNotEmpty()) {
+        viewModel.games.observe(viewLifecycleOwner, Observer { games ->
+            if (games == null) {
+                if (viewModel.gamesLoadingState.value == LiveResource.STATE_LOADING) {
+                    // TODO add a better onboarding experience
+                    showSnackBar(
+                        "Loading your Library. This might take a while",
+                        Snackbar.LENGTH_LONG
+                    )
+                }
+            } else if (games.isNotEmpty()) {
                 adapter.updateGames(games)
+
+                pulsator.stop()
+                pulsator.visibility = View.GONE
+
+                if (games.flatMap { game -> game.achievements }.isEmpty()) {
+                    showSnackBar(
+                        "Fetching all achievements. This might take a while",
+                        Snackbar.LENGTH_SHORT
+                    )
+                }
+            } else {
+                showSnackBar(
+                    "We couldn't find any games in your library.",
+                    Snackbar.LENGTH_LONG,
+                    "Retry",
+                    View.OnClickListener { viewModel.fetchGames() }
+                )
             }
         })
 
@@ -89,20 +114,26 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
             Timber.e("Error while loading Games: $error")
 
-            if (error?.localizedMessage?.contains("Unable to resolve host") == true) {
-                Snackbar.make(
-                    coordinator,
+            when {
+                error?.localizedMessage?.contains("Unable to resolve host") == true -> showSnackBar(
                     "Could not update games, are you connected to the internet?",
-                    Snackbar.LENGTH_LONG
-                ).show()
-            } else if (viewModel.data.value?.isEmpty() != false) { // If the  list is null or empty, we assume fetching has failed for the player.
-                Snackbar.make(
-                    coordinator,
-                    "We couldn't find any games in your library.",
-                    Snackbar.LENGTH_LONG
+                    Snackbar.LENGTH_LONG,
+                    "",
+                    null
                 )
-                    .setAction("Retry") {
-                    }.show()
+                // If the  list is null or empty, we assume fetching has failed for the player.
+                viewModel.games.value?.isEmpty() == true ->
+                    showSnackBar(
+                        "We couldn't find any games in your library.",
+                        Snackbar.LENGTH_LONG,
+                        "Retry",
+                        View.OnClickListener { viewModel.fetchGames() }
+                    )
+                viewModel.games.value == null -> showSnackBar(
+                    "Error while fetching games.",
+                    Snackbar.LENGTH_LONG,
+                    "Retry",
+                    View.OnClickListener { viewModel.fetchGames() })
             }
         })
 
@@ -110,10 +141,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         initRecyclerView()
 
         viewModel.fetchGames()
-    }
-
-    override fun updateAchievementsForGame(appId: String) {
-        viewModel.updateAchievementsForGame(appId)
     }
 
     override fun onAttach(context: Context) {
@@ -124,19 +151,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     private fun initScrollFab() {
         fab.setOnClickListener {
-            list_games.scrollToPosition(0)
+            recycler_view_games.scrollToPosition(0)
         }
     }
 
     private fun initRecyclerView() {
-        list_games.layoutManager = LinearLayoutManager(context)
-        list_games.isNestedScrollingEnabled = false
-        list_games.setHasFixedSize(true)
-        list_games.setItemViewCacheSize(10)
+        recycler_view_games.layoutManager = LinearLayoutManager(context)
+        recycler_view_games.isNestedScrollingEnabled = false
+        recycler_view_games.setHasFixedSize(true)
+        recycler_view_games.setItemViewCacheSize(10)
 
         adapter.listener = this
-        list_games.adapter = adapter
-        list_games.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        recycler_view_games.adapter = adapter
+        recycler_view_games.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= 0) {
@@ -146,6 +173,19 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
                 }
             }
         })
+    }
+
+    private fun showSnackBar(
+        message: String,
+        duration: Int,
+        actionMessage: String = "",
+        clickListener: View.OnClickListener? = null
+    ) {
+        view?.let {
+            Snackbar.make(it, message, duration)
+                .setAction(actionMessage, clickListener)
+                .show()
+        }
     }
 
     /**

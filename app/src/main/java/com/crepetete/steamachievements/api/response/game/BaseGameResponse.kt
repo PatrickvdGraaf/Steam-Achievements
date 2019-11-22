@@ -8,5 +8,5 @@ data class BaseGameResponse(val response: GamesResponse)
 data class GamesResponse(
     @Json(name = "game_count")
     val count: Int,
-    val games: List<BaseGameInfo>
+    val games: List<BaseGameInfo>?
 )

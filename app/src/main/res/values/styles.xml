@@ -74,12 +74,7 @@
 
     <!-- ACHIEVEMENTS-->
     <style name="AppTheme.Achievements.ListItem.Icon" parent="AppTheme">
-        <item name="android:background">#00000000</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:width">@dimen/list_achievement_image_size</item>
-        <item name="android:height">@dimen/list_achievement_image_size</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.Achievements.ListItem.Text" parent="AppTheme">

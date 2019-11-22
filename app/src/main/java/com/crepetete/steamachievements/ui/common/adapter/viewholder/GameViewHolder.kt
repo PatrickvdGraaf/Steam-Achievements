@@ -2,14 +2,17 @@ package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.Bitmap
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
+import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import timber.log.Timber
@@ -34,85 +37,125 @@ class GameViewHolder(
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
-            // Set Achievements images.
-            binding.achievement1.setImageDrawable(null)
-            binding.achievement2.setImageDrawable(null)
-            binding.achievement3.setImageDrawable(null)
-            binding.achievement4.setImageDrawable(null)
-            binding.achievement5.setImageDrawable(null)
-            binding.achievement6.setImageDrawable(null)
-            binding.achievement7.setImageDrawable(null)
-            binding.achievement8.setImageDrawable(null)
+            setGameBanner(dataItem.getImageUrl())
+            setAchievementsImages(dataItem.getAchievements())
+        }
+    }
 
-            val achievements = game.achievements
-            val latestAchievements = achievements
-                .filter { achievement -> achievement.achieved }
-                .sortedWith(Order.LatestAchievedOrder())
-                .take(10)
+    /**
+     * While setting the image banner, we also attempt to generate a fitting background color for
+     * the CardView based on the colors in the banner image. This is done async using [Palette] when
+     * the image is successfully loaded.
+     */
+    private fun setGameBanner(url: String) {
+        binding.pulsator.start()
+        Glide.with(binding.imageViewGameBanner)
+            .asBitmap()
+            .load(url)
+            .listener(object : RequestListener<Bitmap> {
+                /*
+                 * On Error, set the image in the banner to null to prevent cache issues in the
+                 * list. Then stop the loader and replace the loader image with an image that
+                 * indicates that the banner could not be fetched.
+                 */
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Timber.w(e, "Error while loading achievement image from url: $url.")
 
-            val showAchievements = if (latestAchievements.isEmpty()) {
-                achievements
-            } else {
-                latestAchievements
-            }
+                    binding.imageViewGameBanner.setImageDrawable(null)
 
-            showAchievements.forEachIndexed { index, achievement ->
-                val view = when (index) {
-                    0 -> binding.achievement1
-                    1 -> binding.achievement2
-                    2 -> binding.achievement3
-                    3 -> binding.achievement4
-                    4 -> binding.achievement5
-                    5 -> binding.achievement6
-                    6 -> binding.achievement7
-                    else -> binding.achievement8
+                    binding.pulsator.stop()
+                    binding.loaderButton.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            itemView.context,
+                            R.drawable.ic_image_failed
+                        )
+                    )
+
+                    return false
                 }
 
-                Glide.with(view)
-                    .load(achievement.getActualIconUrl())
-                    .override(36)
-                    .into(view)
+                /*
+                 * On Success, set the Card Background to the Dark Muted Swatch, or
+                 * colorPrimaryDark if Swatch generation fails.
+                 */
+                override fun onResourceReady(
+                    resource: Bitmap?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    dataSource: com.bumptech.glide.load.DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.pulsator.stop()
+                    binding.pulsator.visibility = View.GONE
+
+                    resource?.let { bitmap ->
+                        Palette.from(bitmap).generate { palette ->
+                            binding.cardViewGame.setCardBackgroundColor(
+                                palette?.darkMutedSwatch?.rgb ?: ContextCompat.getColor(
+                                    binding.root.context,
+                                    R.color.colorPrimaryDark
+                                )
+                            )
+                        }
+                    }
+
+                    return false
+                }
+            })
+            .into(binding.imageViewGameBanner)
+    }
+
+    /**
+     * Loads images in the Achievements row. It tries to get the 8 most recently achieved
+     * achievements and fills the rest with achievements in the order we fetched them from the
+     * backend.
+     */
+    private fun setAchievementsImages(achievements: List<Achievement>) {
+        binding.achievement1.setImageDrawable(null)
+        binding.achievement2.setImageDrawable(null)
+        binding.achievement3.setImageDrawable(null)
+        binding.achievement4.setImageDrawable(null)
+        binding.achievement5.setImageDrawable(null)
+        binding.achievement6.setImageDrawable(null)
+        binding.achievement7.setImageDrawable(null)
+        binding.achievement8.setImageDrawable(null)
+
+        val showAchievements = achievements
+            .filter { achievement -> achievement.achieved }
+            .sortedWith(Order.LatestAchievedOrder())
+            .take(8)
+            .toMutableList()
+        showAchievements.addAll(achievements)
+
+        showAchievements.forEachIndexed { index, achievement ->
+            val view = when (index) {
+                0 -> binding.achievement1
+                1 -> binding.achievement2
+                2 -> binding.achievement3
+                3 -> binding.achievement4
+                4 -> binding.achievement5
+                5 -> binding.achievement6
+                6 -> binding.achievement7
+                7 -> binding.achievement8
+                else -> null
             }
 
-            // Set Game Banner.
-            Glide.with(binding.imageViewGameBanner)
-                .asBitmap()
-                .load(dataItem.getImageUrl())
-                .listener(object : RequestListener<Bitmap> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Bitmap>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Timber.w(
-                            e,
-                            "Error while loading image from url: ${dataItem.getImageUrl()}."
-                        )
-
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Bitmap?,
-                        model: Any?,
-                        target: Target<Bitmap>?,
-                        dataSource: com.bumptech.glide.load.DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        resource?.let { bitmap ->
-                            Palette.from(bitmap).generate { palette ->
-                                palette?.darkMutedSwatch?.rgb?.let { rgb ->
-                                    binding.cardViewGame.setCardBackgroundColor(rgb)
-                                    binding.cardViewGame.setCardBackgroundColor(rgb)
-                                }
-                            }
-                        }
-
-                        return false
-                    }
-                })
-                .into(binding.imageViewGameBanner)
+            view?.let { imageView ->
+                Glide.with(imageView)
+                    .load(achievement.getActualIconUrl())
+                    .placeholder(R.drawable.ic_image_loading)
+                    .error(R.drawable.ic_image_failed)
+                    .override(
+                        binding.root.context.resources
+                            .getDimensionPixelSize(R.dimen.size_achievement_small)
+                    )
+                    .into(imageView)
+            }
         }
     }
 }

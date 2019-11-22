@@ -16,7 +16,6 @@ import kotlinx.android.parcel.Parcelize
 class Game(
     @Embedded
     var game: BaseGameInfo? = null,
-
     @Relation(parentColumn = "appId", entityColumn = "appId", entity = Achievement::class)
     var achievements: List<Achievement> = listOf()
 ) : Parcelable {
@@ -47,6 +46,24 @@ class Game(
     fun getPlaytime() = game?.playTime ?: 0L
     fun getBannerUrl() =
         "http://media.steampowered.com/steamcommunity/public/images/apps" +
-                "/${game?.appId ?: "0"}" +
-                "/${game?.logoUrl ?: ""}.jpg"
+                "/${game?.appId}" +
+                "/${game?.logoUrl}" +
+                ".jpg"
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is Game) {
+            (other.getName() == getName() &&
+                    other.getBannerUrl() == getBannerUrl() &&
+                    other.getAmountOfAchievements() == getAmountOfAchievements() &&
+                    other.getPercentageCompleted() == getPercentageCompleted() &&
+                    other.getPlaytime() == getPlaytime() &&
+                    other.getRecentPlaytime() == getRecentPlaytime())
+        } else {
+            false
+        }
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
 }

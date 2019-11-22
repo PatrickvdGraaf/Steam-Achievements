@@ -123,13 +123,6 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     }
 
     /**
-     * Shows the date and amount of the day on which the user achieved most of his emptyAchievements.
-     */
-    fun showBestDay(day: Pair<String, Int>) {
-        bestDayTextView.text = "${day.first}; ${day.second} emptyAchievements."
-    }
-
-    /**
      * Shows the users latest emptyAchievements in the RecyclerView and the graph.
      */
     private fun showLatestAchievements(
