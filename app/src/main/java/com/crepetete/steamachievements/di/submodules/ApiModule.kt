@@ -11,6 +11,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
 import dagger.Module
 import dagger.Provides
+import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -23,6 +24,15 @@ import javax.inject.Singleton
 
 @Module
 class ApiModule {
+
+    /**
+     * Provide [AuthorizationService].
+     */
+    @Provides
+    @Singleton
+    fun proviveAuthorizationService(context: Context): AuthorizationService {
+        return AuthorizationService(context)
+    }
 
     @Provides
     @Singleton

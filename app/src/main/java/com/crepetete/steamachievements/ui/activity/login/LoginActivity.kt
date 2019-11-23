@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.ui.activity.login
 
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -21,6 +22,8 @@ import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.main.MainActivity
 import com.crepetete.steamachievements.vo.Player
 import kotlinx.android.synthetic.main.activity_login.*
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationService
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -37,6 +40,9 @@ class LoginActivity : AppCompatActivity(), Injectable {
     @Inject
     lateinit var viewModel: AuthViewModel
 
+    // Initialized lazily so the context is not null.
+    private val authorizationService by lazy { AuthorizationService(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
@@ -44,6 +50,10 @@ class LoginActivity : AppCompatActivity(), Injectable {
 
         // Set listeners
         with(viewModel) {
+            authState.observe(this@LoginActivity, Observer { authState ->
+                // TODO
+            })
+
             currentPlayerId.observe(this@LoginActivity, Observer { id ->
                 id?.let {
                     if (id != Player.INVALID_ID) {
@@ -74,7 +84,33 @@ class LoginActivity : AppCompatActivity(), Injectable {
             })
         }
 
-        setupWebView()
+        button_login.setOnClickListener { view ->
+            requestAuth(view)
+        }
+
+        // setupWebView()
+    }
+
+    /**
+     * To request authorization, we have to create an [AuthorizationRequest].
+     * We leave the creation of this request to our [viewModel], as we might want to use this
+     * request elsewhere in our code where the [AuthViewModel] is also used.
+     */
+    private fun requestAuth(view: View) {
+        val authRequest: AuthorizationRequest = viewModel.getAuthRequest()
+
+        val context = view.context
+
+        val postAuthorizationIntent = Intent(context, LoginActivity::class.java)
+        postAuthorizationIntent.action = "com.google.codelabs.appauth.HANDLE_AUTHORIZATION_RESPONSE"
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            authRequest.hashCode(),
+            postAuthorizationIntent,
+            0
+        )
+
+//        authorizationService.performAuthorizationRequest(authRequest, pendingIntent)
     }
 
     @SuppressLint("SetJavaScriptEnabled")

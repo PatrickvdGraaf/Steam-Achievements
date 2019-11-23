@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.repository.storage
 
 import com.crepetete.steamachievements.vo.Player
+import net.openid.appauth.AuthState
 
 /**
  *
@@ -13,4 +14,7 @@ import com.crepetete.steamachievements.vo.Player
 interface Storage {
     fun getPlayerId(defValue: String = Player.INVALID_ID): String
     fun setPlayerId(playerId: String)
+    fun persistAuthState(authState: AuthState)
+    fun getAuthState(): String?
+    fun clearAuthState()
 }
