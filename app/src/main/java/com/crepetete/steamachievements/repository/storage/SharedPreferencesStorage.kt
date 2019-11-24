@@ -31,7 +31,7 @@ class SharedPreferencesStorage @Inject constructor(context: Context) : Storage {
 
     override fun persistAuthState(authState: AuthState) {
         sharedPreferences.edit()
-            .putString(AUTH_STATE, authState.toJsonString())
+            .putString(AUTH_STATE, authState.jsonSerializeString())
             .apply()
     }
 

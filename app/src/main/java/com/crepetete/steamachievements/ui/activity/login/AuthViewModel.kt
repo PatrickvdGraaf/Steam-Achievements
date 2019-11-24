@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
 import androidx.lifecycle.*
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.ResourceState
@@ -14,10 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationRequest
-import net.openid.appauth.AuthorizationServiceConfiguration
-import net.openid.appauth.TokenResponse
+import net.openid.appauth.*
 import org.json.JSONException
 import timber.log.Timber
 import javax.inject.Inject
@@ -92,27 +90,32 @@ class AuthViewModel @Inject constructor(
         enablePostAuthorizationFlows()
     }
 
+    /**
+     * More information on the [AuthorizationRequest] and the AppAuth library's implementation:
+     * https://codelabs.developers.google.com/codelabs/appauth-android-codelab
+     */
     fun getAuthRequest(): AuthorizationRequest {
         val serviceConfiguration = AuthorizationServiceConfiguration(
             Uri.parse(
-                "https://steamcommunity.com/openid/login" +
-                        "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
-                        "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
+                "https://steamcommunity.com/openid/login/?l=english" +
+                        "&openid.return_to=https://com.crepetete.steamachievements/signin/" +
+                        "&openid.realm=https://com.crepetete.steamachievements" +
+                        "&openid.ns=http://specs.openid.net/auth/2.0" +
+                        "&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
                         "&openid.mode=checkid_setup" +
-                        "&openid.ns=http://specs.openid.net/auth/2.0"
+                        "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select"
             ) /* auth endpoint */,
-            Uri.parse("https://steamcommunity.com/openid") /* token endpoint */
+            Uri.parse("https://www.googleapis.com/oauth2/v4/token") /* token endpoint */
         )
 
-        val clientId = "511828570984-fuprh0cm7665emlne3rnf9pk34kkn86s.apps.googleusercontent.com"
-        val redirectUri = Uri.parse("https://steamcommunity.com/openid/login")
+        val clientId = BuildConfig.STEAM_API_KEY
+        val redirectUri = Uri.parse("com.crepetete.steamachievements/oauth2redirect")
         val builder = AuthorizationRequest.Builder(
             serviceConfiguration,
-            clientId,
-            AuthorizationRequest.RESPONSE_TYPE_CODE,
-            redirectUri
+            clientId, // the client ID, typically pre-registered and static
+            ResponseTypeValues.ID_TOKEN, // the response_type value
+            redirectUri // the redirect URI to which the auth response is sent
         )
-        builder.setScopes("profile")
         return builder.build()
     }
 
@@ -147,8 +150,12 @@ class AuthViewModel @Inject constructor(
      *
      * @param intent represents the [Intent] from the Custom Tabs or the System Browser.
      */
-    private fun handleAuthorizationResponse(intent: Intent) {
-        // code from the step 'Handle the Authorization Response' goes here.
+    fun handleAuthorizationResponse(intent: Intent) {
+        val response = AuthorizationResponse.fromIntent(intent)
+        val error = AuthorizationException.fromIntent(intent)
+        val authState = AuthState(response, error)
+
+        _authState.value = authState
     }
 
     private fun persistAuthState(authState: AuthState) {
@@ -159,7 +166,7 @@ class AuthViewModel @Inject constructor(
         storage.getAuthState()?.let { jsonString ->
             if (!TextUtils.isEmpty(jsonString)) {
                 try {
-                    return AuthState.fromJson(jsonString)
+                    return AuthState.jsonDeserialize(jsonString)
                 } catch (jsonException: JSONException) {
                     // should never happen
                     Timber.e(jsonException)

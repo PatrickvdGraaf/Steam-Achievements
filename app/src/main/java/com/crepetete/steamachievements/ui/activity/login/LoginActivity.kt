@@ -30,6 +30,12 @@ import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), Injectable {
     companion object {
+        private const val USED_INTENT = "USED_INTENT"
+
+        // Linked to the intent filter in the AndroidManifest, ensure that the name matches.
+        private const val AUTH_RESPONSE =
+            "com.crepetete.steamachievements.HANDLE_AUTHORIZATION_RESPONSE"
+
         fun getInstance(context: Context): Intent {
             val intent = Intent(context, LoginActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -51,7 +57,14 @@ class LoginActivity : AppCompatActivity(), Injectable {
         // Set listeners
         with(viewModel) {
             authState.observe(this@LoginActivity, Observer { authState ->
-                // TODO
+                authState?.let { state ->
+                    if (state.isAuthorized) {
+                        // TODO fetch user
+                    } else if (state.authorizationException != null) {
+                        Timber.e(state.authorizationException)
+                        // TODO show error
+                    }
+                }
             })
 
             currentPlayerId.observe(this@LoginActivity, Observer { id ->
@@ -91,6 +104,30 @@ class LoginActivity : AppCompatActivity(), Injectable {
         // setupWebView()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkIntent(intent)
+    }
+
+    private fun checkIntent(intent: Intent?) {
+        if (intent != null) {
+            when (intent.action) {
+                AUTH_RESPONSE -> if (!intent.hasExtra(USED_INTENT)) {
+                    viewModel.handleAuthorizationResponse(intent)
+                    intent.putExtra(USED_INTENT, true)
+                }
+                else -> {
+                    // Do nothing
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkIntent(intent)
+    }
+
     /**
      * To request authorization, we have to create an [AuthorizationRequest].
      * We leave the creation of this request to our [viewModel], as we might want to use this
@@ -102,7 +139,7 @@ class LoginActivity : AppCompatActivity(), Injectable {
         val context = view.context
 
         val postAuthorizationIntent = Intent(context, LoginActivity::class.java)
-        postAuthorizationIntent.action = "com.google.codelabs.appauth.HANDLE_AUTHORIZATION_RESPONSE"
+        postAuthorizationIntent.action = AUTH_RESPONSE
         val pendingIntent = PendingIntent.getActivity(
             context,
             authRequest.hashCode(),
@@ -110,7 +147,11 @@ class LoginActivity : AppCompatActivity(), Injectable {
             0
         )
 
-//        authorizationService.performAuthorizationRequest(authRequest, pendingIntent)
+        authorizationService.performAuthorizationRequest(authRequest, pendingIntent, pendingIntent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -151,8 +192,8 @@ class LoginActivity : AppCompatActivity(), Injectable {
                     "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
                     "&openid.mode=checkid_setup" +
                     "&openid.ns=http://specs.openid.net/auth/2.0" +
-                    "&openid.realm=https://$realm" +
-                    "&openid.return_to=https://$realm/signin/")
+                    "&openid.realm=https://Steam Achievements" +
+                    "&openid.return_to=https://Steam Achievements/signin/")
         )
     }
 
