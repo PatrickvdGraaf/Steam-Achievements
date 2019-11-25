@@ -30,7 +30,19 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" /> <!-- LOGIN -->
-        <activity android:name=".ui.activity.login.LoginActivity" />
+        <activity android:name=".ui.activity.login.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="com.crepetete.achievements"
+                    android:path="/signin" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.activity.main.MainActivity">
             <meta-data
                 android:name="android.app.searchable"

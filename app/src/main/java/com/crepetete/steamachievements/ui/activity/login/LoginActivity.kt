@@ -1,17 +1,11 @@
 package com.crepetete.steamachievements.ui.activity.login
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.crepetete.steamachievements.R
@@ -22,7 +16,6 @@ import com.crepetete.steamachievements.ui.activity.main.MainActivity
 import com.crepetete.steamachievements.vo.Player
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity(), Injectable {
@@ -74,54 +67,41 @@ class LoginActivity : AppCompatActivity(), Injectable {
             })
         }
 
-        setupWebView()
+        val uri = intent.data
+        if (uri?.authority == getRealm()) {
+            viewModel.parseIdFromUri(uri)
+        } else {
+            setupWebView()
+        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.data?.authority == getRealm()) {
+            viewModel.parseIdFromUri(intent.data)
+        }
+    }
+
     private fun setupWebView() {
         val realm = getRealm()
 
-        webView.settings.javaScriptEnabled = true
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                val uri = Uri.parse(url)
-                if (uri.authority == realm) {
-                    viewModel.parseIdFromUri(uri)
-                }
-            }
-
-            override fun onReceivedError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                error: WebResourceError?
-            ) {
-                super.onReceivedError(view, request, error)
-                Timber.e(error?.toString())
-
-                webView.stopLoading()
-            }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-
-                webView.stopLoading()
-            }
-        }
-
-        webView.loadUrl(
-            ("https://steamcommunity.com/openid/login" +
-                    "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
-                    "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
-                    "&openid.mode=checkid_setup" +
-                    "&openid.ns=http://specs.openid.net/auth/2.0" +
-                    "&openid.realm=https://$realm" +
-                    "&openid.return_to=https://$realm/signin/")
-        )
+        val browserIntent =
+            Intent(
+                Intent.ACTION_VIEW, Uri.parse(
+                    "https://steamcommunity.com/openid/login" +
+                            "?openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
+                            "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
+                            "&openid.mode=checkid_setup" +
+                            "&openid.ns=http://specs.openid.net/auth/2.0" +
+                            "&openid.realm=https://$realm" +
+                            "&openid.return_to=https://$realm/signin"
+                )
+            )
+        startActivity(browserIntent)
     }
 
     // TODO move this to ViewModel once a StringManager is implemented
     private fun getRealm(): String {
-        return getString(R.string.app_name).toLowerCase(Locale.ENGLISH)
+        return "com.crepetete.achievements"
     }
 }
