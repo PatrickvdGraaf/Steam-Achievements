@@ -11,6 +11,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
+import com.crepetete.steamachievements.ui.common.adapter.callback.ColorListener
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
@@ -24,7 +25,7 @@ class GameViewHolder(
     private val binding: ViewHolderGameBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(game: Game?) {
+    fun bind(game: Game?, colorListener: ColorListener) {
         if (game != null) {
             val dataItem = GameData(game)
             binding.gameData = dataItem
@@ -37,7 +38,7 @@ class GameViewHolder(
 
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
-            setGameBanner(dataItem.getImageUrl())
+            setGameBanner(game, colorListener)
             setAchievementsImages(dataItem.getAchievements())
         }
     }
@@ -47,7 +48,9 @@ class GameViewHolder(
      * the CardView based on the colors in the banner image. This is done async using [Palette] when
      * the image is successfully loaded.
      */
-    private fun setGameBanner(url: String) {
+    private fun setGameBanner(game: Game, colorListener: ColorListener) {
+        val url = game.getBannerUrl()
+
         binding.pulsator.start()
         Glide.with(binding.imageViewGameBanner)
             .asBitmap()
@@ -95,12 +98,14 @@ class GameViewHolder(
 
                     resource?.let { bitmap ->
                         Palette.from(bitmap).generate { palette ->
-                            binding.cardViewGame.setCardBackgroundColor(
+                            val backgroundColor =
                                 palette?.darkMutedSwatch?.rgb ?: ContextCompat.getColor(
                                     binding.root.context,
                                     R.color.colorPrimaryDark
                                 )
-                            )
+                            binding.cardViewGame.setCardBackgroundColor(backgroundColor)
+
+                            colorListener.onPrimaryGameColorCreated(game, backgroundColor)
                         }
                     }
 
@@ -116,6 +121,7 @@ class GameViewHolder(
      * backend.
      */
     private fun setAchievementsImages(achievements: List<Achievement>) {
+        // Empty all ImageViews to prevent wrong images appearing when the user scrolls fast.
         binding.achievement1.setImageDrawable(null)
         binding.achievement2.setImageDrawable(null)
         binding.achievement3.setImageDrawable(null)
@@ -125,12 +131,14 @@ class GameViewHolder(
         binding.achievement7.setImageDrawable(null)
         binding.achievement8.setImageDrawable(null)
 
+        // Take the last 8 unlocked achievements and add 8 more to fill all view in case the player
+        // doesn't have 8 unlocked achievements.
         val showAchievements = achievements
             .filter { achievement -> achievement.achieved }
             .sortedWith(Order.LatestAchievedOrder())
             .take(8)
             .toMutableList()
-        showAchievements.addAll(achievements)
+        showAchievements.addAll(achievements.take(8))
 
         showAchievements.forEachIndexed { index, achievement ->
             val view = when (index) {

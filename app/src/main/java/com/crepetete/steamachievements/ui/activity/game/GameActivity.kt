@@ -24,15 +24,14 @@ import kotlinx.android.synthetic.main.activity_game.*
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * Shows a more detailed overview of the available information of a [Game] and its [Achievement]s.
+ */
 class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
     HorizontalAchievementsAdapter.OnAchievementClickListener {
 
     companion object {
-        private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
-        private const val INTENT_PALETTE = "INTENT_PALETTE"
-
-        private const val INVALID_ID = "-1"
 
         fun getInstance(context: Context, game: Game): Intent {
             return Intent(context, GameActivity::class.java).apply {
@@ -64,7 +63,10 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         // Retrieve data.
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
+            collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
+            updateNavigationBarColor(game.getPrimaryColor())
             setGameInfo(game)
+
             viewModel.setGame(game)
         }
 
@@ -94,6 +96,11 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         startActivity(TransparentPagerActivity.getInstance(this, index, sortedList))
     }
 
+    private fun updateNavigationBarColor(primaryColor: Int) {
+        collapsingToolbar.setContentScrimColor(primaryColor)
+        collapsingToolbar.setStatusBarScrimColor(primaryColor)
+    }
+
     private fun setGameInfo(game: Game?) {
         if (game == null) {
             return
@@ -106,6 +113,8 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
 
+        banner.load(game.getBannerUrl())
+
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {
             binding.textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
@@ -114,9 +123,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         }
 
         binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
-
-        // Load Banner
-        banner.load(data.getImageUrl())
 
         // Prepare Achievements RecyclerView.
         recyclerViewAchievements.layoutManager = LinearLayoutManager(
