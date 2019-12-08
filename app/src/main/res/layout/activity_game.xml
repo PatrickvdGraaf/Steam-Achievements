@@ -32,8 +32,9 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 android:transitionName="title"
+                app:collapsedTitleTextAppearance="@style/CollapsedToolBar"
                 app:contentScrim="@color/colorPrimary"
-                app:expandedTitleTextAppearance="@style/ExpandedAppBar"
+                app:expandedTitleTextAppearance="@style/ExpandedToolBar"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:title="@{gameData.getName()}">
 
@@ -80,7 +81,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/default_margin_halved"
-                    android:layout_marginTop="@dimen/default_margin"
                     android:layout_marginEnd="@dimen/default_margin_halved"
                     android:layout_marginBottom="@dimen/default_margin"
                     android:elevation="@dimen/elevation_card_large"

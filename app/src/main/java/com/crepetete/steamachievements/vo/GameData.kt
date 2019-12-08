@@ -6,6 +6,11 @@ import androidx.databinding.Bindable
 import com.crepetete.steamachievements.R
 import java.text.DecimalFormat
 
+/**
+ * A representation of a Game object used in the activity_game view binding. Provides utility
+ * methods that allow the binding to fill in all the requested information from the [game] object in
+ * readable form.
+ */
 class GameData(private val game: Game) : BaseObservable() {
 
     @Bindable
@@ -87,7 +92,9 @@ class GameData(private val game: Game) : BaseObservable() {
             minAbbr = context.getString(R.string.abbr_minutes)
         }
 
-        return if (hours <= 0) {
+        return if (hours <= 0 && minutes <= 0) {
+            return ""
+        } else if (hours <= 0) {
             "$minutes$minAbbr"
         } else {
             "$hours$hoursAbbr, $minutes$minAbbr"

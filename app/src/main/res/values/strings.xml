@@ -29,4 +29,8 @@
     <string name="sorting_order_not_achieved">Chronological</string>
     <string name="sorting_order_rarity">Rarity</string>
     <string name="header_progress">Progress</string>
+    <string name="achievements_completed_percentage">%s% (%s/%s) achievements.</string>
+    <string name="achievements_size">%s achievements.</string>
+    <string name="achievements_none">No achievements.</string>
+    <string name="pattern_decimal">0.##</string>
 </resources>
