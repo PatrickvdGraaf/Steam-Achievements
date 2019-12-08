@@ -3,6 +3,8 @@ package com.crepetete.steamachievements.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.ApiSuccessResponse
+import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.db.dao.GamesDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
@@ -140,5 +142,26 @@ class GameRepository @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             gamesDao.upsert(item)
         }
+    }
+
+    suspend fun getNews(appId: String): LiveResource<List<NewsItem>> {
+        return object : NetworkBoundResource<List<NewsItem>, List<NewsItem>?>() {
+            override suspend fun saveCallResult(data: List<NewsItem>?) {
+            }
+
+            override fun shouldFetch(data: List<NewsItem>?) = true
+
+            override suspend fun loadFromDb(): List<NewsItem>? {
+                return null
+            }
+
+            override suspend fun createCall(): List<NewsItem>? {
+                val response = api.getNews(appId)
+                if (response is ApiSuccessResponse) {
+                    return response.body.getNews()
+                }
+                return null
+            }
+        }.asLiveResource()
     }
 }

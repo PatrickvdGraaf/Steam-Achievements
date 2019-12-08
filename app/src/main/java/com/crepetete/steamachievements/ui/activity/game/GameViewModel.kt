@@ -1,31 +1,65 @@
 package com.crepetete.steamachievements.ui.activity.game
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.palette.graphics.Palette
+import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.repository.GameRepository
+import com.crepetete.steamachievements.repository.resource.LiveResource
+import com.crepetete.steamachievements.repository.resource.ResourceState
 import com.crepetete.steamachievements.ui.common.adapter.sorting.AchievementSortedListImpl
 import com.crepetete.steamachievements.ui.common.adapter.sorting.Order
+import com.crepetete.steamachievements.util.extensions.bindObserver
 import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GameViewModel @Inject constructor(
     private val gameRepo: GameRepository
 ) : ViewModel() {
 
+    private val mainJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
+    private var newsJob: Job? = null
+
     private val _appId = MutableLiveData<AppId>()
     val appId: LiveData<AppId>
         get() = _appId
 
+    // Game
     val game: LiveData<Game> = Transformations
         .switchMap(_appId) { id ->
             id.ifExists { appId ->
                 gameRepo.getGame(appId)
             }
+        }
+
+    // News
+    private var _newsLiveResource: LiveResource<List<NewsItem>>? = null
+    private val _news = MediatorLiveData<List<NewsItem>?>()
+    private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
+    private val _newsLoadingError = MediatorLiveData<Exception?>()
+
+    val news: LiveData<List<NewsItem>?>
+        get() {
+            Transformations.map(_appId) { id ->
+                if (id != null) {
+                    uiScope.launch {
+                        gameRepo.getNews(id.id).apply {
+                            _newsLiveResource = this
+                            newsJob = this.job
+                            bindObserver(_news, this.data)
+                            bindObserver(_newsLoadingState, this.state)
+                            bindObserver(_newsLoadingError, this.error)
+                        }
+                    }
+                }
+            }
+            return _news
         }
 
     private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
@@ -35,7 +69,8 @@ class GameViewModel @Inject constructor(
     private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
         0 to Order.LatestAchievedOrder(),
         1 to Order.RarityOrder(),
-        2 to Order.NotAchievedOrder())
+        2 to Order.NotAchievedOrder()
+    )
 
     /* Colors */
     private val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()

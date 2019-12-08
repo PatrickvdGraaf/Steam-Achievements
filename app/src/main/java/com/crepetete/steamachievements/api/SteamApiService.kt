@@ -25,7 +25,7 @@ interface SteamApiService {
     /**
      * Returns basic profile information for a list of 64-bit Steam IDs.
      *
-     * Example URL: http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXXXXXXXXXXXXXX&steamids=76561197960435530
+     * Example URL: http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=<STEAM_API_KEY>&steamids=76561197960435530
      * (This will show Robin Walker's profile information.)
      *
      * @param id Comma-delimited list of 64 bit Steam IDs to return profile information for.
@@ -126,5 +126,5 @@ interface SteamApiService {
         @Query("appid") appId: String,
         @Query("count") count: String = "3",
         @Query("maxlength") maxLength: String = "300"
-    ): NewsResponse
+    ): ApiResponse<NewsResponse>
 }

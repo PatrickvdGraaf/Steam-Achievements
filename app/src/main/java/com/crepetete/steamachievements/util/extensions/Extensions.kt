@@ -4,6 +4,9 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.view.View
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.Dispatchers.Default
@@ -80,4 +83,12 @@ fun CardView.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration:
         setCardBackgroundColor(animator.animatedValue as Int)
     }
     colorAnimation.start()
+}
+
+fun <R> ViewModel.bindObserver(observer: MediatorLiveData<R?>?, source: LiveData<R?>) {
+    observer?.apply {
+        addSource(source) {
+            postValue(it)
+        }
+    }
 }
