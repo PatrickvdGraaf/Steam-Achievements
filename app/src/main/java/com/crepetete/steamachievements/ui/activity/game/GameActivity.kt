@@ -21,6 +21,7 @@ import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import kotlinx.android.synthetic.main.activity_game.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -84,6 +85,12 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
             /* Sort achievements in adapter. */
             achievementsAdapter.updateSortingMethod(method)
+        })
+
+        viewModel.news.observe(this, Observer { nullableNews ->
+            nullableNews?.let { news ->
+                Timber.d(news.toString())
+            }
         })
 
         // Set Button Listeners.

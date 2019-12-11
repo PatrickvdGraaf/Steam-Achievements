@@ -2,6 +2,7 @@ package com.crepetete.steamachievements.ui.common.adapter.sorting
 
 import android.content.res.Resources
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.vo.Achievement
 import timber.log.Timber
 import java.util.*
@@ -22,9 +23,7 @@ class Order {
 
     class LatestAchievedOrder : BaseComparator<Achievement> {
 
-        private val steamReleaseDate = Calendar.getInstance().apply {
-            set(2003, 9, 12, 0, 0, 0)
-        }.time
+        private val steamReleaseDate = Constants.steamReleaseCalendar.time
 
         override fun compare(o1: Achievement, o2: Achievement) = try {
             val unlockTime1 = o1.unlockTime

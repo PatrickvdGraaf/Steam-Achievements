@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.util.extensions
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -59,7 +60,7 @@ fun List<Game>.sortByPlaytime(): List<Game> {
     })
 }
 
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
+fun View.animateBackground(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
     if (colorTo == null) {
         return
     }
@@ -72,7 +73,11 @@ fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Lon
     colorAnimation.start()
 }
 
-fun CardView.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
+fun CardView.animateBackground(
+    @ColorInt colorFrom: Int,
+    @ColorInt colorTo: Int?,
+    duration: Long = 400
+) {
     if (colorTo == null) {
         return
     }

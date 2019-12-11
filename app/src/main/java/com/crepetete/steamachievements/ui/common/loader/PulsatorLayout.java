@@ -92,7 +92,7 @@ public class PulsatorLayout extends RelativeLayout {
 
         // get attributes
         TypedArray attr = context.getTheme().obtainStyledAttributes(
-            attrs, R.styleable.Pulsator4Droid, 0, 0);
+                attrs, R.styleable.Pulsator4Droid, 0, 0);
 
         mCount = DEFAULT_COUNT;
         mDuration = DEFAULT_DURATION;
@@ -104,13 +104,13 @@ public class PulsatorLayout extends RelativeLayout {
         try {
             mCount = attr.getInteger(R.styleable.Pulsator4Droid_pulse_count, DEFAULT_COUNT);
             mDuration = attr.getInteger(R.styleable.Pulsator4Droid_pulse_duration,
-                DEFAULT_DURATION);
+                    DEFAULT_DURATION);
             mRepeat = attr.getInteger(R.styleable.Pulsator4Droid_pulse_repeat, DEFAULT_REPEAT);
             mStartFromScratch = attr.getBoolean(R.styleable.Pulsator4Droid_pulse_startFromScratch,
-                DEFAULT_START_FROM_SCRATCH);
+                    DEFAULT_START_FROM_SCRATCH);
             mColor = attr.getColor(R.styleable.Pulsator4Droid_pulse_color, DEFAULT_COLOR);
             mInterpolator = attr.getInteger(R.styleable.Pulsator4Droid_pulse_interpolator,
-                DEFAULT_INTERPOLATOR);
+                    DEFAULT_INTERPOLATOR);
         } finally {
             attr.recycle();
         }
@@ -295,8 +295,8 @@ public class PulsatorLayout extends RelativeLayout {
     private void build() {
         // create views and animators
         LayoutParams layoutParams = new LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT);
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
 
         int repeatCount = (mRepeat == INFINITE) ? ObjectAnimator.INFINITE : mRepeat;
 
@@ -381,6 +381,11 @@ public class PulsatorLayout extends RelativeLayout {
             mAnimatorSet.cancel();
             mAnimatorSet = null;
         }
+    }
+
+    public void hide() {
+        stop();
+        setVisibility(View.GONE);
     }
 
     private class PulseView extends View {
