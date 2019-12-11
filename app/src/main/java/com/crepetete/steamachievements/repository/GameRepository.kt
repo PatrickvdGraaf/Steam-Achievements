@@ -33,6 +33,7 @@ class GameRepository @Inject constructor(
 
     private companion object {
         const val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
+        const val FETCH_NEWS_KEY = "FETCH_NEWS_KEY"
     }
 
     // Refresh games every day
@@ -153,16 +154,16 @@ class GameRepository @Inject constructor(
                 }
             }
 
-            override fun shouldFetch(data: List<NewsItem>?) = true
+            override fun shouldFetch(data: List<NewsItem>?): Boolean {
+                return true
+            }
 
             override suspend fun loadFromDb(): List<NewsItem>? {
                 return newsDao.getNewsForGame(appId)?.takeLast(3)
             }
 
             override suspend fun createCall(): List<NewsItem>? {
-                val response = api.getNews(appId)
-                Timber.d(response.appNews.newsItems.toString())
-                return response.appNews.newsItems
+                return api.getNews(appId).appNews.newsItems
             }
         }.asLiveResource()
     }

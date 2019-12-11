@@ -66,7 +66,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:transitionName="background"
+            android:fitsSystemWindows="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -208,6 +208,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:paddingStart="@dimen/default_margin_halved"
+                            android:paddingTop="@dimen/default_margin_halved"
                             android:paddingEnd="@dimen/default_margin_halved"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -314,8 +315,6 @@
                             style="@style/AppTheme.Text.Header"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/default_margin"
-                            android:layout_marginEnd="@dimen/default_margin"
                             android:text="@string/header_news"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -337,6 +336,7 @@
                             android:id="@+id/recycler_view_news"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/default_margin"
                             android:nestedScrollingEnabled="false"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

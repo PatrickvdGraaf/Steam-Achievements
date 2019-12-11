@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.ui.common.graph
 
-import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -72,7 +71,7 @@ class AchievementsGraphViewUtil {
                     )
                     graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
                         context,
-                        R.color.colorPrimary
+                        R.color.colorPrimaryDark
                     )
 
                     // Styling series
@@ -80,7 +79,6 @@ class AchievementsGraphViewUtil {
                     paint.style = Paint.Style.STROKE
                     paint.color = ContextCompat.getColor(context, R.color.colorAccent)
                     paint.strokeWidth = 4F
-                    paint.pathEffect = DashPathEffect(floatArrayOf(8f, 5f), 0f)
                     series.setCustomPaint(paint)
 
                     // Setting the result of minBy to nonnull, because we checked if the pairs array

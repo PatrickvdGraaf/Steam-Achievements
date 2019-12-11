@@ -125,7 +125,7 @@ interface SteamApiService {
     suspend fun getNews(
         @Query("appid") appId: String,
         @Query("count") count: String = "3",
-        @Query("maxlength") maxLength: String = "600",
+        @Query("maxlength") maxLength: String = "10000",
         @Query("format") format: String = "json"
     ): NewsResponse
 }

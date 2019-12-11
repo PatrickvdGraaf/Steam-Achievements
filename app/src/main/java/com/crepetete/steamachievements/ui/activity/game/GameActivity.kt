@@ -64,7 +64,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         setSupportActionBar(toolbar)
 
         recycler_view_news.adapter = newsAdapter
-        recycler_view_news.setHasFixedSize(true)
         recycler_view_news.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
@@ -128,7 +127,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         val data = GameData(game)
         binding.gameData = data
 
-        // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
 
         banner.load(game.getBannerUrl())
@@ -151,6 +149,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         // Set RecyclerView adapter.
         recyclerViewAchievements.adapter = achievementsAdapter
+        recyclerViewAchievements.setHasFixedSize(true)
 
         // Move achievements to adapter.
         achievementsAdapter.setAchievements(game.achievements)

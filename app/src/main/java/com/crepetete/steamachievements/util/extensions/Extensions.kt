@@ -2,12 +2,14 @@ package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.os.Build
+import android.text.Html
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.Dispatchers.Default
@@ -90,7 +92,24 @@ fun CardView.animateBackground(
     colorAnimation.start()
 }
 
-fun <R> ViewModel.bindObserver(observer: MediatorLiveData<R?>?, source: LiveData<R?>) {
+fun TextView.setAttributedText(text: String?) {
+    setText(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(
+                text,
+                Html.FROM_HTML_MODE_LEGACY
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            Html.fromHtml(text)
+        }
+    )
+}
+
+fun <R> bindObserver(
+    observer: MediatorLiveData<R?>?,
+    source: LiveData<R?>
+) {
     observer?.apply {
         addSource(source) {
             postValue(it)
