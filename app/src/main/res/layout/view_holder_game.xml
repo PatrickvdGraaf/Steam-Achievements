@@ -141,7 +141,7 @@
                 android:layout_height="@dimen/size_achievement_small"
                 android:layout_marginStart="@dimen/default_margin"
                 android:layout_marginTop="@dimen/default_margin"
-                app:layout_constraintBottom_toTopOf="@+id/container_progress"
+                app:layout_constraintBottom_toTopOf="@+id/card_view_progress"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/separator" />
 
@@ -217,7 +217,7 @@
                 app:layout_constraintTop_toTopOf="@+id/achievement7" />
 
             <FrameLayout
-                android:id="@+id/container_progress"
+                android:id="@+id/card_view_progress"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
                 android:layout_marginStart="@dimen/default_margin"

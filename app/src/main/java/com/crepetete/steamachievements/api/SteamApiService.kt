@@ -118,13 +118,14 @@ interface SteamApiService {
      * http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=440&count=3&maxlength=300
      *
      * @param appId AppID of the game you want the news of.
-     * @param count How many news enties you want to get returned.
+     * @param count How many news entries you want to get returned.
      * @param maxLength Maximum length of each news entry.
      */
     @GET("/ISteamNews/GetNewsForApp/v0002/")
     suspend fun getNews(
         @Query("appid") appId: String,
         @Query("count") count: String = "3",
-        @Query("maxlength") maxLength: String = "300"
-    ): ApiResponse<NewsResponse>
+        @Query("maxlength") maxLength: String = "600",
+        @Query("format") format: String = "json"
+    ): NewsResponse
 }

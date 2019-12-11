@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.ui.activity.game
 
 import androidx.lifecycle.*
-import androidx.palette.graphics.Palette
 import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource
@@ -44,23 +43,7 @@ class GameViewModel @Inject constructor(
     private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _newsLoadingError = MediatorLiveData<Exception?>()
 
-    val news: LiveData<List<NewsItem>?>
-        get() {
-            Transformations.map(_appId) { id ->
-                if (id != null) {
-                    uiScope.launch {
-                        gameRepo.getNews(id.id).apply {
-                            _newsLiveResource = this
-                            newsJob = this.job
-                            bindObserver(_news, this.data)
-                            bindObserver(_newsLoadingState, this.state)
-                            bindObserver(_newsLoadingError, this.error)
-                        }
-                    }
-                }
-            }
-            return _news
-        }
+    val news: LiveData<List<NewsItem>?> = _news
 
     private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
 
@@ -71,10 +54,6 @@ class GameViewModel @Inject constructor(
         1 to Order.RarityOrder(),
         2 to Order.NotAchievedOrder()
     )
-
-    /* Colors */
-    private val vibrantColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
-    private val mutedColor: MutableLiveData<Palette.Swatch> = MutableLiveData()
 
     init {
         setAchievementSortingMethod(AchievementSortedListImpl.DEFAULT_ORDER)
@@ -103,31 +82,26 @@ class GameViewModel @Inject constructor(
      */
     fun getAchievementSortingMethod() = sortingComparator
 
-    fun updatePalette(palette: Palette) {
-        if (palette.darkMutedSwatch != null && palette.darkVibrantSwatch != null) {
-            mutedColor.postValue(palette.darkMutedSwatch)
-            vibrantColor.postValue(palette.darkVibrantSwatch)
-        } else if (palette.darkMutedSwatch != null && palette.mutedSwatch != null) {
-            mutedColor.postValue(palette.mutedSwatch)
-            vibrantColor.postValue(palette.darkMutedSwatch)
-        } else if (palette.darkVibrantSwatch != null && palette.mutedSwatch != null) {
-            mutedColor.postValue(palette.mutedSwatch)
-            vibrantColor.postValue(palette.darkVibrantSwatch)
-        } else if (palette.lightVibrantSwatch != null && palette.mutedSwatch != null) {
-            mutedColor.postValue(palette.mutedSwatch)
-            vibrantColor.postValue(palette.lightVibrantSwatch)
-        } else if (palette.lightVibrantSwatch != null && palette.lightMutedSwatch != null) {
-            mutedColor.postValue(palette.lightVibrantSwatch)
-            vibrantColor.postValue(palette.lightMutedSwatch)
-        }
-    }
-
-    fun setAppId(appId: String) {
-        _appId.value = AppId(appId)
-    }
-
     fun setGame(newGame: Game) {
         _appId.value = AppId(newGame.getAppId().toString())
+    }
+
+    fun fetchNews() {
+        if (_newsLoadingState.value == LiveResource.STATE_LOADING) {
+            return
+        }
+
+        _appId.value?.id?.let { id ->
+            uiScope.launch {
+                gameRepo.getNews(id).apply {
+                    _newsLiveResource = this
+                    newsJob = this.job
+                    bindObserver(_news, this.data)
+                    bindObserver(_newsLoadingState, this.state)
+                    bindObserver(_newsLoadingError, this.error)
+                }
+            }
+        }
     }
 
     data class AppId(val id: String) {

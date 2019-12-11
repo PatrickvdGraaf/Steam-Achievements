@@ -3,10 +3,10 @@ package com.crepetete.steamachievements.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.crepetete.steamachievements.api.SteamApiService
-import com.crepetete.steamachievements.api.response.ApiSuccessResponse
 import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.db.dao.NewsDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
@@ -27,7 +27,8 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor(
     private val achievementsDao: AchievementsDao,
     private val api: SteamApiService,
-    private val gamesDao: GamesDao
+    private val gamesDao: GamesDao,
+    private val newsDao: NewsDao
 ) {
 
     private companion object {
@@ -147,20 +148,21 @@ class GameRepository @Inject constructor(
     suspend fun getNews(appId: String): LiveResource<List<NewsItem>> {
         return object : NetworkBoundResource<List<NewsItem>, List<NewsItem>?>() {
             override suspend fun saveCallResult(data: List<NewsItem>?) {
+                data?.let { news ->
+                    newsDao.upsert(news)
+                }
             }
 
             override fun shouldFetch(data: List<NewsItem>?) = true
 
             override suspend fun loadFromDb(): List<NewsItem>? {
-                return null
+                return newsDao.getNewsForGame(appId)?.takeLast(3)
             }
 
             override suspend fun createCall(): List<NewsItem>? {
                 val response = api.getNews(appId)
-                if (response is ApiSuccessResponse) {
-                    return response.body.getNews()
-                }
-                return null
+                Timber.d(response.appNews.newsItems.toString())
+                return response.appNews.newsItems
             }
         }.asLiveResource()
     }

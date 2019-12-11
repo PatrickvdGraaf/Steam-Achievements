@@ -66,7 +66,6 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             android:transitionName="background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -74,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/default_margin"
-                android:paddingBottom="@dimen/default_margin">
+                android:paddingBottom="@dimen/default_margin_large">
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/playTimeCardView"
@@ -222,7 +221,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/container_progress"
+                    android:id="@+id/card_view_progress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/default_margin_halved"
@@ -245,7 +244,7 @@
                         android:paddingBottom="@dimen/default_margin">
 
                         <TextView
-                            android:id="@+id/textViewProgressHeader"
+                            android:id="@+id/text_view_progress_header"
                             style="@style/AppTheme.Text.Header"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -257,18 +256,18 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/graph_textView"
+                            android:id="@+id/text_view_graph"
                             style="@style/AppTheme.Text.Label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:labelFor="@+id/graph_textView"
+                            android:labelFor="@+id/text_view_graph"
                             android:paddingStart="@dimen/default_margin"
                             android:paddingEnd="@dimen/default_margin"
                             android:text="@string/header_achievements_over_time"
                             app:layout_constraintBottom_toTopOf="@+id/graph"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textViewProgressHeader" />
+                            app:layout_constraintTop_toBottomOf="@+id/text_view_progress_header" />
 
                         <com.jjoe64.graphview.GraphView
                             android:id="@+id/graph"
@@ -281,7 +280,69 @@
                             android:paddingStart="@dimen/default_margin"
                             android:paddingEnd="@dimen/default_margin"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/graph_textView" />
+                            app:layout_constraintTop_toBottomOf="@+id/text_view_graph" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_view_news"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin_halved"
+                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginEnd="@dimen/default_margin_halved"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:elevation="@dimen/elevation_card_large"
+                    app:cardBackgroundColor="@color/cardview_bg_info"
+                    app:cardCornerRadius="@dimen/corner_radius_medium"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/card_view_progress">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/default_margin"
+                        android:paddingTop="@dimen/default_margin"
+                        android:paddingEnd="@dimen/default_margin"
+                        android:paddingBottom="@dimen/default_margin">
+
+                        <TextView
+                            android:id="@+id/text_view_news_header"
+                            style="@style/AppTheme.Text.Header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:text="@string/header_news"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/text_view_news_error"
+                            style="@style/AppTheme.Text.Label"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/alert_no_news"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/text_view_news_header"
+                            tools:visibility="visible" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view_news"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/text_view_news_header"
+                            tools:listitem="@layout/view_holder_news" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>

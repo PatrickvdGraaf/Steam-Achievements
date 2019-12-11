@@ -15,13 +15,13 @@ import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import kotlinx.android.synthetic.main.activity_game.*
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -46,6 +46,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
     @Inject
     lateinit var viewModel: GameViewModel
 
+    private val newsAdapter by lazy { NewsAdapter() }
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +62,14 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         // Prepare view.
         setContentView(binding.root)
         setSupportActionBar(toolbar)
+
+        recycler_view_news.adapter = newsAdapter
+        recycler_view_news.setHasFixedSize(true)
+        recycler_view_news.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
 
         // Retrieve data.
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
@@ -89,7 +98,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         viewModel.news.observe(this, Observer { nullableNews ->
             nullableNews?.let { news ->
-                Timber.d(news.toString())
+                newsAdapter.setItems(news)
             }
         })
 
@@ -97,6 +106,8 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
         }
+
+        viewModel.fetchNews()
     }
 
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
@@ -140,7 +151,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         // Set RecyclerView adapter.
         recyclerViewAchievements.adapter = achievementsAdapter
-        recyclerViewAchievements.setHasFixedSize(true)
 
         // Move achievements to adapter.
         achievementsAdapter.setAchievements(game.achievements)

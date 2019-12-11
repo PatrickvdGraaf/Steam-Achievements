@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/default_padding">
+
+    <TextView
+        android:id="@+id/text_view_news_title"
+        style="@style/AppTheme.Text.Header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="News Item Title" />
+
+    <TextView
+        android:id="@+id/text_view_news_author"
+        style="@style/AppTheme.Text.Label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_news_title"
+        tools:text="Author name" />
+
+    <TextView
+        android:id="@+id/text_view_news_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_news_author"
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur et purus ac nunc scelerisque consectetur at vitae erat. Aliquam erat volutpat. Mauris tincidunt, justo non scelerisque vulputate, sapien nibh pharetra massa, in finibus erat lectus et diam. Integer dignissim quam id mi porttitor accumsan. Donec a urna eget augue congue hendrerit convallis quis odio. Vestibulum convallis euismod tortor ullamcorper vehicula. Integer et malesuada diam. Morbi et velit odio. Duis tempor libero commodo est pharetra pulvinar. Nam vulputate ipsum non ligula tincidunt, a feugiat ipsum dapibus.
+
+Pellentesque eu neque id nisi consequat tempor. Suspendisse blandit mauris eu felis varius porta. Integer fringilla auctor magna sit amet rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque facilisis justo volutpat turpis finibus, sed viverra massa vulputate. Aliquam quis diam mi. Nunc elementum justo vel ligula egestas, ac imperdiet turpis finibus. Maecenas vehicula condimentum enim, et elementum augue. Aenean quis mauris in nisi efficitur viverra non nec neque. Cras consectetur pharetra sem, sit amet ornare ante mattis ac. Morbi lacinia tempus elit, vel interdum massa aliquet sed. Pellentesque pulvinar, nunc quis hendrerit pellentesque, nisl turpis laoreet mauris, in aliquam urna justo at ipsum. Vivamus massa velit, consequat sed tellus quis, tincidunt rhoncus ex. Duis rhoncus nibh iaculis est eleifend commodo." />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

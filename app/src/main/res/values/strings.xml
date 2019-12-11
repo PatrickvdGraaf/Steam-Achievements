@@ -33,4 +33,6 @@
     <string name="achievements_size">%s achievements.</string>
     <string name="achievements_none">No achievements.</string>
     <string name="pattern_decimal">0.##</string>
+    <string name="header_news">News</string>
+    <string name="alert_no_news">No recent news available</string>
 </resources>
