@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Build
 import android.text.Html
@@ -84,12 +85,14 @@ fun CardView.animateBackground(
         return
     }
 
-    val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-    colorAnimation.duration = duration // milliseconds
-    colorAnimation.addUpdateListener { animator ->
-        setCardBackgroundColor(animator.animatedValue as Int)
-    }
-    colorAnimation.start()
+    val animator = ObjectAnimator.ofArgb(
+        context,
+        "backgroundColor",
+        colorFrom,
+        colorTo
+    )
+    animator.duration = duration
+    animator.start()
 }
 
 fun TextView.setAttributedText(text: String?) {

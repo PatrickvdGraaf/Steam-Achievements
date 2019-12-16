@@ -40,7 +40,7 @@ class HorizontalAchievementsAdapter(
     }
 
     override fun onBindViewHolder(holder: AchievementViewHolder, position: Int) {
-        holder.bind(achievements[position], position)
+        holder.bind(achievements[position])
     }
 
     override fun getItemCount() = achievements.size()

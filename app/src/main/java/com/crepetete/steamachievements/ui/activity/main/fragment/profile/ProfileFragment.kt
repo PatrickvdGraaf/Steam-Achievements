@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import coil.api.load
+import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.di.Injectable
@@ -56,7 +56,10 @@ class ProfileFragment : Fragment(), Injectable {
         profileViewModel.currentPlayer.observe(viewLifecycleOwner, Observer { player ->
             if (player != null) {
                 textViewPersona.text = player.persona
-                imageViewProfile.load(player.avatarFullUrl)
+
+                Glide.with(requireContext())
+                    .load(player.avatarFullUrl)
+                    .into(imageViewProfile)
             }
         })
     }

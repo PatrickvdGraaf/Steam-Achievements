@@ -7,7 +7,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.api.load
+import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
@@ -129,7 +129,9 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         collapsingToolbar.title = game.getName()
 
-        banner.load(game.getBannerUrl())
+        Glide.with(this)
+            .load(game.getBannerUrl())
+            .into(banner)
 
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {

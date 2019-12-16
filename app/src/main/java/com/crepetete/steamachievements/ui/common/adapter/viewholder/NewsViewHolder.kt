@@ -49,7 +49,6 @@ class NewsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
             textViewContent.setAttributedText(
                 StringUtils.limitTextLength(
-                    view.context,
                     news.contents,
                     600
                 )

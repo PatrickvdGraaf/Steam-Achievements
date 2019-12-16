@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
@@ -31,9 +30,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     @Inject
     lateinit var viewModel: LibraryViewModel
-
-    @Inject
-    lateinit var imageLoader: ImageLoader
 
     lateinit var adapter: GamesAdapter
 

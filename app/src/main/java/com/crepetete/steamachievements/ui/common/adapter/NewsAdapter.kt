@@ -8,6 +8,8 @@ import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.NewsViewHolder
 
 /**
+ * ListAdapter for a list of [NewsItem]s.
+ *
  * @author: Patrick van de Graaf.
  * @date: Wed 11 Dec, 2019; 13:26.
  */
