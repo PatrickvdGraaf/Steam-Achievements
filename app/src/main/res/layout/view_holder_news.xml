@@ -11,12 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="182dp"
         android:layout_marginBottom="@dimen/default_margin"
+        android:paddingBottom="@dimen/default_margin"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/colorPrimaryDark"
-        android:paddingBottom="@dimen/default_margin"/>
+        tools:background="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/text_view_news_title"
@@ -39,6 +39,15 @@
         tools:text="Author name" />
 
     <TextView
+        android:id="@+id/text_view_news_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_news_author"
+        tools:text="21:39 - Wed 11 Dec - 2019" />
+
+    <TextView
         android:id="@+id/text_view_news_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -46,9 +55,10 @@
         android:clickable="true"
         android:focusable="true"
         android:textColor="@color/colorAccent"
+        android:textSize="@dimen/text_body_one"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_news_author"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_news_date"
         tools:text="@string/lorem_ipsum_paragraph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

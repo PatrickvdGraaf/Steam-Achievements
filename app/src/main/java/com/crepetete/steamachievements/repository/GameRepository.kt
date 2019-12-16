@@ -155,7 +155,7 @@ class GameRepository @Inject constructor(
             }
 
             override fun shouldFetch(data: List<NewsItem>?): Boolean {
-                return true
+                return data == null || rateLimiter.shouldFetch(FETCH_NEWS_KEY)
             }
 
             override suspend fun loadFromDb(): List<NewsItem>? {

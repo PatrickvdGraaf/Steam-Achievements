@@ -47,7 +47,7 @@ data class NewsItem(
     val contents: String,
     @field:Json(name = "feedlabel")
     val feedLabel: String,
-    val date: Int,
+    val date: Long,
     @field:Json(name = "feedname")
     val feedName: String,
     @field:Json(name = "feed_type")

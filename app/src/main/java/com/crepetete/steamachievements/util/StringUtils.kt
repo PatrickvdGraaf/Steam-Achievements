@@ -8,7 +8,7 @@ object StringUtils {
         if (text.length < maxLength) {
             return text
         }
-        return "${text.substring(maxLength)}.. (more...)"
+        return "${text.substring(0, maxLength)}.. (more...)"
     }
 
     fun findImageUrlInText(text: String): String? {
@@ -18,10 +18,14 @@ object StringUtils {
             urlEndIndex = text.indexOf(".png")
         }
 
-        return if (urlStartIndex != -1 && urlEndIndex != -1 && urlStartIndex < urlEndIndex) {
+        return if (areIndexesCorrect(urlStartIndex, urlEndIndex)) {
             text.substring(urlStartIndex, urlEndIndex + 4) // Note that 4 stands for '.jpg' /'.png'.
         } else {
             null
         }
+    }
+
+    private fun areIndexesCorrect(start: Int, end: Int): Boolean {
+        return start != -1 && end != -1 && start < end
     }
 }
