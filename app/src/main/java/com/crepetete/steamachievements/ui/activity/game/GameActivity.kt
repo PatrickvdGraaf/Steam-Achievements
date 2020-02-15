@@ -10,18 +10,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
+import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.adapter.NewsAdapter
+import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import kotlinx.android.synthetic.main.activity_game.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -41,12 +44,20 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         }
     }
 
-    lateinit var binding: ActivityGameBinding
+    private lateinit var binding: ActivityGameBinding
 
     @Inject
     lateinit var viewModel: GameViewModel
 
-    private val newsAdapter by lazy { NewsAdapter() }
+    private val newsAdapter by lazy {
+        NewsAdapter(object : OnNewsItemClickListener {
+            override fun onNewsItemSelected(item: NewsItem) {
+                Timber.d(item.gid)
+                // TODO show NewsPage.
+            }
+        })
+    }
+
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

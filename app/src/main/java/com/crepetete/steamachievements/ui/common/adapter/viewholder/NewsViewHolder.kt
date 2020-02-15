@@ -11,6 +11,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.api.response.news.NewsItem
+import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.util.StringUtils
 import com.crepetete.steamachievements.util.extensions.setAttributedText
@@ -24,7 +25,10 @@ import java.util.*
  * @author: Patrick van de Graaf.
  * @date: Wed 11 Dec, 2019; 13:26.
  */
-class NewsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+class NewsViewHolder(
+    private val view: View,
+    private val newsSelectionListener: OnNewsItemClickListener
+) : RecyclerView.ViewHolder(view) {
 
     /**
      * Uses a [newsItem] to set up the [view].
@@ -47,11 +51,11 @@ class NewsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
                 textViewAuthor.movementMethod = LinkMovementMethod.getInstance()
             }
 
-            textViewContent.setAttributedText(
-                StringUtils.limitTextLength(
-                    news.contents,
-                    600
-                )
+            textViewContent.text = StringUtils.limitTextLength(
+                view.context,
+                news.contents,
+                600,
+                View.OnClickListener { newsSelectionListener.onNewsItemSelected(news) }
             )
             textViewContent.movementMethod = LinkMovementMethod.getInstance()
 

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.api.response.news.NewsItem
+import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.NewsViewHolder
 
 /**
@@ -13,13 +14,14 @@ import com.crepetete.steamachievements.ui.common.adapter.viewholder.NewsViewHold
  * @author: Patrick van de Graaf.
  * @date: Wed 11 Dec, 2019; 13:26.
  */
-class NewsAdapter : RecyclerView.Adapter<NewsViewHolder>() {
+class NewsAdapter(private val newsSelectionListener: OnNewsItemClickListener) :
+    RecyclerView.Adapter<NewsViewHolder>() {
     private var items = listOf<NewsItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_holder_news, parent, false)
-        return NewsViewHolder(view)
+        return NewsViewHolder(view, newsSelectionListener)
     }
 
     override fun getItemCount(): Int {
