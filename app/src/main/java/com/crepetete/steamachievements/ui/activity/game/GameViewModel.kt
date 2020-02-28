@@ -1,6 +1,10 @@
 package com.crepetete.steamachievements.ui.activity.game
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource

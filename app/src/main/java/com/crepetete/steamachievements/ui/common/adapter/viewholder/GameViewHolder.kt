@@ -36,6 +36,13 @@ class GameViewHolder(
                 View.GONE
             }
 
+            binding.imageViewRecentlyPlayed.visibility =
+                if (dataItem.getRecentPlaytimeString().isEmpty()) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+
             binding.progressBar.progress = dataItem.getPercentageCompleted().toInt()
 
             setGameBanner(game, colorListener)

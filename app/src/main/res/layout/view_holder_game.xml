@@ -5,7 +5,6 @@
     tools:ignore="ContentDescription">
 
     <data>
-
         <import type="com.crepetete.steamachievements.vo.GameData" />
 
         <variable
