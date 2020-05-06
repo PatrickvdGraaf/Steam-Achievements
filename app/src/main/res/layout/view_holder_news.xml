@@ -7,7 +7,7 @@
     android:paddingBottom="@dimen/default_margin_double">
 
     <ImageView
-        android:id="@+id/image_view_banner_news"
+        android:id="@+id/imageViewBannerNews"
         android:layout_width="match_parent"
         android:layout_height="182dp"
         android:layout_marginBottom="@dimen/default_margin"
@@ -19,46 +19,91 @@
         tools:background="@color/colorPrimaryDark" />
 
     <TextView
-        android:id="@+id/text_view_news_title"
+        android:id="@+id/textViewNewsTitle"
         style="@style/AppTheme.Text.Value.Big"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_view_banner_news"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewBannerNews"
         tools:text="News Item Title" />
 
     <TextView
-        android:id="@+id/text_view_news_author"
+        android:id="@+id/textViewNewsAuthor"
         style="@style/AppTheme.Text.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_news_title"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNewsTitle"
         tools:text="Author name" />
 
     <TextView
-        android:id="@+id/text_view_news_date"
+        android:id="@+id/textViewNewsDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_news_author"
+        app:layout_constraintTop_toBottomOf="@id/textViewNewsAuthor"
         tools:text="21:39 - Wed 11 Dec - 2019" />
 
     <TextView
-        android:id="@+id/text_view_news_text"
+        android:id="@+id/textViewNewsText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
         android:clickable="true"
         android:focusable="true"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/text_body_one"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_news_date"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNewsDate"
         tools:text="@string/lorem_ipsum_paragraph" />
+
+    <View
+        android:id="@+id/viewSeparatorLeft"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginEnd="@dimen/default_margin_halved"
+        android:background="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonShowMore"
+        app:layout_constraintEnd_toStartOf="@+id/buttonShowMore"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonShowMore" />
+
+    <Button
+        android:id="@+id/buttonShowMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:text="@string/button_more"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNewsText" />
+
+    <View
+        android:id="@+id/viewSeparatorRight"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/default_margin_halved"
+        android:background="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonShowMore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonShowMore"
+        app:layout_constraintTop_toTopOf="@+id/buttonShowMore" />
+
+    <View
+        android:id="@+id/viewSeparatorFull"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/default_margin"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNewsText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

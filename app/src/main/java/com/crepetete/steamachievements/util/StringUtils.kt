@@ -1,58 +1,29 @@
 package com.crepetete.steamachievements.util
 
-import android.content.Context
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ClickableSpan
-import android.view.View
-import com.crepetete.steamachievements.R
-
 object StringUtils {
     /**
-     * Abbreviates the given [text] to a length of [maxLength] plus a text indicating that there is
-     * more text available.
-     * An optional [View.OnClickListener] can be passed if something needs to be done when the
-     * 'more' text is clicked.
+     * Abbreviates the given [text] to a length of [maxLength] and adds three dots after the last
+     * word before the [maxLength]indicating that there
+     * is more text available.
+     *
      */
-    fun limitTextLength(
-        context: Context,
-        text: String,
-        maxLength: Int = 600,
-        onMoreClickedListener: View.OnClickListener? = null
-    ): SpannableString {
+    fun limitTextLength(text: String, maxLength: Int = 600): String {
         if (text.length < maxLength) {
-            return SpannableString(text)
+            return text
         }
 
-        // "%s.. [%s]"
-        val limiterFormatText = context.getString(R.string.format_limiter_more)
+        val cappedText = text.substring(0, maxLength)
 
-        // e.g. "more..."
-        val textMore = context.getString(R.string.limiter_more)
+        // Find the last word in our capped text, and get it's length.
+        val parts: List<String> = cappedText.split(" ")
+        // Plus one for a space or dot in front of the word.
+        val lastWordLength = parts[parts.size - 1].length + 1
 
-        // Set the shortened text and set the translated text for 'More'.
-        val spannableString = SpannableString(
-            String.format(
-                limiterFormatText,
-                text.substring(0, maxLength),
-                textMore
-            )
-        )
+        // Use the length to remove the last word in the text to remove words that were split when
+        // we capped the original text.
+        val trimmedText = cappedText.substring(0, cappedText.length - lastWordLength)
 
-        // Use the textMore to calculate where the clickable span should be.
-        // It should be the total length of the text, minus one for the ')', minus the length of the
-        // 'more' text in the users current localisation.
-        spannableString.setSpan(
-            object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    onMoreClickedListener?.onClick(widget)
-                }
-            },
-            spannableString.length - (1 + textMore.length),
-            spannableString.length - 1,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        return spannableString
+        return "$trimmedText..."
     }
 
     /**

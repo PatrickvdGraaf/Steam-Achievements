@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.ui.common.adapter.viewholder
 
 import android.graphics.drawable.Drawable
+import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.ImageView
@@ -14,10 +15,11 @@ import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.util.StringUtils
-import com.crepetete.steamachievements.util.extensions.setAttributedText
 import kotlinx.android.synthetic.main.view_holder_news.view.*
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 /**
  * Code for setting up a News Item ListItem.
@@ -30,47 +32,67 @@ class NewsViewHolder(
     private val newsSelectionListener: OnNewsItemClickListener
 ) : RecyclerView.ViewHolder(view) {
 
+    private companion object {
+        const val MAX_LENGTH_ARTICLE = 600
+    }
+
     /**
      * Uses a [newsItem] to set up the [view].
      */
     fun bind(newsItem: NewsItem?) {
         newsItem?.let { news ->
-            val textViewTitle = view.text_view_news_title
-            val textViewAuthor = view.text_view_news_author
-            val textViewContent = view.text_view_news_text
-            val textViewDate = view.text_view_news_date
-            val imageViewBanner = view.image_view_banner_news
+            with(view) {
+                textViewNewsTitle.text = news.title
 
-            textViewTitle.text = news.title
+                // Show author name, email, tag text, or hide the view.
+                if (news.author.isBlank()) {
+                    textViewNewsAuthor.visibility = View.GONE
+                } else {
+                    textViewNewsAuthor.text = Html.fromHtml(news.author, Html.FROM_HTML_MODE_LEGACY)
+                    textViewNewsAuthor.visibility = View.VISIBLE
+                    textViewNewsAuthor.movementMethod = LinkMovementMethod.getInstance()
+                }
 
-            if (news.author.isBlank()) {
-                textViewAuthor.visibility = View.GONE
-            } else {
-                textViewAuthor.setAttributedText(news.author)
-                textViewAuthor.visibility = View.VISIBLE
-                textViewAuthor.movementMethod = LinkMovementMethod.getInstance()
+                // Parse a readable representation for the upload date. 
+                val pattern = "EEEE HH:mm dd-MM-yyyy"
+                val calendarSteam = Constants.steamReleaseCalendar
+                val reportDate = Calendar.getInstance()
+                reportDate.time = Date(news.date * 1000)
+
+                if (reportDate.after(calendarSteam)) {
+                    textViewNewsDate.text = SimpleDateFormat(pattern, Locale.getDefault())
+                        .format(reportDate.time)
+                }
+
+                // Show the news article main text, capped at MAX_LENGTH_ARTICLE characters.
+                textViewNewsText.movementMethod = LinkMovementMethod.getInstance()
+                textViewNewsText.text =
+                    Html.fromHtml(
+                        StringUtils.limitTextLength(news.contents, MAX_LENGTH_ARTICLE),
+                        Html.FROM_HTML_MODE_LEGACY
+                    )
+
+                if (news.contents.length > MAX_LENGTH_ARTICLE) {
+                    buttonShowMore.visibility = View.VISIBLE
+                    buttonShowMore.setOnClickListener {
+                        newsSelectionListener.onNewsItemSelected(news)
+                    }
+                    viewSeparatorLeft.visibility = View.VISIBLE
+                    viewSeparatorRight.visibility = View.VISIBLE
+                    viewSeparatorFull.visibility = View.GONE
+                } else {
+                    buttonShowMore.visibility = View.GONE
+                    viewSeparatorLeft.visibility = View.GONE
+                    viewSeparatorRight.visibility = View.GONE
+                    viewSeparatorFull.visibility = View.VISIBLE
+                }
+
+                // Show a banner image, if available.
+                loadImageInto(
+                    imageViewBannerNews,
+                    StringUtils.findImageUrlInText(news.contents)
+                )
             }
-
-            textViewContent.text = StringUtils.limitTextLength(
-                view.context,
-                news.contents,
-                600,
-                View.OnClickListener { newsSelectionListener.onNewsItemSelected(news) }
-            )
-            textViewContent.movementMethod = LinkMovementMethod.getInstance()
-
-            val pattern = "EEEE HH:mm dd-MM-yyyy"
-            val calendarSteam = Constants.steamReleaseCalendar
-            val reportDate = Calendar.getInstance()
-
-            reportDate.time = Date(news.date * 1000)
-
-            if (reportDate.after(calendarSteam)) {
-                textViewDate.text = SimpleDateFormat(pattern, Locale.getDefault())
-                    .format(reportDate.time)
-            }
-
-            loadImageInto(imageViewBanner, StringUtils.findImageUrlInText(news.contents))
         }
     }
 

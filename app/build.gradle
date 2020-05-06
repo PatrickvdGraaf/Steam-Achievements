@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         applicationId "com.crepetete.steamachievements"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "0.0.2"
