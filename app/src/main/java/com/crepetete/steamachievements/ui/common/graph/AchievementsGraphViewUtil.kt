@@ -11,14 +11,14 @@ import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.LineGraphSeries
-import java.util.*
+import java.util.Date
 
 /**
  * A Class for setting info on a [GraphView].
  */
 class AchievementsGraphViewUtil {
     companion object {
-        private val steamReleaseDate = Constants.steamReleaseCalendar.time
+        val steamReleaseDate = Constants.steamReleaseCalendar.time
 
         /**
          * Shows a Graph where a line indicates the total completion percentage for a game over

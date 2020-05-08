@@ -72,19 +72,17 @@ class NewsViewHolder(
                         Html.FROM_HTML_MODE_LEGACY
                     )
 
-                if (news.contents.length > MAX_LENGTH_ARTICLE) {
-                    buttonShowMore.visibility = View.VISIBLE
-                    buttonShowMore.setOnClickListener {
-                        newsSelectionListener.onNewsItemSelected(news)
-                    }
-                    viewSeparatorLeft.visibility = View.VISIBLE
-                    viewSeparatorRight.visibility = View.VISIBLE
-                    viewSeparatorFull.visibility = View.GONE
-                } else {
-                    buttonShowMore.visibility = View.GONE
-                    viewSeparatorLeft.visibility = View.GONE
-                    viewSeparatorRight.visibility = View.GONE
-                    viewSeparatorFull.visibility = View.VISIBLE
+                // Show the 'more' button and separators accordingly.
+                val isTextCapped = news.contents.length > MAX_LENGTH_ARTICLE
+                val relativeVisibility = if (isTextCapped) View.VISIBLE else View.GONE
+
+                buttonShowMore.visibility = relativeVisibility
+                viewSeparatorLeft.visibility = relativeVisibility
+                viewSeparatorRight.visibility = relativeVisibility
+                viewSeparatorFull.visibility = relativeVisibility
+
+                buttonShowMore.setOnClickListener {
+                    newsSelectionListener.onNewsItemSelected(news)
                 }
 
                 // Show a banner image, if available.

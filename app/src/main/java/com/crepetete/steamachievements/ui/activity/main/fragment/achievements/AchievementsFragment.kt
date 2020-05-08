@@ -72,7 +72,7 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         textViewCompletion = view.findViewById(R.id.textview_completion)
         circularProgressBar = view.findViewById(R.id.custom_progressBar)
         bestDayTextView = view.findViewById(R.id.best_day_textView)
-        achievementsOverTimeGraph = view.findViewById(R.id.graph)
+        achievementsOverTimeGraph = view.findViewById(R.id.lineChartAchievements)
 
         circularProgressBar.addListener(ValueAnimator.AnimatorUpdateListener {
             updatePercentageText(it.animatedValue as Float)

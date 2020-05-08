@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.ui.activity.game
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -18,14 +19,22 @@ import com.crepetete.steamachievements.ui.activity.achievements.pager.Transparen
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.ui.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
-import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.formatter.LargeValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.android.synthetic.main.activity_game.*
 import timber.log.Timber
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.ArrayList
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -33,6 +42,27 @@ import javax.inject.Inject
  */
 class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
     HorizontalAchievementsAdapter.OnAchievementClickListener {
+
+    fun getTheSixPreviousDays(dateFormat: String, addToday: Boolean): MutableList<String> {
+        val calendar = Calendar.getInstance()
+        val currentDate: Date = calendar.time
+        val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+        val formattedDate = formatter.format(currentDate)
+        calendar.time = formatter.parse(formattedDate)!!
+
+        val list: MutableList<String> = ArrayList()
+        if (addToday) {
+            calendar.add(Calendar.DATE, 0)
+            list.add(formatter.format(calendar.time))
+            Log.i("TopLevelFunc", formatter.format(calendar.time))
+        }
+        for (i in 1..6) {
+            calendar.add(Calendar.DATE, -1)
+            list.add(formatter.format(calendar.time))
+            Log.i("TopLevelFunc", formatter.format(calendar.time))
+        }
+        return list
+    }
 
     companion object {
         private const val INTENT_GAME = "INTENT_GAME"
@@ -168,7 +198,7 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         achievementsAdapter.setAchievements(game.achievements)
 
         // Init Graph.
-        AchievementsGraphViewUtil.setAchievementsOverTime(graph, game.achievements, this)
+        customizeChart()
     }
 
     /**
@@ -176,5 +206,30 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
      */
     override fun onDateTapped(date: Date) {
         // TODO write implementation.
+    }
+
+    private fun customizeChart() {
+        val desc = Description()
+        desc.text = ""
+        lineChartAchievements.description = desc
+        lineChartAchievements.axisRight.isEnabled = false
+        lineChartAchievements.xAxis.position = XAxis.XAxisPosition.BOTTOM
+
+        lineChartAchievements.xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                val date = Date(value.toLong())
+                val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH)
+                return sdf.format(date)
+            }
+        }
+
+        lineChartAchievements.axisLeft.valueFormatter = object : LargeValueFormatter() {}
+        lineChartAchievements.legend.setDrawInside(false)
+
+        lineChartAchievements.isHighlightPerTapEnabled = true
+        lineChartAchievements.setDrawMarkers(true)
+        lineChartAchievements.setTouchEnabled(true)
+
+        lineChartAchievements.isAutoScaleMinMaxEnabled = true
     }
 }

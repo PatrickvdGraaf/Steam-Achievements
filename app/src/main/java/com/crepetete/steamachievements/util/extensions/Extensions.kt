@@ -6,10 +6,14 @@ import android.animation.ValueAnimator
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.Dispatchers.Default
 import java.util.Comparator
 
@@ -90,6 +94,25 @@ fun CardView.animateBackground(
     )
     animator.duration = duration
     animator.start()
+}
+
+fun LineDataSet.customizeDataSet(dataSetSize: Int, chart: LineChart): LineDataSet {
+    this.setDrawFilled(true)
+    this.setDrawValues(false)
+
+    this.color = R.color.colorAccent
+
+    this.fillDrawable = ContextCompat.getDrawable(
+        chart.context,
+        R.drawable.gradient_white_to_transparent
+    )
+
+    this.setColors(color)
+
+    for (index in 0..dataSetSize - 2) {
+        this.circleColors[0] = color
+    }
+    return this
 }
 
 fun <R> bindObserver(

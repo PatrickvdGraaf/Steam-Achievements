@@ -265,13 +265,13 @@
                             android:paddingStart="@dimen/default_margin"
                             android:paddingEnd="@dimen/default_margin"
                             android:text="@string/header_achievements_over_time"
-                            app:layout_constraintBottom_toTopOf="@+id/graph"
+                            app:layout_constraintBottom_toTopOf="@+id/lineChartAchievements"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/text_view_progress_header" />
 
-                        <com.jjoe64.graphview.GraphView
-                            android:id="@+id/graph"
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/lineChartAchievements"
                             android:layout_width="match_parent"
                             android:layout_height="260dp"
                             android:layout_marginStart="@dimen/default_margin"
@@ -280,6 +280,7 @@
                             android:layout_marginBottom="@dimen/default_margin"
                             android:paddingStart="@dimen/default_margin"
                             android:paddingEnd="@dimen/default_margin"
+                            app:chartData="@{gameData}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/text_view_graph" />
 

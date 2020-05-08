@@ -43,11 +43,16 @@ class GameViewModel @Inject constructor(
 
     // News
     private var _newsLiveResource: LiveResource<List<NewsItem>>? = null
-    private val _news = MediatorLiveData<List<NewsItem>?>()
     private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _newsLoadingError = MediatorLiveData<Exception?>()
 
+    private val _news = MediatorLiveData<List<NewsItem>?>()
     val news: LiveData<List<NewsItem>?> = _news
+
+    // Chart
+    private val _achievementsChartData = MutableLiveData<List<Achievement?>>()
+    val achievementsChartData: LiveData<List<Achievement?>>
+        get() = _achievementsChartData
 
     private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
 
