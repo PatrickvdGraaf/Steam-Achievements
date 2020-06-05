@@ -3,7 +3,6 @@ package com.crepetete.steamachievements.ui.activity.game
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -54,12 +53,12 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         if (addToday) {
             calendar.add(Calendar.DATE, 0)
             list.add(formatter.format(calendar.time))
-            Log.i("TopLevelFunc", formatter.format(calendar.time))
+            Timber.i(formatter.format(calendar.time))
         }
         for (i in 1..6) {
             calendar.add(Calendar.DATE, -1)
             list.add(formatter.format(calendar.time))
-            Log.i("TopLevelFunc", formatter.format(calendar.time))
+            Timber.i(formatter.format(calendar.time))
         }
         return list
     }
@@ -115,7 +114,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
             collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
             updateNavigationBarColor(game.getPrimaryColor())
-            setGameInfo(game)
 
             viewModel.setGame(game)
         }
