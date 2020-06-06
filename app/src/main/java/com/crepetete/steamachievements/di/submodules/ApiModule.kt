@@ -1,8 +1,6 @@
 package com.crepetete.steamachievements.di.submodules
 
 import android.content.Context
-import coil.ImageLoader
-import coil.util.CoilUtils
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.util.livedata.LiveDataCallAdapterFactory
@@ -23,20 +21,6 @@ import javax.inject.Singleton
 
 @Module
 class ApiModule {
-
-    @Provides
-    @Singleton
-    fun providesDefaultImageLoader(context: Context): ImageLoader {
-        return ImageLoader(context) {
-            availableMemoryPercentage(0.1)
-            bitmapPoolPercentage(0.1)
-            okHttpClient {
-                OkHttpClient.Builder()
-                    .cache(CoilUtils.createDefaultCache(context))
-                    .build()
-            }
-        }
-    }
 
     @Provides
     @Singleton

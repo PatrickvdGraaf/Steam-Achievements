@@ -1,12 +1,12 @@
 package com.crepetete.steamachievements.ui.common.graph
 
-import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.graph.point.DateDataPoint
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
+import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
@@ -18,9 +18,7 @@ import java.util.*
  */
 class AchievementsGraphViewUtil {
     companion object {
-        private val steamReleaseDate = Calendar.getInstance().apply {
-            set(2003, 9, 12, 0, 0, 0)
-        }.time
+        private val steamReleaseDate = Constants.steamReleaseCalendar.time
 
         /**
          * Shows a Graph where a line indicates the total completion percentage for a game over
@@ -73,7 +71,7 @@ class AchievementsGraphViewUtil {
                     )
                     graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
                         context,
-                        R.color.colorPrimary
+                        R.color.colorPrimaryDark
                     )
 
                     // Styling series
@@ -81,7 +79,6 @@ class AchievementsGraphViewUtil {
                     paint.style = Paint.Style.STROKE
                     paint.color = ContextCompat.getColor(context, R.color.colorAccent)
                     paint.strokeWidth = 4F
-                    paint.pathEffect = DashPathEffect(floatArrayOf(8f, 5f), 0f)
                     series.setCustomPaint(paint)
 
                     // Setting the result of minBy to nonnull, because we checked if the pairs array

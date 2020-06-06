@@ -8,8 +8,8 @@ import android.widget.Filterable
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
 import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
+import com.crepetete.steamachievements.ui.common.adapter.callback.ColorListener
 import com.crepetete.steamachievements.ui.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.ui.common.enums.SortingType
@@ -21,13 +21,12 @@ import java.util.*
 /**
  * Adapter that shows Games in a (vertical) List.
  */
-class GamesAdapter(
-    private val imageLoader: ImageLoader,
-    var listener: GamesAdapterCallback
-) : RecyclerView.Adapter<GameViewHolder>(), Filterable {
+class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<GameViewHolder>(),
+    Filterable, ColorListener {
 
+    // oldItems is used to calculate to difference compared to the new items using Filter.
+    private var oldItems = listOf<Game>()
     private var items = listOf<Game>()
-    private var newItems = listOf<Game>()
 
     private var sortMethod = SortingType.PLAYTIME
 
@@ -42,7 +41,7 @@ class GamesAdapter(
 
         binding.root.setOnClickListener {
             listener.onGameClicked(
-                newItems[viewHolder.adapterPosition],
+                items[viewHolder.adapterPosition],
                 binding.imageViewGameBanner,
                 binding.imageViewGameBanner,
                 binding.imageViewGameBanner
@@ -62,8 +61,8 @@ class GamesAdapter(
 
     override fun onBindViewHolder(holder: GameViewHolder, position: Int, payLoads: List<Any>) {
         try {
-            val game = newItems[position]
-            holder.bind(game)
+            val game = items[position]
+            holder.bind(game, this)
             holder.itemView.visibility = View.VISIBLE
         } catch (e: IndexOutOfBoundsException) {
             Timber.e(
@@ -74,10 +73,11 @@ class GamesAdapter(
         }
     }
 
-    override fun getItemCount() = newItems.size
+    override fun getItemCount() = items.size
 
     /**
      * Presents a Filter for the [Filterable] interface.
+     * Processes a search query when the Search function in the NavigationBar is used.
      */
     override fun getFilter(): Filter {
         return object : Filter() {
@@ -87,10 +87,10 @@ class GamesAdapter(
                 val results = FilterResults()
 
                 if (filterString.isNullOrBlank()) {
-                    results.values = newItems
-                    results.count = newItems.size
+                    results.values = items
+                    results.count = items.size
                 } else {
-                    items.filter { game ->
+                    oldItems.filter { game ->
                         game.getName().toLowerCase(Locale.ENGLISH).contains(filterString)
                     }.let { filteredList ->
                         results.values = filteredList
@@ -118,11 +118,23 @@ class GamesAdapter(
     }
 
     /**
+     * Method from the [ColorListener] interface.
+     *
+     * When a CardView in the Library ListView has finished generating a background color for the
+     * Card, we update the game so we can use the color in the transition to the GameActivity
+     * when an item is clicked.
+     */
+    override fun onPrimaryGameColorCreated(game: Game, rgb: Int) {
+        items.filter { item -> item.getAppId() == game.getAppId() }
+            .forEach { item -> item.setPrimaryColor(rgb) }
+    }
+
+    /**
      * Set the games list shown in the RecyclerView attached to this adapter.
      * Sorts the list with the current sorting method before submitting.
      */
     fun updateGames(games: List<Game>) {
-        newItems = games
+        items = games
         filter.filter(query)
     }
 
@@ -135,18 +147,17 @@ class GamesAdapter(
     }
 
     private fun showNewItems(newItems: List<Game>) {
-        this.newItems = newItems.sort(sortMethod)
+        this.items = newItems.sort(sortMethod)
 
         val diffResult = DiffUtil.calculateDiff(
-            GamesDiffCallback(items, this.newItems)
+            GamesDiffCallback(oldItems, this.items)
         )
 
-        items = newItems
+        oldItems = newItems
         diffResult.dispatchUpdatesTo(this@GamesAdapter)
     }
 
     interface GamesAdapterCallback {
         fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View)
-        fun onPrimaryGameColorCreated(game: Game, rgb: Int)
     }
 }

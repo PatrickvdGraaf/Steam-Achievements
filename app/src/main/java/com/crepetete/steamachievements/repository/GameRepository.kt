@@ -3,8 +3,10 @@ package com.crepetete.steamachievements.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.crepetete.steamachievements.api.SteamApiService
+import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.db.dao.NewsDao
 import com.crepetete.steamachievements.repository.limiter.RateLimiter
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.NetworkBoundResource
@@ -25,11 +27,13 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor(
     private val achievementsDao: AchievementsDao,
     private val api: SteamApiService,
-    private val gamesDao: GamesDao
+    private val gamesDao: GamesDao,
+    private val newsDao: NewsDao
 ) {
 
     private companion object {
         const val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
+        const val FETCH_NEWS_KEY = "FETCH_NEWS_KEY"
     }
 
     // Refresh games every day
@@ -140,5 +144,27 @@ class GameRepository @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             gamesDao.upsert(item)
         }
+    }
+
+    suspend fun getNews(appId: String): LiveResource<List<NewsItem>> {
+        return object : NetworkBoundResource<List<NewsItem>, List<NewsItem>?>() {
+            override suspend fun saveCallResult(data: List<NewsItem>?) {
+                data?.let { news ->
+                    newsDao.upsert(news)
+                }
+            }
+
+            override fun shouldFetch(data: List<NewsItem>?): Boolean {
+                return data == null || rateLimiter.shouldFetch(FETCH_NEWS_KEY)
+            }
+
+            override suspend fun loadFromDb(): List<NewsItem>? {
+                return newsDao.getNewsForGame(appId)?.takeLast(3)
+            }
+
+            override suspend fun createCall(): List<NewsItem>? {
+                return api.getNews(appId).appNews.newsItems
+            }
+        }.asLiveResource()
     }
 }

@@ -9,6 +9,7 @@ import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.repository.resource.ResourceState
 import com.crepetete.steamachievements.testing.OpenForTesting
+import com.crepetete.steamachievements.util.extensions.bindObserver
 import com.crepetete.steamachievements.vo.Player
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +86,7 @@ class AuthViewModel @Inject constructor(
      * It saves the ID to the SharedPreferences via the [userRepository] and also updates the
      * [_currentPlayerId] LiveData value.
      *
-     * TODO Make the SharedPreferences return LiveData and let the _currentPlayerId listen to that.
+     * TODO: Make the SharedPreferences return LiveData and let the _currentPlayerId listen to that.
      */
     fun parseIdFromUri(uri: Uri?) {
         val userAccountUrl = Uri.parse(uri?.getQueryParameter("openid.identity") ?: "")
@@ -100,13 +101,5 @@ class AuthViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         mainJob.cancel()
-    }
-
-    private fun <R> bindObserver(observer: MediatorLiveData<R?>?, source: LiveData<R?>) {
-        observer?.apply {
-            addSource(source) {
-                postValue(it)
-            }
-        }
     }
 }

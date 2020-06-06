@@ -105,12 +105,12 @@
             app:layout_constraintTop_toBottomOf="@+id/container_recent_playtime">
 
             <TextView
-                android:id="@+id/graph_textView"
+                android:id="@+id/text_view_graph"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/default_margin_quarter"
                 android:layout_marginTop="@dimen/default_margin"
-                android:labelFor="@+id/graph_textView"
+                android:labelFor="@+id/text_view_graph"
                 android:text="@string/header_achievements_over_time"
                 android:textColor="@color/colorTextLabel"
                 android:textSize="@dimen/text_label" />

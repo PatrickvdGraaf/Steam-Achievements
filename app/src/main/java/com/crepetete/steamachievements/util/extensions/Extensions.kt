@@ -1,9 +1,16 @@
 package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.os.Build
+import android.text.Html
 import android.view.View
+import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
 import kotlinx.coroutines.Dispatchers.Default
@@ -56,7 +63,7 @@ fun List<Game>.sortByPlaytime(): List<Game> {
     })
 }
 
-fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
+fun View.animateBackground(colorFrom: Int, colorTo: Int?, duration: Long = 200) {
     if (colorTo == null) {
         return
     }
@@ -69,15 +76,46 @@ fun View.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Lon
     colorAnimation.start()
 }
 
-fun CardView.setBackgroundColorAnimated(colorFrom: Int, colorTo: Int?, duration: Long = 400) {
+fun CardView.animateBackground(
+    @ColorInt colorFrom: Int,
+    @ColorInt colorTo: Int?,
+    duration: Long = 400
+) {
     if (colorTo == null) {
         return
     }
 
-    val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-    colorAnimation.duration = duration // milliseconds
-    colorAnimation.addUpdateListener { animator ->
-        setCardBackgroundColor(animator.animatedValue as Int)
+    val animator = ObjectAnimator.ofArgb(
+        context,
+        "backgroundColor",
+        colorFrom,
+        colorTo
+    )
+    animator.duration = duration
+    animator.start()
+}
+
+fun TextView.setAttributedText(text: String?) {
+    setText(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(
+                text,
+                Html.FROM_HTML_MODE_LEGACY
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            Html.fromHtml(text)
+        }
+    )
+}
+
+fun <R> bindObserver(
+    observer: MediatorLiveData<R?>?,
+    source: LiveData<R?>
+) {
+    observer?.apply {
+        addSource(source) {
+            postValue(it)
+        }
     }
-    colorAnimation.start()
 }

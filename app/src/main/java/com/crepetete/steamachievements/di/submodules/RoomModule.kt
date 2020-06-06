@@ -6,6 +6,7 @@ import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.db.SteamDatabase
 import com.crepetete.steamachievements.db.dao.AchievementsDao
 import com.crepetete.steamachievements.db.dao.GamesDao
+import com.crepetete.steamachievements.db.dao.NewsDao
 import com.crepetete.steamachievements.db.dao.PlayerDao
 import dagger.Module
 import dagger.Provides
@@ -29,5 +30,10 @@ class RoomModule {
 
     @Provides
     @Singleton
-    internal fun provideAchievementsDao(database: SteamDatabase): AchievementsDao = database.achievementsDao()
+    internal fun provideAchievementsDao(database: SteamDatabase): AchievementsDao =
+        database.achievementsDao()
+
+    @Provides
+    @Singleton
+    internal fun provideNewsDao(database: SteamDatabase): NewsDao = database.newsDao()
 }

@@ -1,6 +1,9 @@
 package com.crepetete.steamachievements.ui.activity.main.fragment.library
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.repository.GameRepository
 import com.crepetete.steamachievements.repository.UserRepository
 import com.crepetete.steamachievements.repository.resource.LiveResource.Companion.STATE_LOADING
@@ -33,13 +36,17 @@ class LibraryViewModel @Inject constructor(
 
     // Games
     private val _games = MediatorLiveData<List<Game>?>()
-    private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
-    private val _gamesLoadingError = MediatorLiveData<Exception?>()
-
     val games: LiveData<List<Game>?> = _games
-    val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
+
+    // Error
+    private val _gamesLoadingError = MediatorLiveData<Exception?>()
     val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
 
+    // Loading State
+    private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
+    val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
+
+    // Sorting
     private var sortingType = MutableLiveData<SortingType>()
 
     init {
@@ -65,24 +72,16 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun updatePrimaryColorForGame(game: Game, rgb: Int) {
-        game.setPrimaryColor(rgb)
-        game.game?.let { gameData ->
-            viewModelScope.launch {
-                gameRepo.update(gameData)
-            }
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         mainJob.cancel()
+        gamesFetchJob?.cancel()
     }
 
     private fun <R> bindObserver(observer: MediatorLiveData<R>, source: LiveData<R>) {
         observer.apply {
-            addSource(source) {
-                postValue(it)
+            addSource(source) { src ->
+                postValue(src)
             }
         }
     }

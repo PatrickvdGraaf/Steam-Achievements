@@ -97,14 +97,14 @@
         <item name="paddingEnd">@dimen/default_margin</item>
     </style>
 
-    <style name="ExpandedAppBar" parent="@android:style/TextAppearance.Medium">
+    <!-- TOOLBAR -->
+    <style name="ExpandedToolBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">@dimen/text_header_four</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">24sp</item>
+    <style name="CollapsedToolBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
@@ -31,9 +30,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     @Inject
     lateinit var viewModel: LibraryViewModel
-
-    @Inject
-    lateinit var imageLoader: ImageLoader
 
     lateinit var adapter: GamesAdapter
 
@@ -57,7 +53,7 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = GamesAdapter(imageLoader, this)
+        adapter = GamesAdapter(this)
 
         // Update the view with new data.
         viewModel.games.observe(viewLifecycleOwner, Observer { games ->
@@ -195,14 +191,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
      */
     override fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View) {
         startActivity(GameActivity.getInstance(requireContext(), game))
-    }
-
-    /**
-     * Invoked when the Adapter has created a primary rgb color for the games thumbnail.
-     * Calls the ViewModel so it can update this property in the Database.
-     */
-    override fun onPrimaryGameColorCreated(game: Game, rgb: Int) {
-        viewModel.updatePrimaryColorForGame(game, rgb)
     }
 
     /**

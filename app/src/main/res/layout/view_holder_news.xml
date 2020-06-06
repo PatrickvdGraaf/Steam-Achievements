@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/default_margin_double">
+
+    <ImageView
+        android:id="@+id/image_view_banner_news"
+        android:layout_width="match_parent"
+        android:layout_height="182dp"
+        android:layout_marginBottom="@dimen/default_margin"
+        android:paddingBottom="@dimen/default_margin"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/text_view_news_title"
+        style="@style/AppTheme.Text.Value.Big"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_view_banner_news"
+        tools:text="News Item Title" />
+
+    <TextView
+        android:id="@+id/text_view_news_author"
+        style="@style/AppTheme.Text.Value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_news_title"
+        tools:text="Author name" />
+
+    <TextView
+        android:id="@+id/text_view_news_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_news_author"
+        tools:text="21:39 - Wed 11 Dec - 2019" />
+
+    <TextView
+        android:id="@+id/text_view_news_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/text_body_one"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_news_date"
+        tools:text="@string/lorem_ipsum_paragraph" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

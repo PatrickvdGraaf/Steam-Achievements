@@ -4,20 +4,18 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.vo.Achievement
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import java.util.*
 
 /**
  * A Class for setting info on a [GraphView].
  */
 class AchievementsGraphHelper {
-    private val steamReleaseDate = Calendar.getInstance().apply {
-        set(2003, 9, 12, 0, 0, 0)
-    }.time
+    private val steamReleaseDate = Constants.steamReleaseCalendar.time
 
     /**
      * Shows a Graph where a line indicates the total completion percentage for a game over time.

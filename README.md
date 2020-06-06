@@ -29,8 +29,10 @@ app/gradle.properties. <strong>Make sure that this file is added to your .gitign
 accidentally committed.</strong>
 
 Your app/gradle.properties should look like this; 
-- STEAM_API_KEY="your_api_key"
-- TEST_USER_ID="your_test_id"
+```
+STEAM_API_KEY="your_api_key"
+TEST_USER_ID="your_test_id"
+```
 
 An API key can be obtained from https://steamcommunity.com/dev/apikey.
 You can find your own Steam ID with tools like https://steamidfinder.com.

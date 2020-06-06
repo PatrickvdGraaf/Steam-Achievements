@@ -7,32 +7,35 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.api.load
+import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
+import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.databinding.ActivityGameBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
+import com.crepetete.steamachievements.ui.common.adapter.NewsAdapter
+import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
 import kotlinx.android.synthetic.main.activity_game.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * Shows a more detailed overview of the available information of a [Game] and its [Achievement]s.
+ */
 class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
     HorizontalAchievementsAdapter.OnAchievementClickListener {
 
     companion object {
-        private const val INTENT_GAME_ID = "INTENT_GAME_ID"
         private const val INTENT_GAME = "INTENT_GAME"
-        private const val INTENT_PALETTE = "INTENT_PALETTE"
-
-        private const val INVALID_ID = "-1"
 
         fun getInstance(context: Context, game: Game): Intent {
             return Intent(context, GameActivity::class.java).apply {
@@ -41,10 +44,19 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         }
     }
 
-    lateinit var binding: ActivityGameBinding
+    private lateinit var binding: ActivityGameBinding
 
     @Inject
     lateinit var viewModel: GameViewModel
+
+    private val newsAdapter by lazy {
+        NewsAdapter(object : OnNewsItemClickListener {
+            override fun onNewsItemSelected(item: NewsItem) {
+                Timber.d(item.gid)
+                // TODO show NewsPage.
+            }
+        })
+    }
 
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
@@ -62,9 +74,19 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         setContentView(binding.root)
         setSupportActionBar(toolbar)
 
+        recycler_view_news.adapter = newsAdapter
+        recycler_view_news.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+
         // Retrieve data.
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
+            collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
+            updateNavigationBarColor(game.getPrimaryColor())
             setGameInfo(game)
+
             viewModel.setGame(game)
         }
 
@@ -84,14 +106,27 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
             achievementsAdapter.updateSortingMethod(method)
         })
 
+        viewModel.news.observe(this, Observer { nullableNews ->
+            nullableNews?.let { news ->
+                newsAdapter.setItems(news)
+            }
+        })
+
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
         }
+
+        viewModel.fetchNews()
     }
 
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
         startActivity(TransparentPagerActivity.getInstance(this, index, sortedList))
+    }
+
+    private fun updateNavigationBarColor(primaryColor: Int) {
+        collapsingToolbar.setContentScrimColor(primaryColor)
+        collapsingToolbar.setStatusBarScrimColor(primaryColor)
     }
 
     private fun setGameInfo(game: Game?) {
@@ -103,8 +138,11 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         val data = GameData(game)
         binding.gameData = data
 
-        // Set Toolbar Title.
         collapsingToolbar.title = game.getName()
+
+        Glide.with(this)
+            .load(game.getBannerUrl())
+            .into(banner)
 
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {
@@ -114,9 +152,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         }
 
         binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
-
-        // Load Banner
-        banner.load(data.getImageUrl())
 
         // Prepare Achievements RecyclerView.
         recyclerViewAchievements.layoutManager = LinearLayoutManager(

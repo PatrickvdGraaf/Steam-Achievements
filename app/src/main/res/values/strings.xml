@@ -29,4 +29,13 @@
     <string name="sorting_order_not_achieved">Chronological</string>
     <string name="sorting_order_rarity">Rarity</string>
     <string name="header_progress">Progress</string>
+    <string name="achievements_completed_percentage">%s% (%s/%s) achievements.</string>
+    <string name="achievements_size">%s achievements.</string>
+    <string name="achievements_none">No achievements.</string>
+    <string name="pattern_decimal">0.##</string>
+    <string name="header_news">News</string>
+    <string name="alert_no_news">No recent news available</string>
+    <string name="lorem_ipsum_paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur et purus ac nunc scelerisque consectetur at vitae erat. Aliquam erat volutpat. Mauris tincidunt, justo non scelerisque vulputate, sapien nibh pharetra massa, in finibus erat lectus et diam. Integer dignissim quam id mi porttitor accumsan. Donec a urna eget augue congue hendrerit convallis quis odio. Vestibulum convallis euismod tortor ullamcorper vehicula. Integer et malesuada diam. Morbi et velit odio. Duis tempor libero commodo est pharetra pulvinar. Nam vulputate ipsum non ligula tincidunt, a feugiat ipsum dapibus. Pellentesque eu neque id nisi consequat tempor. Suspendisse blandit mauris eu felis varius porta. Integer fringilla auctor magna sit amet rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque facilisis justo volutpat turpis finibus, sed viverra massa vulputate. Aliquam quis diam mi. Nunc elementum justo vel ligula egestas, ac imperdiet turpis finibus. Maecenas vehicula condimentum enim, et elementum augue. Aenean quis mauris in nisi efficitur viverra non nec neque. Cras consectetur pharetra sem, sit amet ornare ante mattis ac. Morbi lacinia tempus elit, vel interdum massa aliquet sed. Pellentesque pulvinar, nunc quis hendrerit pellentesque, nisl turpis laoreet mauris, in aliquam urna justo at ipsum. Vivamus massa velit, consequat sed tellus quis, tincidunt rhoncus ex. Duis rhoncus nibh iaculis est eleifend commodo.</string>
+    <string name="format_limiter_more">%s.. [%s]</string>
+    <string name="limiter_more">more…</string>
 </resources>
