@@ -3,7 +3,6 @@ package com.crepetete.steamachievements.ui.activity.game
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.repository.GameRepository
@@ -34,20 +33,22 @@ class GameViewModel @Inject constructor(
         get() = _appId
 
     // Game
-    val game: LiveData<Game> = Transformations
-        .switchMap(_appId) { id ->
-            id.ifExists { appId ->
-                gameRepo.getGame(appId)
-            }
-        }
+    private val gameMutable: MutableLiveData<Game?> = MutableLiveData<Game?>(null)
+    val game: LiveData<Game?>
+        get(): LiveData<Game?> = gameMutable
 
     // News
     private var _newsLiveResource: LiveResource<List<NewsItem>>? = null
-    private val _news = MediatorLiveData<List<NewsItem>?>()
     private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _newsLoadingError = MediatorLiveData<Exception?>()
 
+    private val _news = MediatorLiveData<List<NewsItem>?>()
     val news: LiveData<List<NewsItem>?> = _news
+
+    // Chart
+    private val _achievementsChartData = MutableLiveData<List<Achievement?>>()
+    val achievementsChartData: LiveData<List<Achievement?>>
+        get() = _achievementsChartData
 
     private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
 
@@ -88,6 +89,7 @@ class GameViewModel @Inject constructor(
 
     fun setGame(newGame: Game) {
         _appId.value = AppId(newGame.getAppId().toString())
+        gameMutable.value = newGame
     }
 
     fun fetchNews() {

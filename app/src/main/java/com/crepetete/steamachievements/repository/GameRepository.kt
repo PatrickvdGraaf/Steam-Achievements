@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import com.crepetete.steamachievements.api.SteamApiService
 import com.crepetete.steamachievements.api.response.news.NewsItem
 import com.crepetete.steamachievements.db.dao.AchievementsDao
@@ -135,9 +134,7 @@ class GameRepository @Inject constructor(
      * value of the last API call.
      */
     fun getGame(appId: String): LiveData<Game> {
-        return liveData {
-            emitSource(gamesDao.getGame(appId))
-        }
+        return gamesDao.getGame(appId)
     }
 
     fun update(item: BaseGameInfo) {

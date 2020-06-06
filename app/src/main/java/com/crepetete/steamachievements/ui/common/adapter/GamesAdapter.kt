@@ -8,15 +8,16 @@ import android.widget.Filterable
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.steamachievements.databinding.ViewHolderGameBinding
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.adapter.callback.ColorListener
 import com.crepetete.steamachievements.ui.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.ui.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
 import com.crepetete.steamachievements.vo.Game
+import kotlinx.android.synthetic.main.view_holder_game.view.*
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
 /**
  * Adapter that shows Games in a (vertical) List.
@@ -33,18 +34,17 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
     private var query: String? = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
-        val binding =
-            ViewHolderGameBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
-        val viewHolder = GameViewHolder(binding)
+        val view =
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.view_holder_game, parent, false)
+        val viewHolder = GameViewHolder(view)
 
-        binding.root.setOnClickListener {
+        view.setOnClickListener {
             listener.onGameClicked(
                 items[viewHolder.adapterPosition],
-                binding.imageViewGameBanner,
-                binding.imageViewGameBanner,
-                binding.imageViewGameBanner
+                view.imageViewGameBanner,
+                view.imageViewGameBanner,
+                view.imageViewGameBanner
             )
         }
 

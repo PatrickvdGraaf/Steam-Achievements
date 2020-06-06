@@ -3,18 +3,19 @@ package com.crepetete.steamachievements.util.extensions
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.os.Build
-import android.text.Html
 import android.view.View
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.ui.common.enums.SortingType
 import com.crepetete.steamachievements.vo.Game
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.Dispatchers.Default
-import java.util.*
+import java.util.Comparator
 
 /**
  * Sorts a list of games using the [Default] dispatcher.
@@ -95,18 +96,23 @@ fun CardView.animateBackground(
     animator.start()
 }
 
-fun TextView.setAttributedText(text: String?) {
-    setText(
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(
-                text,
-                Html.FROM_HTML_MODE_LEGACY
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            Html.fromHtml(text)
-        }
+fun LineDataSet.customizeDataSet(dataSetSize: Int, chart: LineChart): LineDataSet {
+    this.setDrawFilled(true)
+    this.setDrawValues(false)
+
+    this.color = R.color.colorAccent
+
+    this.fillDrawable = ContextCompat.getDrawable(
+        chart.context,
+        R.drawable.gradient_white_to_transparent
     )
+
+    this.setColors(color)
+
+    for (index in 0..dataSetSize - 2) {
+        this.circleColors[0] = color
+    }
+    return this
 }
 
 fun <R> bindObserver(

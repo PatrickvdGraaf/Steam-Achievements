@@ -4,15 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
 import com.crepetete.steamachievements.api.response.news.NewsItem
-import com.crepetete.steamachievements.databinding.ActivityGameBinding
-import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.ui.activity.BaseActivity
 import com.crepetete.steamachievements.ui.activity.achievements.pager.TransparentPagerActivity
 import com.crepetete.steamachievements.ui.common.adapter.HorizontalAchievementsAdapter
@@ -20,18 +17,32 @@ import com.crepetete.steamachievements.ui.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.ui.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.ui.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.ui.common.graph.point.OnGraphDateTappedListener
+import com.crepetete.steamachievements.util.extensions.customizeDataSet
 import com.crepetete.steamachievements.vo.Achievement
 import com.crepetete.steamachievements.vo.Game
 import com.crepetete.steamachievements.vo.GameData
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.LargeValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import kotlinx.android.synthetic.main.activity_game.*
 import timber.log.Timber
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.ArrayList
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 /**
  * Shows a more detailed overview of the available information of a [Game] and its [Achievement]s.
  */
-class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
+class GameActivity : BaseActivity(), OnGraphDateTappedListener,
     HorizontalAchievementsAdapter.OnAchievementClickListener {
 
     companion object {
@@ -43,8 +54,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
             }
         }
     }
-
-    private lateinit var binding: ActivityGameBinding
 
     @Inject
     lateinit var viewModel: GameViewModel
@@ -64,18 +73,13 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
 
-        // Inflate view and obtain an instance of the binding class.
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_game)
-
         // Set status bar tint.
         setTranslucentStatusBar()
-
-        // Prepare view.
-        setContentView(binding.root)
+        setContentView(R.layout.activity_game)
         setSupportActionBar(toolbar)
 
-        recycler_view_news.adapter = newsAdapter
-        recycler_view_news.layoutManager = LinearLayoutManager(
+        recyclerViewNews.adapter = newsAdapter
+        recyclerViewNews.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
             false
@@ -85,7 +89,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
             collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
             updateNavigationBarColor(game.getPrimaryColor())
-            setGameInfo(game)
 
             viewModel.setGame(game)
         }
@@ -136,7 +139,6 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         // Move data into binding.
         val data = GameData(game)
-        binding.gameData = data
 
         collapsingToolbar.title = game.getName()
 
@@ -146,12 +148,19 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
 
         // TODO find a way to implement this inside xml with data binding.
         if (data.getRecentPlaytimeString() != "0m") {
-            binding.textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+            textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
         } else {
-            binding.textViewRecentlyPlayed.visibility = View.GONE
+            textViewRecentlyPlayed.visibility = View.GONE
         }
 
-        binding.totalPlayedTextView.setText(data.getTotalPlayTimeString())
+        totalPlayedTextView.setText(data.getTotalPlayTimeString())
+
+        if (data.hasResentPlaytime()) {
+            textViewRecentlyPlayed.visibility = View.VISIBLE
+            textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+        } else {
+            textViewRecentlyPlayed.visibility = View.GONE
+        }
 
         // Prepare Achievements RecyclerView.
         recyclerViewAchievements.layoutManager = LinearLayoutManager(
@@ -168,7 +177,8 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
         achievementsAdapter.setAchievements(game.achievements)
 
         // Init Graph.
-        AchievementsGraphViewUtil.setAchievementsOverTime(graph, game.achievements, this)
+        customizeChart()
+        setChartData(lineChartAchievements, data)
     }
 
     /**
@@ -176,5 +186,87 @@ class GameActivity : BaseActivity(), Injectable, OnGraphDateTappedListener,
      */
     override fun onDateTapped(date: Date) {
         // TODO write implementation.
+    }
+
+    private fun customizeChart() {
+        val desc = Description()
+        desc.text = ""
+        lineChartAchievements.description = desc
+        lineChartAchievements.axisRight.isEnabled = false
+        lineChartAchievements.xAxis.position = XAxis.XAxisPosition.BOTTOM
+
+        lineChartAchievements.xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                val date = Date(value.toLong())
+                val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH)
+                return sdf.format(date)
+            }
+        }
+
+        lineChartAchievements.axisLeft.valueFormatter = object : LargeValueFormatter() {}
+        lineChartAchievements.legend.setDrawInside(false)
+
+        lineChartAchievements.isHighlightPerTapEnabled = true
+        lineChartAchievements.setDrawMarkers(true)
+        lineChartAchievements.setTouchEnabled(true)
+
+        lineChartAchievements.isAutoScaleMinMaxEnabled = true
+    }
+
+    private fun setChartData(chart: LineChart, gameData: GameData?) {
+        val achievedEntries = ArrayList<Entry>()
+
+        if (gameData != null) {
+            val achievements = gameData.getAchievements()
+            achievements
+                .filter {
+                    it.achieved &&
+                            it.unlockTime != Date() &&
+                            it.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
+                }
+                .sortedBy { it.unlockTime }
+                .map { achievement -> achievedEntries.addEntry(achievements, achievement) }
+        }
+
+        val dataSets: MutableList<ILineDataSet> = ArrayList()
+
+        val achievementsDataSet = LineDataSet(achievedEntries, "Completion")
+            .customizeDataSet(achievedEntries.size, chart)
+
+        achievementsDataSet.setDrawHighlightIndicators(false)
+
+        dataSets.add(achievementsDataSet)
+
+        val lineData = LineData(dataSets)
+        chart.data = lineData
+        chart.postInvalidate()
+    }
+
+    /**
+     * This method creates an [Entry] for the [LineChart] showing Achievements completion percentages.
+     *
+     * It uses the size of the complete [achievements] list and the size of a filtered list containing
+     * only unlocked Achievements to calculate the total completion percentage at the moment the user
+     * unlocked the specific [achievement]. This value goes on the y-axis.
+     *
+     * The x-axis will contain the [Achievement.unlockTime] in millis.
+     */
+    private fun ArrayList<Entry>.addEntry(
+        achievements: List<Achievement>,
+        achievement: Achievement
+    ) {
+        // Check the users completion rate after unlocking the [achievement].
+        val unlockedAchievements = achievements
+            .filter(Achievement::achieved)
+            .map { it.unlockTime }
+            .filter { it?.before(achievement.unlockTime) == true || it == achievement.unlockTime }
+
+        // Calculate the percentage relative to the already achieved achievements at that time.
+        val completionPercentage =
+            (unlockedAchievements.size.toFloat() / achievements.size.toFloat())
+
+        achievement.unlockTime?.time?.let {
+            this.add(Entry(it.toFloat(), completionPercentage * 100F))
+        }
     }
 }

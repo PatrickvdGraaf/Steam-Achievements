@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.SteamAchievementsApp
-import com.crepetete.steamachievements.databinding.FragmentLibraryBinding
 import com.crepetete.steamachievements.di.Injectable
 import com.crepetete.steamachievements.repository.resource.LiveResource
 import com.crepetete.steamachievements.ui.activity.game.GameActivity
@@ -33,21 +31,12 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
 
     lateinit var adapter: GamesAdapter
 
-    lateinit var binding: FragmentLibraryBinding
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_library,
-            container,
-            false
-        )
-
-        return binding.root
+        return inflater.inflate(R.layout.fragment_library, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -163,9 +152,9 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= 0) {
-                    binding.fab.hide()
+                    fab.hide()
                 } else {
-                    binding.fab.show()
+                    fab.show()
                 }
             }
         })
