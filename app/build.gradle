@@ -33,10 +33,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
-    }
-
     defaultConfig {
         applicationId "com.crepetete.steamachievements"
         minSdkVersion 24
@@ -68,6 +64,7 @@ android {
 
     packagingOptions {
         pickFirst 'META-INF/core_release.kotlin_module'
+        exclude 'META-INF/*.kotlin_module'
     }
 
     productFlavors {
@@ -170,7 +167,6 @@ dependencies {
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"// liveData
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version" // ViewModelScope
 

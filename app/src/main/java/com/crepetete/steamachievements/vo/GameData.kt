@@ -1,8 +1,6 @@
 package com.crepetete.steamachievements.vo
 
 import android.content.Context
-import androidx.databinding.BaseObservable
-import androidx.databinding.Bindable
 import com.crepetete.steamachievements.R
 import java.text.DecimalFormat
 
@@ -11,15 +9,13 @@ import java.text.DecimalFormat
  * methods that allow the binding to fill in all the requested information from the [game] object in
  * readable form.
  */
-class GameData(private val game: Game) : BaseObservable() {
+class GameData(private val game: Game) {
 
-    @Bindable
     fun getName() = game.getName()
 
     /**
      * @return A base text representation of the players achievement completion.
      */
-    @Bindable
     fun getAchievementsText() = when {
         hasCompletedAchievements() -> "${DecimalFormat("0.##").format(getPercentageCompleted())}% " +
                 "(${getCompletedAchievements().size}/${game.achievements.size}) achievements." // Show a completion percentage
@@ -30,7 +26,6 @@ class GameData(private val game: Game) : BaseObservable() {
     /**
      * @return Image URL for the games big banner image.
      */
-    @Bindable
     fun getImageUrl() = game.getBannerUrl()
 
     /**
@@ -38,7 +33,6 @@ class GameData(private val game: Game) : BaseObservable() {
      *
      * @return A base text representation of the total playtime.
      */
-    @Bindable
     fun getTotalPlayTimeString() = toHours(game.getPlaytime())
 
     /**
@@ -46,13 +40,11 @@ class GameData(private val game: Game) : BaseObservable() {
      *
      * @return A base text representation of the recent playtime.
      */
-    @Bindable
     fun getRecentPlaytimeString() = toHours(game.getRecentPlaytime())
 
     /**
      * @return a float representing a percentage (achieved achievements over total achievements).
      */
-    @Bindable
     fun getPercentageCompleted(): Float {
         val achievedSize = getCompletedAchievements().size.toFloat()
         val totalSize = game.achievements.size.toFloat()
@@ -99,5 +91,9 @@ class GameData(private val game: Game) : BaseObservable() {
         } else {
             "$hours$hoursAbbr, $minutes$minAbbr"
         }
+    }
+
+    fun hasResentPlaytime(): Boolean {
+        return game.getRecentPlaytime() > 0
     }
 }
