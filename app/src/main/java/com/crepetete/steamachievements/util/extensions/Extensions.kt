@@ -10,8 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.ui.common.enums.SortingType
-import com.crepetete.steamachievements.vo.Game
+import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.presentation.common.enums.SortingType
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.Dispatchers.Default

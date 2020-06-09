@@ -99,7 +99,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                    <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
                         android:id="@+id/textViewRecentlyPlayed"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
                         app:valueText="1h 23m" />
 
-                    <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                    <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
                         android:id="@+id/totalPlayedTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

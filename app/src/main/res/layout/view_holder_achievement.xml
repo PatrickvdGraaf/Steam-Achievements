@@ -30,7 +30,7 @@
             android:scaleType="centerCrop"
             tools:targetApi="m" />
 
-        <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+        <com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout
             android:id="@+id/pulsator"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -51,7 +51,7 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_steam_round" />
 
-        </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
+        </com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout>
 
     </androidx.cardview.widget.CardView>
 

@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/default_margin"
         android:paddingTop="@dimen/default_margin"
-        tools:context=".ui.activity.main.fragment.achievements.AchievementsFragment">
+        tools:context=".presentation.fragment.achievements.AchievementsFragment">
         <TextView
             android:id="@+id/textview_total_achievements"
             style="@style/AppTheme.Text.Value.Big"
@@ -47,7 +47,7 @@
 
         </LinearLayout>
 
-        <com.crepetete.steamachievements.ui.common.view.CircularProgressBar
+        <com.crepetete.steamachievements.presentation.common.view.CircularProgressBar
             android:id="@+id/custom_progressBar"
             android:layout_width="@dimen/progressBar_dimen"
             android:layout_height="@dimen/progressBar_dimen"

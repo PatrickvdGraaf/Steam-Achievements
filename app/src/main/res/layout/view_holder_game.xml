@@ -27,7 +27,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+        <com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout
             android:id="@+id/pulsator"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -51,7 +51,7 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_image_loading" />
 
-        </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
+        </com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout>
 
         <ImageView
             android:id="@+id/image_view_total_played"

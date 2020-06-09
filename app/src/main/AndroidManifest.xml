@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".SteamAchievementsApp"
+        android:name=".presentation.SteamAchievementsApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
@@ -18,7 +18,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
         <activity
-            android:name=".ui.activity.splash.SplashScreenActivity"
+            android:name="com.crepetete.steamachievements.presentation.activity.splash.SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +30,8 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" /> <!-- LOGIN -->
-        <activity android:name=".ui.activity.login.LoginActivity" />
-        <activity android:name=".ui.activity.main.MainActivity">
+        <activity android:name="com.crepetete.steamachievements.presentation.activity.login.LoginActivity" />
+        <activity android:name="com.crepetete.steamachievements.presentation.activity.main.MainActivity">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_games" />
@@ -41,10 +41,10 @@
             </intent-filter>
         </activity> <!-- GAME DETAIL -->
         <activity
-            android:name=".ui.activity.game.GameActivity"
+            android:name="com.crepetete.steamachievements.presentation.activity.game.GameActivity"
             android:theme="@style/Transparent" /> <!-- PAGER -->
         <activity
-            android:name=".ui.activity.achievements.pager.TransparentPagerActivity"
+            android:name="com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity"
             android:theme="@style/Transparent" />
     </application>
 
