@@ -17,15 +17,13 @@ import androidx.lifecycle.Observer
 import com.crepetete.data.helper.LiveResource
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Player
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.activity.main.MainActivity
-import com.crepetete.steamachievements.presentation.di.Injectable
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.Locale
 
-class LoginActivity : AppCompatActivity(), Injectable {
+class LoginActivity : AppCompatActivity() {
     companion object {
         fun getInstance(context: Context): Intent {
             val intent = Intent(context, LoginActivity::class.java)
@@ -37,7 +35,6 @@ class LoginActivity : AppCompatActivity(), Injectable {
     private val viewModel: AuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 

@@ -8,9 +8,8 @@ import com.crepetete.steamachievements.data.database.dao.PlayerDao
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
 import com.crepetete.steamachievements.domain.repository.UserRepository
-import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(
+class UserRepositoryImpl(
     private val storage: PreferencesRepository,
     private val api: SteamApiService,
     private val dao: PlayerDao

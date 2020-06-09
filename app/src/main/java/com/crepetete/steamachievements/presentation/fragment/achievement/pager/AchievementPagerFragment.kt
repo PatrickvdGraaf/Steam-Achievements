@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.presentation.fragment.achievement.pager
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -17,19 +16,17 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Achievement
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
-import com.crepetete.steamachievements.presentation.di.Injectable
 import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.util.extensions.animateBackground
 import kotlinx.android.synthetic.main.fragment_achievement_pager.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.Calendar
 import java.util.Date
-import javax.inject.Inject
 
 /**
  * ViewPager Fragment that shows a Dialog-like view for an [Achievement].
  */
-class AchievementPagerFragment : Fragment(), Injectable {
+class AchievementPagerFragment : Fragment() {
 
     companion object {
         private const val INTENT_KEY_ACHIEVEMENT = "INTENT_KEY_ACHIEVEMENT"
@@ -43,8 +40,7 @@ class AchievementPagerFragment : Fragment(), Injectable {
         }
     }
 
-    @Inject
-    lateinit var viewModel: PagerFragmentViewModel
+    private val viewModel: PagerFragmentViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,12 +72,6 @@ class AchievementPagerFragment : Fragment(), Injectable {
         content.setOnClickListener {
             activity?.onBackPressed()
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     /**

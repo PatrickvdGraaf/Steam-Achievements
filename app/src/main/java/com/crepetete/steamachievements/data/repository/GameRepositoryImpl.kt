@@ -19,12 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 @OpenForTesting
-class GameRepositoryImpl @Inject constructor(
+class GameRepositoryImpl(
     private val achievementsDao: AchievementsDao,
     private val api: SteamApiService,
     private val gamesDao: GamesDao,
@@ -43,7 +40,7 @@ class GameRepositoryImpl @Inject constructor(
      * Fetch Games from both the Database and the API.
      * Refresh rate is set with the [rateLimiter].
      */
-    override fun getGames(userId: String): LiveResource<List<Game>> {
+    override fun getGames(userId: String?): LiveResource<List<Game>> {
         return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
             override suspend fun saveCallResult(data: List<Game>) {
@@ -55,14 +52,18 @@ class GameRepositoryImpl @Inject constructor(
 
             override suspend fun createCall(): List<Game>? {
                 val games: MutableList<Game> = mutableListOf()
-                val gamesResponse = api.getGamesForUser(userId).response.games
+                val gamesResponse = if (userId != null) {
+                    api.getGamesForUser(userId).response.games
+                } else {
+                    listOf()
+                }
 
                 gamesResponse?.let { baseGameInfo ->
                     gamesDao.upsert(baseGameInfo)
 
                     baseGameInfo.forEach { baseGame ->
                         val achievements =
-                            if (rateLimiter.shouldFetch("achievements_${baseGame.appId}")) {
+                            if (rateLimiter.shouldFetch("achievements_${baseGame.appId}") && userId != null) {
                                 fetchAchievementsFromApi(userId, baseGame.appId.toString())
                             } else {
                                 achievementsDao.getAchievements(baseGame.appId.toString())
@@ -86,10 +87,7 @@ class GameRepositoryImpl @Inject constructor(
         }.asLiveResource()
     }
 
-    override suspend fun fetchAchievementsFromApi(
-        userId: String,
-        appId: String
-    ): List<Achievement>? {
+    override fun fetchAchievementsFromApi(userId: String, appId: String): List<Achievement>? {
         try {
             val baseResponse = api.getSchemaForGame(appId)
 
@@ -152,7 +150,7 @@ class GameRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNews(appId: String): LiveResource<List<NewsItem>> {
+    override fun getNews(appId: String): LiveResource<List<NewsItem>> {
         return object : NetworkBoundResource<List<NewsItem>, List<NewsItem>?>() {
             override suspend fun saveCallResult(data: List<NewsItem>?) {
                 data?.let { news ->

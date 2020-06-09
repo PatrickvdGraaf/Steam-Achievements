@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.presentation.fragment.profile
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.activity.login.AuthViewModel
-import com.crepetete.steamachievements.presentation.di.Injectable
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ProfileFragment : Fragment(), Injectable {
+class ProfileFragment : Fragment() {
 
     private val profileViewModel: AuthViewModel by viewModel()
 
@@ -61,11 +58,5 @@ class ProfileFragment : Fragment(), Injectable {
                     .into(imageViewProfile)
             }
         })
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 }

@@ -2,13 +2,12 @@ package com.crepetete.steamachievements.data.repository
 
 import android.content.Context
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
-import javax.inject.Inject
 
 /**
  * @author: Patrick van de Graaf.
  * @date: Sun 10 Nov, 2019; 12:31.
  */
-class PreferencesRepositoryImpl @Inject constructor(context: Context) : PreferencesRepository {
+class PreferencesRepositoryImpl(context: Context) : PreferencesRepository {
 
     private companion object {
         private const val PREFS_NAME = "STEAM_ACHIEVEMENTS_PREFS_NAME"

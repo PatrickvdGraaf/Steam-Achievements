@@ -6,12 +6,11 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Achievement
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.activity.BaseActivity
 import com.crepetete.steamachievements.presentation.activity.achievements.pager.ZoomOutPageTransformer
 import com.crepetete.steamachievements.presentation.fragment.achievement.pager.adapter.ScreenSlidePagerAdapter
 import kotlinx.android.synthetic.main.activity_pager.*
-import javax.inject.Inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * Activity which holds a ViewPager that shows an achievement.
@@ -30,13 +29,11 @@ class TransparentPagerActivity : BaseActivity() {
         }
     }
 
-    @Inject
-    lateinit var viewModel: TransparentPagerViewModel
+    private val viewModel: TransparentPagerViewModel by viewModel()
 
     private val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pager)
 

@@ -89,7 +89,7 @@ interface SteamApiService {
      *          Up to 100 Steam IDs can be requested.
      */
     @GET("/ISteamUser/GetPlayerSummaries/v0002/")
-    suspend fun getUserInfo(
+    fun getUserInfo(
         @Query("steamids") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
     ): ApiResponse<UserResponse>
@@ -118,7 +118,7 @@ interface SteamApiService {
      * (in JSON: "appids_filter: [ 440, 500, 550 ]" )
      */
     @GET("/IPlayerService/GetOwnedGames/v0001/")
-    suspend fun getGamesForUser(
+    fun getGamesForUser(
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY,
         @Query("include_appinfo") includeAppInfo: Int = 1,
@@ -134,7 +134,7 @@ interface SteamApiService {
      * @param appId The AppID of the game you want stats of
      */
     @GET("/ISteamUserStats/GetSchemaForGame/v2/")
-    suspend fun getSchemaForGame(
+    fun getSchemaForGame(
         @Query("appid") appId: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
     ): SchemaResponse
@@ -148,7 +148,7 @@ interface SteamApiService {
      * @param appId The ID for the game you're requesting
      */
     @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
-    suspend fun getAchievementsForPlayer(
+    fun getAchievementsForPlayer(
         @Query("appid") appId: String,
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
@@ -163,7 +163,7 @@ interface SteamApiService {
      * @param appId AppID of the game you want the percentages of.
      */
     @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
-    suspend fun getGlobalAchievementStats(
+    fun getGlobalAchievementStats(
         @Query("gameid") appId: String
     ): GlobalAchievResponse
 
@@ -179,7 +179,7 @@ interface SteamApiService {
      * @param maxLength Maximum length of each news entry.
      */
     @GET("/ISteamNews/GetNewsForApp/v0002/")
-    suspend fun getNews(
+    fun getNews(
         @Query("appid") appId: String,
         @Query("count") count: String = "3",
         @Query("maxlength") maxLength: String = "10000",

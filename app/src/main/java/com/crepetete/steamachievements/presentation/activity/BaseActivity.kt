@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.presentation.activity.login.LoginActivity
-import com.crepetete.steamachievements.presentation.di.Injectable
-import dagger.android.AndroidInjection
 
 /**
  *
@@ -19,7 +17,7 @@ import dagger.android.AndroidInjection
  * @author: Patrick van de Graaf.
  * @date: Sun 03 Feb, 2019; 22:51.
  */
-abstract class BaseActivity : AppCompatActivity(), Injectable {
+abstract class BaseActivity : AppCompatActivity() {
 
     companion object {
         const val INTENT_USER_ID = "user_id"
@@ -29,7 +27,6 @@ abstract class BaseActivity : AppCompatActivity(), Injectable {
     var userId: String = INVALID_ID
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState, persistentState)
 
         /* Check if there is a userId property in the arguments and go to login if there is none. */

@@ -7,22 +7,17 @@ import androidx.lifecycle.ViewModel
 import com.crepetete.data.helper.LiveResource
 import com.crepetete.data.helper.ResourceState
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
-import com.crepetete.steamachievements.data.repository.GameRepositoryImpl
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.usecases.news.GetNewsUseCase
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.AchievementSortedListImpl
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.Order
 import com.crepetete.steamachievements.util.extensions.bindObserver
-import com.crepetete.steamachievements.util.livedata.AbsentLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class GameViewModel @Inject constructor(
-    private val gameRepo: GameRepositoryImpl
-) : ViewModel() {
+class GameViewModel(private val getNewsUseCase: GetNewsUseCase) : ViewModel() {
 
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
@@ -98,25 +93,15 @@ class GameViewModel @Inject constructor(
         }
 
         _appId.value?.id?.let { id ->
-            uiScope.launch {
-                gameRepo.getNews(id).apply {
-                    _newsLiveResource = this
-                    newsJob = this.job
-                    bindObserver(_news, this.data)
-                    bindObserver(_newsLoadingState, this.state)
-                    bindObserver(_newsLoadingError, this.error)
-                }
+            getNewsUseCase(id).apply {
+                _newsLiveResource = this
+                newsJob = this.job
+                bindObserver(_news, this.data)
+                bindObserver(_newsLoadingState, this.state)
+                bindObserver(_newsLoadingError, this.error)
             }
         }
     }
 
-    data class AppId(val id: String) {
-        fun <T> ifExists(f: (String) -> LiveData<T>): LiveData<T> {
-            return if (id.isBlank()) {
-                AbsentLiveData.create()
-            } else {
-                f(id)
-            }
-        }
-    }
+    data class AppId(val id: String)
 }

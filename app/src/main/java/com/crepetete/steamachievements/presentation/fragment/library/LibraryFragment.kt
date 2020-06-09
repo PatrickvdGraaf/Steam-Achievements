@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.presentation.fragment.library
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,21 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.data.helper.LiveResource
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Game
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.activity.game.GameActivity
 import com.crepetete.steamachievements.presentation.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
-import com.crepetete.steamachievements.presentation.di.Injectable
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import javax.inject.Inject
 
-class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
-    GamesAdapter.GamesAdapterCallback {
+class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
 
-    @Inject
-    lateinit var viewModel: LibraryViewModel
+    private val viewModel: LibraryViewModel by viewModel()
 
     lateinit var adapter: GamesAdapter
 
@@ -126,12 +121,6 @@ class LibraryFragment : Fragment(), Injectable, NavBarInteractionListener,
         initRecyclerView()
 
         viewModel.fetchGames()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     private fun initScrollFab() {

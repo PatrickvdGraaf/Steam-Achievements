@@ -11,7 +11,6 @@ import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.activity.BaseActivity
 import com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
@@ -32,12 +31,12 @@ import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import kotlinx.android.synthetic.main.activity_game.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
 /**
  * Shows a more detailed overview of the available information of a [Game] and its [Achievement]s.
@@ -55,8 +54,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         }
     }
 
-    @Inject
-    lateinit var viewModel: GameViewModel
+    private val viewModel: GameViewModel by viewModel()
 
     private val newsAdapter by lazy {
         NewsAdapter(object : OnNewsItemClickListener {
@@ -70,7 +68,6 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
     private val achievementsAdapter by lazy { HorizontalAchievementsAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as SteamAchievementsApp).appComponent.inject(this)
         super.onCreate(savedInstanceState)
 
         // Set status bar tint.

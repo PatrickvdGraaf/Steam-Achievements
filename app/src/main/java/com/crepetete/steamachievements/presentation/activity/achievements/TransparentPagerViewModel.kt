@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.domain.model.Achievement
-import javax.inject.Inject
 
 /**
  * ViewModel for [TransparentPagerActivity], responsible for holding the AchievementsPager data.
  */
-class TransparentPagerViewModel @Inject constructor() : ViewModel() {
+class TransparentPagerViewModel : ViewModel() {
     private val _index = MutableLiveData<Int>()
     val index: LiveData<Int>
         get() = _index

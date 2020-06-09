@@ -6,23 +6,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.crepetete.data.helper.LiveResource.Companion.STATE_LOADING
 import com.crepetete.data.helper.ResourceState
-import com.crepetete.steamachievements.data.repository.GameRepositoryImpl
-import com.crepetete.steamachievements.data.repository.UserRepositoryImpl
 import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.usecases.game.GetGamesUseCase
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel responsible for handling all logic for the [LibraryFragment].
  */
-class LibraryViewModel @Inject constructor(
-    private val gameRepo: GameRepositoryImpl,
-    private val userRepository: UserRepositoryImpl
-) : ViewModel() {
+class LibraryViewModel(private val getGamesUseCase: GetGamesUseCase) : ViewModel() {
 
     private companion object {
         val DEFAULT_SORT_METHOD = SortingType.PLAYTIME
@@ -63,13 +58,11 @@ class LibraryViewModel @Inject constructor(
         }
 
         uiScope.launch {
-            userRepository.getCurrentPlayerId()?.let { id ->
-                gameRepo.getGames(id).let { resource ->
-                    gamesFetchJob = resource.job
-                    bindObserver(_games, resource.data)
-                    bindObserver(_gamesLoadingState, resource.state)
-                    bindObserver(_gamesLoadingError, resource.error)
-                }
+            getGamesUseCase().let { resource ->
+                gamesFetchJob = resource.job
+                bindObserver(_games, resource.data)
+                bindObserver(_gamesLoadingState, resource.state)
+                bindObserver(_gamesLoadingError, resource.error)
             }
         }
     }

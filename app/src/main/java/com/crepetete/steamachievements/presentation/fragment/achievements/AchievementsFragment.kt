@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.presentation.fragment.achievements
 
 import android.animation.ValueAnimator
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Achievement
-import com.crepetete.steamachievements.presentation.SteamAchievementsApp
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.presentation.common.view.CircularProgressBar
@@ -98,12 +96,6 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
         if (achievements.isNotEmpty()) {
             showLatestAchievements(achievements, allAchievements)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        (activity!!.application as SteamAchievementsApp).appComponent.inject(this)
     }
 
     /**
