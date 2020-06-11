@@ -63,8 +63,6 @@ class AchievementsRepositoryImpl(
     }
 
     override suspend fun updateAchievementsFromApi(userId: String, appIds: List<String>) {
-        val updatedAchievements = mutableListOf<Achievement>()
-
         appIds.forEach { appId ->
             val baseResponse = api.getSchemaForGame(appId)
 
@@ -101,9 +99,8 @@ class AchievementsRepositoryImpl(
                         }
                 }
             }
-            responseAchievements?.let { updatedAchievements.addAll(it) }
+            achievementsDao.upsert(responseAchievements ?: listOf())
         }
-        achievementsDao.upsert(updatedAchievements)
     }
 
     override fun getAchievementsAsFlow(): Flow<List<Achievement>> {

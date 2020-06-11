@@ -51,7 +51,6 @@ val dataModules = module(override = true) {
     single<GameRepository> {
         GameRepositoryImpl(
             get(),
-            get<SteamDatabase>().achievementsDao(),
             get<SteamDatabase>().gamesDao(),
             get<SteamDatabase>().newsDao(),
             get()

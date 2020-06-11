@@ -5,7 +5,6 @@ import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.data.helper.RateLimiter
 import com.crepetete.data.network.SteamApiService
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
-import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.database.dao.NewsDao
 import com.crepetete.steamachievements.data.helper.LiveResource
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit
 @OpenForTesting
 class GameRepositoryImpl(
     private val api: SteamApiService,
-    private val achievementsDao: AchievementsDao,
     private val gamesDao: GamesDao,
     private val newsDao: NewsDao,
     private val updateAchievementsUseCase: UpdateAchievementsUseCase
@@ -47,7 +45,9 @@ class GameRepositoryImpl(
             override suspend fun saveCallResult(data: List<BaseGameInfo>) {
                 gamesDao.upsert(data)
 
-                updateAchievementsUseCase(userId, data.map { it.appId.toString() })
+                updateAchievementsUseCase(
+                    userId,
+                    data.sortedByDescending { it.playTime }.map { it.appId.toString() })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
@@ -55,18 +55,6 @@ class GameRepositoryImpl(
             }
 
             override suspend fun createCall(): List<BaseGameInfo>? {
-
-//                gamesResponse?.let { baseGameInfo ->
-//                    baseGameInfo.forEach { baseGame ->
-//                        games.add(
-//                            Game(
-//                                baseGame,
-//                                achievementsDao.getAchievements(baseGame.appId.toString())
-//                            )
-//                        )
-//                    }
-//                }
-
                 return if (userId != null) {
                     api.getGamesForUser(userId).response.games
                 } else {
