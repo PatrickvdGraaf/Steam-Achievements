@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.crepetete.data.helper.LiveResource
-import com.crepetete.data.helper.ResourceState
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
+import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.domain.usecases.news.GetNewsUseCase

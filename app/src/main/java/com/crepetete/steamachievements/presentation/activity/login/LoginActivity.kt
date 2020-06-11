@@ -14,8 +14,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.crepetete.data.helper.LiveResource
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*

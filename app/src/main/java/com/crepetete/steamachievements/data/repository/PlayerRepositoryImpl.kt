@@ -1,19 +1,19 @@
 package com.crepetete.steamachievements.data.repository
 
-import com.crepetete.data.helper.LiveResource
 import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.data.network.SteamApiService
 import com.crepetete.data.network.response.base.ApiSuccessResponse
 import com.crepetete.steamachievements.data.database.dao.PlayerDao
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Player
+import com.crepetete.steamachievements.domain.repository.PlayerRepository
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
-import com.crepetete.steamachievements.domain.repository.UserRepository
 
-class UserRepositoryImpl(
+class PlayerRepositoryImpl(
     private val storage: PreferencesRepository,
     private val api: SteamApiService,
     private val dao: PlayerDao
-) : UserRepository {
+) : PlayerRepository {
 
     override fun getPlayer(playerId: String): LiveResource<Player> {
         return object : NetworkBoundResource<Player, Player?>() {
@@ -40,7 +40,8 @@ class UserRepositoryImpl(
         }.asLiveResource()
     }
 
-    override fun getCurrentPlayerId(defValue: String?) = storage.getPlayerId(defValue)
+    override fun getCurrentPlayerId(defValue: String) =
+        storage.getPlayerId(defValue) ?: defValue
 
     override fun putCurrentPlayerId(playerId: String) {
         storage.setPlayerId(playerId)

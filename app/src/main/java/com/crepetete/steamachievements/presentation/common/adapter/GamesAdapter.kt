@@ -6,12 +6,10 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.common.adapter.callback.ColorListener
-import com.crepetete.steamachievements.presentation.common.adapter.diffutil.GamesDiffCallback
 import com.crepetete.steamachievements.presentation.common.adapter.viewholder.GameViewHolder
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
 import com.crepetete.steamachievements.util.extensions.sort
@@ -134,8 +132,10 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
      * Sorts the list with the current sorting method before submitting.
      */
     fun updateGames(games: List<Game>) {
-        items = games
-        filter.filter(query)
+        if (games != items) {
+            items = games
+            filter.filter(query)
+        }
     }
 
     /**
@@ -148,13 +148,11 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
 
     private fun showNewItems(newItems: List<Game>) {
         this.items = newItems.sort(sortMethod)
+        notifyDataSetChanged()
+    }
 
-        val diffResult = DiffUtil.calculateDiff(
-            GamesDiffCallback(oldItems, this.items)
-        )
-
-        oldItems = newItems
-        diffResult.dispatchUpdatesTo(this@GamesAdapter)
+    override fun getItemId(position: Int): Long {
+        return items[position].getAppId()
     }
 
     interface GamesAdapterCallback {

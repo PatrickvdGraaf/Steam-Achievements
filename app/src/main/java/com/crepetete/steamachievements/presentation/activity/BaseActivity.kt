@@ -6,6 +6,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.presentation.activity.login.LoginActivity
 
 /**
@@ -21,21 +22,20 @@ abstract class BaseActivity : AppCompatActivity() {
 
     companion object {
         const val INTENT_USER_ID = "user_id"
-        private const val INVALID_ID = "-1"
     }
 
-    var userId: String = INVALID_ID
+    var userId: String = Player.INVALID_ID
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
 
         /* Check if there is a userId property in the arguments and go to login if there is none. */
-        val restoredId = savedInstanceState?.getString(INTENT_USER_ID, INVALID_ID)
-        if (restoredId == INVALID_ID) {
+        val restoredId = savedInstanceState?.getString(INTENT_USER_ID, Player.INVALID_ID)
+        if (restoredId == Player.INVALID_ID) {
             startActivity(LoginActivity.getInstance(this))
             return
         } else {
-            userId = intent.getStringExtra(INTENT_USER_ID) ?: INVALID_ID
+            userId = intent.getStringExtra(INTENT_USER_ID) ?: Player.INVALID_ID
         }
     }
 

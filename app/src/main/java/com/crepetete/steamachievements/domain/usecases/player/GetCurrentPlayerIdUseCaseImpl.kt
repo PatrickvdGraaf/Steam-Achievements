@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.domain.usecases.player
 
-import com.crepetete.steamachievements.domain.repository.UserRepository
+import com.crepetete.steamachievements.domain.model.Player
+import com.crepetete.steamachievements.domain.repository.PlayerRepository
 
 /**
  * Retrieves the ID of the Player that is currently logged in.
@@ -9,9 +10,9 @@ import com.crepetete.steamachievements.domain.repository.UserRepository
  * @date: Sun 07 Jun, 2020; 14:02.
  */
 class GetCurrentPlayerIdUseCaseImpl(
-    private val userRepository: UserRepository
+    private val playerRepository: PlayerRepository
 ) : GetCurrentPlayerIdUseCase {
     override fun invoke(defValue: String?): String? {
-        return userRepository.getCurrentPlayerId(defValue)
+        return playerRepository.getCurrentPlayerId(defValue ?: Player.INVALID_ID)
     }
 }

@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.crepetete.data.helper.LiveResource
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.game.GameActivity
 import com.crepetete.steamachievements.presentation.common.adapter.GamesAdapter
@@ -24,7 +24,9 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
 
     private val viewModel: LibraryViewModel by viewModel()
 
-    lateinit var adapter: GamesAdapter
+    private val adapter = GamesAdapter(this).apply {
+        setHasStableIds(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,10 +39,8 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = GamesAdapter(this)
-
         // Update the view with new data.
-        viewModel.games.observe(viewLifecycleOwner, Observer { games ->
+        viewModel.gamesLiveData.observe(viewLifecycleOwner, Observer { games ->
             if (games == null) {
                 if (viewModel.gamesLoadingState.value == LiveResource.STATE_LOADING) {
                     // TODO add a better onboarding experience
@@ -58,7 +58,7 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
                 if (games.flatMap { game -> game.achievements }.isEmpty()) {
                     showSnackBar(
                         "Fetching all achievements. This might take a while",
-                        Snackbar.LENGTH_SHORT
+                        Snackbar.LENGTH_LONG
                     )
                 }
             } else {
@@ -66,7 +66,7 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
                     "We couldn't find any games in your library.",
                     Snackbar.LENGTH_LONG,
                     "Retry",
-                    View.OnClickListener { viewModel.fetchGames() }
+                    View.OnClickListener { viewModel.updateGameData() }
                 )
             }
         })
@@ -101,26 +101,13 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
                     "",
                     null
                 )
-                // If the  list is null or empty, we assume fetching has failed for the player.
-                viewModel.games.value?.isEmpty() == true ->
-                    showSnackBar(
-                        "We couldn't find any games in your library.",
-                        Snackbar.LENGTH_LONG,
-                        "Retry",
-                        View.OnClickListener { viewModel.fetchGames() }
-                    )
-                viewModel.games.value == null -> showSnackBar(
-                    "Error while fetching games.",
-                    Snackbar.LENGTH_LONG,
-                    "Retry",
-                    View.OnClickListener { viewModel.fetchGames() })
             }
         })
 
         initScrollFab()
         initRecyclerView()
 
-        viewModel.fetchGames()
+        viewModel.updateGameData()
     }
 
     private fun initScrollFab() {

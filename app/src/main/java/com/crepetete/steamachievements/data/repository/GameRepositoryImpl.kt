@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.data.repository
 
 import androidx.lifecycle.LiveData
-import com.crepetete.data.helper.LiveResource
 import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.data.helper.RateLimiter
 import com.crepetete.data.network.SteamApiService
@@ -9,23 +8,25 @@ import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.database.dao.NewsDao
-import com.crepetete.steamachievements.domain.model.Achievement
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.domain.repository.GameRepository
+import com.crepetete.steamachievements.domain.usecases.achievements.UpdateAchievementsUseCase
 import com.crepetete.steamachievements.testing.OpenForTesting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @OpenForTesting
 class GameRepositoryImpl(
-    private val achievementsDao: AchievementsDao,
     private val api: SteamApiService,
+    private val achievementsDao: AchievementsDao,
     private val gamesDao: GamesDao,
-    private val newsDao: NewsDao
+    private val newsDao: NewsDao,
+    private val updateAchievementsUseCase: UpdateAchievementsUseCase
 ) : GameRepository {
 
     private companion object {
@@ -40,10 +41,11 @@ class GameRepositoryImpl(
      * Fetch Games from both the Database and the API.
      * Refresh rate is set with the [rateLimiter].
      */
-    override fun getGames(userId: String?): LiveResource<List<Game>> {
+    override fun updateGames(userId: String?): LiveResource<List<Game>> {
         return object : NetworkBoundResource<List<Game>, List<Game>>() {
 
             override suspend fun saveCallResult(data: List<Game>) {
+                gamesDao.upsert(data.filter { it.game != null }.map { it.game!! })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
@@ -59,25 +61,16 @@ class GameRepositoryImpl(
                 }
 
                 gamesResponse?.let { baseGameInfo ->
-                    gamesDao.upsert(baseGameInfo)
-
                     baseGameInfo.forEach { baseGame ->
-                        val achievements =
-                            if (rateLimiter.shouldFetch("achievements_${baseGame.appId}") && userId != null) {
-                                fetchAchievementsFromApi(userId, baseGame.appId.toString())
-                            } else {
-                                achievementsDao.getAchievements(baseGame.appId.toString())
-                            }
-
-                        achievementsDao.upsert(achievements ?: listOf())
                         games.add(
                             Game(
                                 baseGame,
-                                achievements ?: listOf()
+                                achievementsDao.getAchievements(baseGame.appId.toString())
                             )
                         )
                     }
                 }
+
                 return games
             }
 
@@ -87,52 +80,8 @@ class GameRepositoryImpl(
         }.asLiveResource()
     }
 
-    override fun fetchAchievementsFromApi(userId: String, appId: String): List<Achievement>? {
-        try {
-            val baseResponse = api.getSchemaForGame(appId)
-
-            /* Reference to base achievements list. */
-            val responseAchievements = baseResponse.game.availableGameStats?.achievements
-
-            /* Iterate over all object in the response.  */
-            if (responseAchievements?.isNotEmpty() == true) {
-                try {
-                    val achievedResponse = api.getAchievementsForPlayer(appId, userId)
-
-                    achievedResponse.playerStats?.achievements?.forEach { response ->
-                        /* For each one, find the corresponding achievement in the
-                           responseAchievements list and update the information. */
-                        responseAchievements.filter { achievement ->
-                            achievement.name == response.apiName
-                        }.forEach { resultAchievement ->
-                            resultAchievement.appId = appId.toLong()
-                            resultAchievement.unlockTime = response.getUnlockDate()
-                            resultAchievement.achieved = response.achieved != 0
-                            response.description?.let { desc ->
-                                resultAchievement.description = desc
-                            }
-                        }
-                    }
-
-                    val globalResponse = api.getGlobalAchievementStats(appId)
-
-                    globalResponse.achievementpercentages.achievements.forEach { response ->
-                        responseAchievements.filter { achievement ->
-                            achievement.name == response.name
-                        }
-                            .forEach { game ->
-                                game.percentage = response.percent
-                            }
-                    }
-                } catch (e: Exception) {
-                    Timber.d(e)
-                }
-            }
-            return responseAchievements
-        } catch (e: Exception) {
-            Timber.d(e)
-            return null
-        }
+    override fun getGamesAsFlow(): Flow<List<BaseGameInfo>?> {
+        return gamesDao.getGamesAsFlow()
     }
 
     /**

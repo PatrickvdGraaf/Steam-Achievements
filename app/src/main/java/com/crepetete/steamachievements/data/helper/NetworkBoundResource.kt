@@ -1,9 +1,11 @@
 package com.crepetete.data.helper
 
 import androidx.lifecycle.MutableLiveData
-import com.crepetete.data.helper.LiveResource.Companion.STATE_FAILED
-import com.crepetete.data.helper.LiveResource.Companion.STATE_LOADING
-import com.crepetete.data.helper.LiveResource.Companion.STATE_SUCCESS
+import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_FAILED
+import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_LOADING
+import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_SUCCESS
+import com.crepetete.steamachievements.data.helper.ResourceState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

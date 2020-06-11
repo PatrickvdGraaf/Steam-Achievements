@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.domain.usecases.news
 
-import com.crepetete.data.helper.LiveResource
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.repository.GameRepository
 
 /**

@@ -21,4 +21,9 @@ abstract class GamesDao : BaseDao<BaseGameInfo>() {
     @Transaction
     @Query("SELECT * FROM games")
     abstract suspend fun getGames(): List<Game>
+
+    // https://medium.com/androiddevelopers/room-flow-273acffe5b57
+    @Transaction
+    @Query("SELECT * FROM games")
+    abstract fun getGamesAsFlow(): kotlinx.coroutines.flow.Flow<List<BaseGameInfo>?>
 }

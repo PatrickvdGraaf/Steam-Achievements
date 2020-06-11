@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.domain.usecases.player
 
-import com.crepetete.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Player
 
 /**

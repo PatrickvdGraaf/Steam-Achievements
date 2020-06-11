@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.crepetete.data.helper.LiveResource
-import com.crepetete.data.helper.ResourceState
+import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.usecases.player.GetCurrentPlayerIdUseCase
 import com.crepetete.steamachievements.domain.usecases.player.GetPlayerUseCase

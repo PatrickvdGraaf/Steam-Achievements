@@ -118,7 +118,7 @@ interface SteamApiService {
      * (in JSON: "appids_filter: [ 440, 500, 550 ]" )
      */
     @GET("/IPlayerService/GetOwnedGames/v0001/")
-    fun getGamesForUser(
+    suspend fun getGamesForUser(
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY,
         @Query("include_appinfo") includeAppInfo: Int = 1,
@@ -134,7 +134,7 @@ interface SteamApiService {
      * @param appId The AppID of the game you want stats of
      */
     @GET("/ISteamUserStats/GetSchemaForGame/v2/")
-    fun getSchemaForGame(
+    suspend fun getSchemaForGame(
         @Query("appid") appId: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
     ): SchemaResponse
@@ -148,7 +148,7 @@ interface SteamApiService {
      * @param appId The ID for the game you're requesting
      */
     @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
-    fun getAchievementsForPlayer(
+    suspend fun getAchievementsForPlayer(
         @Query("appid") appId: String,
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
@@ -163,7 +163,7 @@ interface SteamApiService {
      * @param appId AppID of the game you want the percentages of.
      */
     @GET("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/")
-    fun getGlobalAchievementStats(
+    suspend fun getGlobalAchievementStats(
         @Query("gameid") appId: String
     ): GlobalAchievResponse
 

@@ -26,9 +26,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNavigationItemSelectedListener {
 
     companion object {
-        fun getInstance(context: Context, userId: String) = Intent(context, MainActivity::class.java).apply {
-            putExtra(INTENT_USER_ID, userId)
-        }
+        fun getInstance(context: Context, userId: String) = Intent(
+            context,
+            MainActivity::class.java
+        ).apply { putExtra(INTENT_USER_ID, userId) }
     }
 
     @IdRes
