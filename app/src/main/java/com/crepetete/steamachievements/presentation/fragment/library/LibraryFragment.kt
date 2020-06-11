@@ -73,20 +73,25 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
 
         // Hide or show the pulsating loading view.
         viewModel.gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
-            state?.let {
-                when (state) {
-                    LiveResource.STATE_LOADING -> {
-                        pulsator.visibility = View.VISIBLE
-                        pulsator.start()
-                    }
-                    LiveResource.STATE_SUCCESS -> {
-                        pulsator.stop()
-                        pulsator.visibility = View.GONE
-                    }
-                    LiveResource.STATE_FAILED -> {
-                        pulsator.stop()
+            if (viewModel.gamesLiveData.value.isNullOrEmpty()) {
+                state?.let {
+                    when (state) {
+                        LiveResource.STATE_LOADING -> {
+                            pulsator.visibility = View.VISIBLE
+                            pulsator.start()
+                        }
+                        LiveResource.STATE_SUCCESS -> {
+                            pulsator.stop()
+                            pulsator.visibility = View.GONE
+                        }
+                        LiveResource.STATE_FAILED -> {
+                            pulsator.stop()
+                        }
                     }
                 }
+            } else {
+                pulsator.stop()
+                pulsator.visibility = View.GONE
             }
         })
 

@@ -42,36 +42,36 @@ class GameRepositoryImpl(
      * Refresh rate is set with the [rateLimiter].
      */
     override fun updateGames(userId: String?): LiveResource<List<Game>> {
-        return object : NetworkBoundResource<List<Game>, List<Game>>() {
+        return object : NetworkBoundResource<List<Game>, List<BaseGameInfo>>() {
 
-            override suspend fun saveCallResult(data: List<Game>) {
-                gamesDao.upsert(data.filter { it.game != null }.map { it.game!! })
+            override suspend fun saveCallResult(data: List<BaseGameInfo>) {
+                gamesDao.upsert(data)
+
+                updateAchievementsUseCase(userId, data.map { it.appId.toString() })
             }
 
             override fun shouldFetch(data: List<Game>?): Boolean {
                 return rateLimiter.shouldFetch(FETCH_GAMES_KEY) || data == null
             }
 
-            override suspend fun createCall(): List<Game>? {
-                val games: MutableList<Game> = mutableListOf()
-                val gamesResponse = if (userId != null) {
+            override suspend fun createCall(): List<BaseGameInfo>? {
+
+//                gamesResponse?.let { baseGameInfo ->
+//                    baseGameInfo.forEach { baseGame ->
+//                        games.add(
+//                            Game(
+//                                baseGame,
+//                                achievementsDao.getAchievements(baseGame.appId.toString())
+//                            )
+//                        )
+//                    }
+//                }
+
+                return if (userId != null) {
                     api.getGamesForUser(userId).response.games
                 } else {
                     listOf()
                 }
-
-                gamesResponse?.let { baseGameInfo ->
-                    baseGameInfo.forEach { baseGame ->
-                        games.add(
-                            Game(
-                                baseGame,
-                                achievementsDao.getAchievements(baseGame.appId.toString())
-                            )
-                        )
-                    }
-                }
-
-                return games
             }
 
             override suspend fun loadFromDb(): List<Game> {
