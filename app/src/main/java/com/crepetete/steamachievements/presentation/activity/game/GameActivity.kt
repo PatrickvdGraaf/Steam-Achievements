@@ -75,42 +75,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         setContentView(R.layout.activity_game)
         setSupportActionBar(toolbar)
 
-        recyclerViewNews.adapter = newsAdapter
-        recyclerViewNews.layoutManager = LinearLayoutManager(
-            this,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
-
-        // Set observers
-        viewModel.game.observe(this, Observer { game ->
-            if (game != null) {
-                setGameInfo(game)
-            }
-        })
-
-        /* Update the achievement adapter sorting method.*/
-        viewModel.getAchievementSortingMethod().observe(this, Observer { method ->
-            /* Update label. */
-            sortMethodDescription.text = String.format("Sorted by: %s", method.getName(resources))
-
-            /* Sort achievements in adapter. */
-            achievementsAdapter.updateSortingMethod(method)
-        })
-
-        viewModel.news.observe(this, Observer { nullableNews ->
-            nullableNews?.let { news ->
-                newsAdapter.setItems(news)
-            }
-        })
-
-        viewModel.newsLoadingState.observe(this, Observer {
-            Timber.d("New Loading state: $it.")
-        })
-
-        viewModel.newsLoadingError.observe(this, Observer {
-            Timber.e("Loading News Failed: ${it?.localizedMessage}")
-        })
+        setViewModelObservers()
 
         // Retrieve data.
         intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
@@ -125,6 +90,66 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
         }
+
+        // Prepare RecyclerView.
+        recyclerViewAchievements.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+
+        recyclerViewNews.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+
+        // Set RecyclerView adapter.
+        recyclerViewAchievements.adapter = achievementsAdapter
+        recyclerViewAchievements.setHasFixedSize(true)
+        recyclerViewNews.adapter = newsAdapter
+
+        // Achievements Graph
+        customizeChart()
+    }
+
+    private fun setViewModelObservers() {
+        // Set observers
+        viewModel.game.observe(this, Observer { game ->
+            if (game != null) {
+                setGameInfo(game)
+            }
+        })
+
+        viewModel.achievements.observe(this, Observer { achievements ->
+            setAchievementsInfo(achievements)
+        })
+
+        /* Update the achievement adapter sorting method.*/
+        viewModel.getAchievementSortingMethod().observe(this, Observer { method ->
+            /* Update label. */
+            sortMethodDescription.text = String.format("Sorted by: %s", method.getName(resources))
+
+            /* Sort achievements in adapter. */
+            achievementsAdapter.updateSortingMethod(method)
+        })
+
+        viewModel.news.observe(this, Observer { nullableNews ->
+            nullableNews?.let { news ->
+                if (news.isNotEmpty()) {
+                    newsAdapter.setItems(news)
+                    card_view_news.visibility = View.VISIBLE
+                }
+            }
+        })
+
+        viewModel.newsLoadingState.observe(this, Observer {
+            Timber.d("New Loading state: $it.")
+        })
+
+        viewModel.newsLoadingError.observe(this, Observer {
+            Timber.e("Loading News Failed: ${it?.localizedMessage}")
+        })
     }
 
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
@@ -143,46 +168,46 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
 
         // Move data into binding.
         val data = GameData(game)
-
         collapsingToolbar.title = game.getName()
 
         Glide.with(this)
             .load(game.getBannerUrl())
             .into(banner)
 
-        // TODO find a way to implement this inside xml with data binding.
-        if (data.getRecentPlaytimeString() != "0m") {
-            textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+        if (data.hasTotalPlayTime()) {
+            // TODO find a way to implement this inside xml with data binding.
+            if (data.getRecentPlaytimeString() != "0m") {
+                textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+            } else {
+                textViewRecentlyPlayed.visibility = View.GONE
+            }
+
+            totalPlayedTextView.setText(data.getTotalPlayTimeString())
+
+            if (data.hasRecentPlaytime()) {
+                textViewRecentlyPlayed.visibility = View.VISIBLE
+                textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+            } else {
+                textViewRecentlyPlayed.visibility = View.GONE
+            }
+
+            playTimeCardView.visibility = View.VISIBLE
         } else {
-            textViewRecentlyPlayed.visibility = View.GONE
+            playTimeCardView.visibility = View.GONE
         }
+    }
 
-        totalPlayedTextView.setText(data.getTotalPlayTimeString())
+    private fun setAchievementsInfo(achievements: List<Achievement>) {
+        if (achievements.isNotEmpty()) {
+            // Move achievements to adapter.
+            achievementsAdapter.setAchievements(achievements)
 
-        if (data.hasResentPlaytime()) {
-            textViewRecentlyPlayed.visibility = View.VISIBLE
-            textViewRecentlyPlayed.setText(data.getRecentPlaytimeString())
+            // Init Graph.
+            setChartData(lineChartAchievements, achievements)
+            achievementsCardView.visibility = View.VISIBLE
         } else {
-            textViewRecentlyPlayed.visibility = View.GONE
+            achievementsCardView.visibility = View.GONE
         }
-
-        // Prepare Achievements RecyclerView.
-        recyclerViewAchievements.layoutManager = LinearLayoutManager(
-            this,
-            LinearLayoutManager.HORIZONTAL,
-            false
-        )
-
-        // Set RecyclerView adapter.
-        recyclerViewAchievements.adapter = achievementsAdapter
-        recyclerViewAchievements.setHasFixedSize(true)
-
-        // Move achievements to adapter.
-        achievementsAdapter.setAchievements(game.achievements)
-
-        // Init Graph.
-        customizeChart()
-        setChartData(lineChartAchievements, data)
     }
 
     /**
@@ -217,20 +242,17 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         lineChartAchievements.isAutoScaleMinMaxEnabled = true
     }
 
-    private fun setChartData(chart: LineChart, gameData: GameData?) {
+    private fun setChartData(chart: LineChart, achievements: List<Achievement>) {
         val achievedEntries = ArrayList<Entry>()
 
-        if (gameData != null) {
-            val achievements = gameData.getAchievements()
-            achievements
-                .filter {
-                    it.achieved &&
-                            it.unlockTime != Date() &&
-                            it.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
-                }
-                .sortedBy { it.unlockTime }
-                .map { achievement -> achievedEntries.addEntry(achievements, achievement) }
-        }
+        achievements
+            .filter {
+                it.achieved &&
+                        it.unlockTime != Date() &&
+                        it.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
+            }
+            .sortedBy { it.unlockTime }
+            .map { achievement -> achievedEntries.addEntry(achievements, achievement) }
 
         val dataSets: MutableList<ILineDataSet> = ArrayList()
 
@@ -244,6 +266,8 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         val lineData = LineData(dataSets)
         chart.data = lineData
         chart.postInvalidate()
+
+        card_view_progress.visibility = View.VISIBLE
     }
 
     /**

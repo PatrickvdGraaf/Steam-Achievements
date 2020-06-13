@@ -94,7 +94,11 @@ class GameData(private val game: Game) {
         }
     }
 
-    fun hasResentPlaytime(): Boolean {
+    fun hasRecentPlaytime(): Boolean {
         return game.getRecentPlaytime() > 0
+    }
+
+    fun hasTotalPlayTime(): Boolean {
+        return game.getPlaytime() > 0
     }
 }

@@ -22,7 +22,7 @@ import com.crepetete.steamachievements.domain.model.Player
         Achievement::class,
         NewsItem::class
     ],
-    version = 13,
+    version = 14,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

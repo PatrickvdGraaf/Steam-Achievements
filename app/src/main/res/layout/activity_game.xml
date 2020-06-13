@@ -71,13 +71,14 @@
                 android:layout_marginEnd="@dimen/default_margin_halved"
                 android:layout_marginBottom="@dimen/default_margin"
                 android:elevation="@dimen/elevation_card_large"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/cardview_bg_info"
                 app:cardCornerRadius="@dimen/corner_radius_medium"
                 app:cardUseCompatPadding="true"
-                app:layout_constraintBottom_toTopOf="@+id/achievementsRecyclerView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/playTimeContainer"
@@ -126,7 +127,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/achievementsRecyclerView"
+                android:id="@+id/achievementsCardView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/default_margin_halved"
@@ -134,12 +135,14 @@
                 android:layout_marginEnd="@dimen/default_margin_halved"
                 android:layout_marginBottom="@dimen/default_margin"
                 android:elevation="@dimen/elevation_card_large"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/cardview_bg_info"
                 app:cardCornerRadius="@dimen/corner_radius_medium"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/playTimeCardView">
+                app:layout_constraintTop_toBottomOf="@+id/playTimeCardView"
+                tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/container_achievement"
@@ -218,12 +221,14 @@
                 android:layout_marginEnd="@dimen/default_margin_halved"
                 android:layout_marginBottom="@dimen/default_margin"
                 android:elevation="@dimen/elevation_card_large"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/cardview_bg_info"
                 app:cardCornerRadius="@dimen/corner_radius_medium"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/achievementsRecyclerView">
+                app:layout_constraintTop_toBottomOf="@+id/achievementsCardView"
+                tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/progressContainer"
@@ -283,12 +288,14 @@
                 android:layout_marginEnd="@dimen/default_margin_halved"
                 android:layout_marginBottom="@dimen/default_margin"
                 android:elevation="@dimen/elevation_card_large"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/cardview_bg_info"
                 app:cardCornerRadius="@dimen/corner_radius_medium"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card_view_progress">
+                app:layout_constraintTop_toBottomOf="@+id/card_view_progress"
+                tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

@@ -10,6 +10,7 @@ import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.usecases.achievements.GetAchievementsUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
 import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCase
 import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
@@ -22,6 +23,7 @@ import kotlinx.coroutines.Job
 
 class GameViewModel(
     private val getGameUseCase: GetGameUseCase,
+    private val getAchievementsUseCase: GetAchievementsUseCase,
     private val getNewsUseCase: GetNewsSnapshotUseCase,
     private val updateNewsUseCase: UpdateNewsUseCase
 ) : ViewModel() {
@@ -46,6 +48,10 @@ class GameViewModel(
     // Room
     val game: LiveData<Game> = Transformations.switchMap(appId) {
         getGameUseCase(it.id)
+    }
+
+    val achievements: LiveData<List<Achievement>> = Transformations.switchMap(appId) {
+        getAchievementsUseCase(it.id)
     }
 
     val news: LiveData<List<NewsItem>> = Transformations.switchMap(appId) {
