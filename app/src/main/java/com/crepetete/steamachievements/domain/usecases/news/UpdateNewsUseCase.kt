@@ -1,6 +1,5 @@
 package com.crepetete.steamachievements.domain.usecases.news
 
-import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.data.helper.LiveResource
 
 /**
@@ -9,6 +8,6 @@ import com.crepetete.steamachievements.data.helper.LiveResource
  * @author: Patrick van de Graaf.
  * @date: Tue 09 Jun, 2020; 23:22.
  */
-interface GetNewsUseCase {
-    operator fun invoke(gameId: String): LiveResource<List<NewsItem>>
+interface UpdateNewsUseCase {
+    operator fun invoke(gameId: String): LiveResource
 }

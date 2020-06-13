@@ -33,7 +33,7 @@ class AuthViewModel(
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
     private var fetchPlayerJob: Job? = null
 
-    private var _playerLiveResource: LiveResource<Player>? = null
+    private var _playerLiveResource: LiveResource? = null
     private val _player = MediatorLiveData<Player?>()
     private val _playerLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _playerLoadingError = MediatorLiveData<Exception?>()
@@ -55,7 +55,6 @@ class AuthViewModel(
                         getPlayerUseCase(id).apply {
                             _playerLiveResource = this
                             fetchPlayerJob = this.job
-                            bindObserver(_player, this.data)
                             bindObserver(_playerLoadingState, this.state)
                             bindObserver(_playerLoadingError, this.error)
                         }

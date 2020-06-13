@@ -44,6 +44,7 @@ class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 }
 
             itemView.progressBar.progress = dataItem.getPercentageCompleted().toInt()
+            itemView.achievements_textView.text = dataItem.getAchievementsText()
 
             setGameBanner(game, colorListener)
             setAchievementsImages(dataItem.getAchievements())
@@ -163,7 +164,6 @@ class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             view?.let { imageView ->
                 Glide.with(imageView)
                     .load(achievement.getActualIconUrl())
-                    .placeholder(R.drawable.ic_image_loading)
                     .error(R.drawable.ic_image_failed)
                     .override(itemView.context.resources.getDimensionPixelSize(R.dimen.size_achievement_small))
                     .into(imageView)

@@ -1,12 +1,12 @@
 package com.crepetete.steamachievements.data.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.testing.OpenForTesting
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Interface for database access on [BaseGameInfo] related operations.
@@ -16,14 +16,10 @@ import com.crepetete.steamachievements.testing.OpenForTesting
 abstract class GamesDao : BaseDao<BaseGameInfo>() {
     @Transaction
     @Query("SELECT * FROM games WHERE appId = :appId LIMIT 1")
-    abstract fun getGame(appId: String): LiveData<Game>
-
-    @Transaction
-    @Query("SELECT * FROM games")
-    abstract suspend fun getGames(): List<Game>
+    abstract fun getGame(appId: String): Flow<Game>
 
     // https://medium.com/androiddevelopers/room-flow-273acffe5b57
     @Transaction
     @Query("SELECT * FROM games")
-    abstract fun getGamesAsFlow(): kotlinx.coroutines.flow.Flow<List<BaseGameInfo>?>
+    abstract fun getGames(): Flow<List<BaseGameInfo>?>
 }

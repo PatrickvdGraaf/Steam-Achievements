@@ -3,6 +3,7 @@ package com.crepetete.steamachievements.domain.model
 import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.crepetete.steamachievements.BuildConfig
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -21,11 +22,11 @@ class Game(
 ) : Parcelable {
 
     companion object {
-        const val INVALID_COLOR = 0
-        const val INVALID_ID = -1L
+        private const val INVALID_COLOR = 0
+        private const val INVALID_ID = -1
 
         // Killing Floor 2
-        const val TEST_GAME_ID = 232090L
+        const val TEST_GAME_ID = 232090
     }
 
     fun setPrimaryColor(color: Int) {
@@ -39,11 +40,12 @@ class Game(
     }
 
     fun getAmountOfAchievements() = achievements.size
+    fun getAmountOfUnlockedAchievements() = achievements.filter { it.achieved }.size
     fun getRecentPlaytime() = game?.recentPlayTime ?: 0
     fun getPrimaryColor() = game?.colorPrimaryDark ?: INVALID_COLOR
-    fun getAppId(): Long = game?.appId ?: INVALID_ID
+    fun getAppId(): Int = game?.appId ?: if (BuildConfig.DEBUG) TEST_GAME_ID else INVALID_ID
     fun getName() = game?.name ?: ""
-    fun getPlaytime() = game?.playTime ?: 0L
+    fun getPlaytime() = game?.playTime ?: 0
     fun getBannerUrl() =
         "http://media.steampowered.com/steamcommunity/public/images/apps" +
                 "/${game?.appId}" +
@@ -64,6 +66,6 @@ class Game(
     }
 
     override fun hashCode(): Int {
-        return super.hashCode()
+        return getAppId().toInt()
     }
 }

@@ -98,6 +98,9 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
         // Handle errors when updating the games list.
         viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
             Timber.e("Error while loading Games: $error")
+            if (error is IllegalArgumentException) {
+                Timber.e("${error.localizedMessage} + {${error.message}")
+            }
 
             when {
                 error?.localizedMessage?.contains("Unable to resolve host") == true -> showSnackBar(

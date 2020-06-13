@@ -10,6 +10,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import timber.log.Timber
 
 /**
  * NetworkBoundResource is a plain class which does the job of data flow between
@@ -32,9 +36,6 @@ import kotlinx.coroutines.launch
  */
 abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    // The final result LiveData.
-    private val result = MutableLiveData<ResultType>()
-
     // Loading state of the job.
     private val state = MutableLiveData<@ResourceState Int?>()
 
@@ -53,67 +54,57 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
 
         CoroutineScope(ioDispatcher).launch {
             state.postValue(STATE_LOADING)
-
-            val dbSource = loadFromDb()
-
-            if (shouldFetch(dbSource)) {
-                fetchFromNetwork(dbSource)
-            } else {
-                state.postValue(STATE_SUCCESS)
-                result.postValue(dbSource)
-            }
+            fetchFromNetwork()
         }
     }
 
     /**
-     * Fetch the data from network and persist into DB and then
-     * send it back to UI.
+     * Fetch the data from network and persist into DB.
      */
-    private suspend fun fetchFromNetwork(dbSource: ResultType?) {
-        assert(state.value == STATE_LOADING)
-        dbSource?.let(result::postValue)
-
+    private suspend fun fetchFromNetwork() {
         try {
-            createCall()?.let { apiResponse ->
-                saveCallResult(apiResponse)
-                result.postValue(loadFromDb())
-            } ?: run {
-                if (dbSource == null)
-                    result.postValue(null)
-            }
+            createCall().enqueue(object : Callback<RequestType?> {
+                override fun onFailure(call: Call<RequestType?>, t: Throwable) {
+                    state.postValue(STATE_FAILED)
+                    Timber.e("API Error: ${t.localizedMessage}")
+                }
 
-            state.postValue(STATE_SUCCESS)
+                override fun onResponse(
+                    call: Call<RequestType?>,
+                    response: Response<RequestType?>
+                ) {
+                    if (response.isSuccessful) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            saveCallResult(response.body())
+                        }
+                        state.postValue(STATE_SUCCESS)
+                    } else {
+                        state.postValue(STATE_FAILED)
+                        Timber.e("Failed HTTP request. Response was not successful. ${response.code()}")
+                    }
+                    job.complete()
+                }
+
+            })
         } catch (e: Exception) {
-            assert(result.value == dbSource)
             state.postValue(STATE_FAILED)
             error.postValue(e)
+            job.complete()
         }
     }
-
-    /**
-     * Returns an optional result from the Room Database.
-     */
-    protected abstract suspend fun loadFromDb(): ResultType?
-
-    /**
-     * Called after fetching data in the database to decide whether it should be updated from the
-     * network.
-     */
-    protected abstract fun shouldFetch(data: ResultType?): Boolean
 
     /**
      * Returns an optional API result.
      */
-    protected abstract suspend fun createCall(): RequestType?
+    protected abstract suspend fun createCall(): Call<RequestType>
 
     /**
      * Called to save the result of the API response into the database.
      */
-    protected abstract suspend fun saveCallResult(data: RequestType)
+    protected abstract suspend fun saveCallResult(data: RequestType?)
 
     fun asLiveResource() =
         LiveResource(
-            result,
             state,
             error,
             job

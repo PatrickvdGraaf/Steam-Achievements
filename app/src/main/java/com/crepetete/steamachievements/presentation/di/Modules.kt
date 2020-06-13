@@ -1,23 +1,29 @@
 package com.crepetete.steamachievements.presentation.di
 
-import com.crepetete.data.network.SteamApiService
+import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.SteamDatabase
 import com.crepetete.steamachievements.data.repository.AchievementsRepositoryImpl
 import com.crepetete.steamachievements.data.repository.GameRepositoryImpl
+import com.crepetete.steamachievements.data.repository.NewsRepositoryImpl
 import com.crepetete.steamachievements.data.repository.PlayerRepositoryImpl
 import com.crepetete.steamachievements.data.repository.PreferencesRepositoryImpl
 import com.crepetete.steamachievements.domain.repository.AchievementsRepository
 import com.crepetete.steamachievements.domain.repository.GameRepository
+import com.crepetete.steamachievements.domain.repository.NewsRepository
 import com.crepetete.steamachievements.domain.repository.PlayerRepository
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
 import com.crepetete.steamachievements.domain.usecases.achievements.UpdateAchievementsUseCase
 import com.crepetete.steamachievements.domain.usecases.achievements.UpdateAchievementsUseCaseImpl
+import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
+import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.game.GetGamesFlowUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGamesFlowUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.game.UpdateGamesUseCase
 import com.crepetete.steamachievements.domain.usecases.game.UpdateGamesUseCaseImpl
-import com.crepetete.steamachievements.domain.usecases.news.GetNewsUseCase
-import com.crepetete.steamachievements.domain.usecases.news.GetNewsUseCaseImpl
+import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCase
+import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCaseImpl
+import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
+import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.player.GetCurrentPlayerIdUseCase
 import com.crepetete.steamachievements.domain.usecases.player.GetCurrentPlayerIdUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.player.GetPlayerUseCase
@@ -47,16 +53,16 @@ val dataModules = module(override = true) {
     // Room Database
     single { SteamDatabase.buildDatabase(androidContext()) }
 
-    // Repositories
+    // Game Repo
     single<GameRepository> {
         GameRepositoryImpl(
             get(),
             get<SteamDatabase>().gamesDao(),
-            get<SteamDatabase>().newsDao(),
             get()
         )
     }
 
+    // Player Repo
     single<PlayerRepository> {
         PlayerRepositoryImpl(
             get(),
@@ -65,6 +71,7 @@ val dataModules = module(override = true) {
         )
     }
 
+    // Achievements Repo
     single<AchievementsRepository> {
         AchievementsRepositoryImpl(
             get(),
@@ -72,6 +79,10 @@ val dataModules = module(override = true) {
         )
     }
 
+    // News Repo
+    single<NewsRepository> { NewsRepositoryImpl(get(), get<SteamDatabase>().newsDao()) }
+
+    // Shared Preferences
     single<PreferencesRepository> { PreferencesRepositoryImpl(androidContext()) }
 }
 
@@ -80,9 +91,11 @@ val domainModules = module(override = true) {
     single { createGetPlayerUseCase(get()) }
     single { createSaveCurrentPlayerIdUserCase(get()) }
     single { createGetGamesUseCase(get(), get()) }
-    single { createGetNewsUseCase(get()) }
+    single { createUpdateNewsUseCase(get()) }
     single { createUpdateAchievementsUseCase(get(), get()) }
     single { createGetGamesFlowUseCase(get(), get()) }
+    single { createGetGameUseCase(get()) }
+    single { createGetNewsSnapshotUseCase(get()) }
 }
 
 val presentationModules = module(override = true) {
@@ -91,7 +104,7 @@ val presentationModules = module(override = true) {
     viewModel { LibraryViewModel(get(), get()) }
     viewModel { PagerFragmentViewModel() }
     viewModel { TransparentPagerViewModel() }
-    viewModel { GameViewModel(get()) }
+    viewModel { GameViewModel(get(), get(), get()) }
 }
 
 // UseCases
@@ -114,8 +127,8 @@ fun createGetGamesUseCase(
     return UpdateGamesUseCaseImpl(gamesRepo, playerRepo)
 }
 
-fun createGetNewsUseCase(gamesRepo: GameRepository): GetNewsUseCase {
-    return GetNewsUseCaseImpl(gamesRepo)
+fun createUpdateNewsUseCase(newsRepo: NewsRepository): UpdateNewsUseCase {
+    return UpdateNewsUseCaseImpl(newsRepo)
 }
 
 fun createUpdateAchievementsUseCase(
@@ -125,9 +138,18 @@ fun createUpdateAchievementsUseCase(
     return UpdateAchievementsUseCaseImpl(achievementsRepo, playerRepo)
 }
 
+
+fun createGetGameUseCase(gameRepo: GameRepository): GetGameUseCase {
+    return GetGameUseCaseImpl(gameRepo)
+}
+
 fun createGetGamesFlowUseCase(
     gamesRepo: GameRepository,
     achievementsRepo: AchievementsRepository
 ): GetGamesFlowUseCase {
     return GetGamesFlowUseCaseImpl(gamesRepo, achievementsRepo)
+}
+
+fun createGetNewsSnapshotUseCase(newsRepository: NewsRepository): GetNewsSnapshotUseCase {
+    return GetNewsSnapshotUseCaseImpl(newsRepository)
 }

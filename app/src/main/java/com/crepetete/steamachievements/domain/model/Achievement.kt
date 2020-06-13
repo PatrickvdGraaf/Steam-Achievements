@@ -11,11 +11,13 @@ import java.util.Date
  * More info;
  * @see <a href="https://proandroiddev.com/parcelable-in-kotlin-here-comes-parcelize-b998d5a5fcac">this link</a>.
  */
-@Entity(tableName = "achievements",
-    primaryKeys = ["name", "appId"])
+@Entity(
+    tableName = "achievements",
+    primaryKeys = ["name", "appId"]
+)
 @Parcelize
 data class Achievement(
-    var appId: Long,
+    var appId: Int,
     val name: String,
     @field:Json(name = "defaultvalue")
     val defaultValue: Int,

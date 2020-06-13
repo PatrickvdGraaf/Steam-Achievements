@@ -75,7 +75,7 @@ class GameData(private val game: Game) {
      */
     private fun hasCompletedAchievements() = game.achievements.any { it.achieved }
 
-    private fun toHours(time: Long, context: Context? = null): String {
+    private fun toHours(time: Int, context: Context? = null): String {
         val hours = time / 60
         val minutes = time % 60
         var hoursAbbr = "h"

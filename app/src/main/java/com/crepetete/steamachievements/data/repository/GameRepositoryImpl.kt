@@ -1,15 +1,16 @@
 package com.crepetete.steamachievements.data.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.data.helper.RateLimiter
-import com.crepetete.data.network.SteamApiService
-import com.crepetete.steamachievements.data.api.response.news.NewsItem
+import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.response.game.GamesResponse
 import com.crepetete.steamachievements.data.database.dao.GamesDao
-import com.crepetete.steamachievements.data.database.dao.NewsDao
 import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.repository.GameRepository
 import com.crepetete.steamachievements.domain.usecases.achievements.UpdateAchievementsUseCase
 import com.crepetete.steamachievements.testing.OpenForTesting
@@ -17,19 +18,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import retrofit2.Call
 import java.util.concurrent.TimeUnit
 
 @OpenForTesting
 class GameRepositoryImpl(
     private val api: SteamApiService,
     private val gamesDao: GamesDao,
-    private val newsDao: NewsDao,
     private val updateAchievementsUseCase: UpdateAchievementsUseCase
 ) : GameRepository {
 
     private companion object {
         const val FETCH_GAMES_KEY = "FETCH_GAMES_KEY"
-        const val FETCH_NEWS_KEY = "FETCH_NEWS_KEY"
     }
 
     // Refresh games every day
@@ -39,37 +39,40 @@ class GameRepositoryImpl(
      * Fetch Games from both the Database and the API.
      * Refresh rate is set with the [rateLimiter].
      */
-    override fun updateGames(userId: String?): LiveResource<List<Game>> {
-        return object : NetworkBoundResource<List<Game>, List<BaseGameInfo>>() {
+    override fun updateGames(userId: String?): LiveResource {
+        CoroutineScope(Dispatchers.IO).launch {
+            api.getGamesForUser(userId ?: Player.INVALID_ID).gamesResponse.games?.let { games ->
+                val sortedGames = games.sortedByDescending { it.playTime }
+                gamesDao.upsert(sortedGames)
+                updateAchievementsUseCase(userId, sortedGames.map { it.appId.toString() })
+            }
+        }
 
-            override suspend fun saveCallResult(data: List<BaseGameInfo>) {
-                gamesDao.upsert(data)
-
-                updateAchievementsUseCase(
-                    userId,
-                    data.sortedByDescending { it.playTime }.map { it.appId.toString() })
+        // TODO Find out why we cant create a Call<BaseGameResponse> and remove code above.
+        return object : NetworkBoundResource<List<Game>, GamesResponse>() {
+            override suspend fun createCall(): Call<GamesResponse> {
+                return api.getGamesForUserAsCall(userId ?: Player.INVALID_ID)
+//                return if (userId != null && rateLimiter.shouldFetch(FETCH_GAMES_KEY)) {
+//                    api.getGamesForUser(userId).response.games
+//                } else {
+//                    null
+//                }
             }
 
-            override fun shouldFetch(data: List<Game>?): Boolean {
-                return rateLimiter.shouldFetch(FETCH_GAMES_KEY) || data == null
-            }
+            override suspend fun saveCallResult(data: GamesResponse?) {
+                data?.games?.let { games ->
+                    gamesDao.upsert(games)
 
-            override suspend fun createCall(): List<BaseGameInfo>? {
-                return if (userId != null) {
-                    api.getGamesForUser(userId).response.games
-                } else {
-                    listOf()
+                    updateAchievementsUseCase(
+                        userId,
+                        games.sortedByDescending { it.playTime }.map { it.appId.toString() })
                 }
-            }
-
-            override suspend fun loadFromDb(): List<Game> {
-                return gamesDao.getGames()
             }
         }.asLiveResource()
     }
 
     override fun getGamesAsFlow(): Flow<List<BaseGameInfo>?> {
-        return gamesDao.getGamesAsFlow()
+        return gamesDao.getGames()
     }
 
     /**
@@ -78,34 +81,12 @@ class GameRepositoryImpl(
      * value of the last API call.
      */
     override fun getGame(appId: String): LiveData<Game> {
-        return gamesDao.getGame(appId)
+        return gamesDao.getGame(appId).asLiveData()
     }
 
     override fun update(item: BaseGameInfo) {
         CoroutineScope(Dispatchers.IO).launch {
             gamesDao.upsert(item)
         }
-    }
-
-    override fun getNews(appId: String): LiveResource<List<NewsItem>> {
-        return object : NetworkBoundResource<List<NewsItem>, List<NewsItem>?>() {
-            override suspend fun saveCallResult(data: List<NewsItem>?) {
-                data?.let { news ->
-                    newsDao.upsert(news)
-                }
-            }
-
-            override fun shouldFetch(data: List<NewsItem>?): Boolean {
-                return data == null || rateLimiter.shouldFetch(FETCH_NEWS_KEY)
-            }
-
-            override suspend fun loadFromDb(): List<NewsItem>? {
-                return newsDao.getNewsForGame(appId)?.takeLast(3)
-            }
-
-            override suspend fun createCall(): List<NewsItem>? {
-                return api.getNews(appId).appNews.newsItems
-            }
-        }.asLiveResource()
     }
 }

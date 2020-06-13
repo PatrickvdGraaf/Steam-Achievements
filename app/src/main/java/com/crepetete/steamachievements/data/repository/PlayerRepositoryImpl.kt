@@ -1,13 +1,14 @@
 package com.crepetete.steamachievements.data.repository
 
 import com.crepetete.data.helper.NetworkBoundResource
-import com.crepetete.data.network.SteamApiService
-import com.crepetete.data.network.response.base.ApiSuccessResponse
+import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.response.user.UserResponse
 import com.crepetete.steamachievements.data.database.dao.PlayerDao
 import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.repository.PlayerRepository
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
+import retrofit2.Call
 
 class PlayerRepositoryImpl(
     private val storage: PreferencesRepository,
@@ -15,27 +16,17 @@ class PlayerRepositoryImpl(
     private val dao: PlayerDao
 ) : PlayerRepository {
 
-    override fun getPlayer(playerId: String): LiveResource<Player> {
-        return object : NetworkBoundResource<Player, Player?>() {
-            override suspend fun saveCallResult(data: Player?) {
-                data?.let { player ->
+    override fun getPlayer(playerId: String): LiveResource {
+        return object : NetworkBoundResource<Player, UserResponse>() {
+            override suspend fun createCall(): Call<UserResponse> {
+                return api.getUserInfo(playerId)
+            }
+
+            override suspend fun saveCallResult(data: UserResponse?) {
+                data?.response?.players?.get(0)?.let { player ->
                     dao.insert(player)
                     putCurrentPlayerId(player.steamId)
                 }
-            }
-
-            override fun shouldFetch(data: Player?) = data == null && playerId != Player.INVALID_ID
-
-            override suspend fun loadFromDb(): Player? {
-                return dao.getPlayerById(playerId)
-            }
-
-            override suspend fun createCall(): Player? {
-                val response = api.getUserInfo(playerId)
-                if (response is ApiSuccessResponse) {
-                    return response.body.response.players.firstOrNull()
-                }
-                return null
             }
         }.asLiveResource()
     }

@@ -8,7 +8,7 @@ import com.crepetete.steamachievements.domain.model.Player
  * @date: Sun 07 Jun, 2020; 13:13.
  */
 interface PlayerRepository {
-    fun getPlayer(playerId: String): LiveResource<Player>
+    fun getPlayer(playerId: String): LiveResource
     fun getCurrentPlayerId(defValue: String = Player.INVALID_ID): String
     fun putCurrentPlayerId(playerId: String)
 }

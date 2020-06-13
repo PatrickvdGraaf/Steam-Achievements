@@ -3,13 +3,16 @@ package com.crepetete.steamachievements.presentation.activity.game
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
-import com.crepetete.steamachievements.domain.usecases.news.GetNewsUseCase
+import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
+import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCase
+import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.AchievementSortedListImpl
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.Order
 import com.crepetete.steamachievements.util.extensions.bindObserver
@@ -17,36 +20,45 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
-class GameViewModel(private val getNewsUseCase: GetNewsUseCase) : ViewModel() {
+class GameViewModel(
+    private val getGameUseCase: GetGameUseCase,
+    private val getNewsUseCase: GetNewsSnapshotUseCase,
+    private val updateNewsUseCase: UpdateNewsUseCase
+) : ViewModel() {
 
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
     private var newsJob: Job? = null
 
+    // ID
     private val _appId = MutableLiveData<AppId>()
     val appId: LiveData<AppId>
         get() = _appId
 
-    // Game
-    private val gameMutable: MutableLiveData<Game?> = MutableLiveData<Game?>(null)
-    val game: LiveData<Game?>
-        get(): LiveData<Game?> = gameMutable
-
-    // News
-    private var _newsLiveResource: LiveResource<List<NewsItem>>? = null
+    // Api
+    private var _newsLiveResource: LiveResource? = null
     private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
-    private val _newsLoadingError = MediatorLiveData<Exception?>()
+    val newsLoadingState: LiveData<@ResourceState Int?> = _newsLoadingState
 
-    private val _news = MediatorLiveData<List<NewsItem>?>()
-    val news: LiveData<List<NewsItem>?> = _news
+    private val _newsLoadingError = MediatorLiveData<Exception?>()
+    val newsLoadingError: LiveData<Exception?> = _newsLoadingError
+
+    // Room
+    val game: LiveData<Game> = Transformations.switchMap(appId) {
+        getGameUseCase(it.id)
+    }
+
+    val news: LiveData<List<NewsItem>> = Transformations.switchMap(appId) {
+        getNewsUseCase(it.id)
+    }
 
     // Chart
     private val _achievementsChartData = MutableLiveData<List<Achievement?>>()
     val achievementsChartData: LiveData<List<Achievement?>>
         get() = _achievementsChartData
 
+    // Sort
     private val sortingComparator = MutableLiveData<Order.BaseComparator<Achievement>>()
-
     private var index = 0
 
     private val sortingMethods: HashMap<Int, Order.BaseComparator<Achievement>> = hashMapOf(
@@ -83,23 +95,21 @@ class GameViewModel(private val getNewsUseCase: GetNewsUseCase) : ViewModel() {
     fun getAchievementSortingMethod() = sortingComparator
 
     fun setGame(newGame: Game) {
-        _appId.value = AppId(newGame.getAppId().toString())
-        gameMutable.value = newGame
+        val id = newGame.getAppId().toString()
+        _appId.value = AppId(id)
+        updateNews(id)
     }
 
-    fun fetchNews() {
+    private fun updateNews(appId: String) {
         if (_newsLoadingState.value == LiveResource.STATE_LOADING) {
             return
         }
 
-        _appId.value?.id?.let { id ->
-            getNewsUseCase(id).apply {
-                _newsLiveResource = this
-                newsJob = this.job
-                bindObserver(_news, this.data)
-                bindObserver(_newsLoadingState, this.state)
-                bindObserver(_newsLoadingError, this.error)
-            }
+        updateNewsUseCase(appId).apply {
+            _newsLiveResource = this
+            newsJob = this.job
+            bindObserver(_newsLoadingState, this.state)
+            bindObserver(_newsLoadingError, this.error)
         }
     }
 

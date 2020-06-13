@@ -82,14 +82,6 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
             false
         )
 
-        // Retrieve data.
-        intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
-            collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
-            updateNavigationBarColor(game.getPrimaryColor())
-
-            viewModel.setGame(game)
-        }
-
         // Set observers
         viewModel.game.observe(this, Observer { game ->
             if (game != null) {
@@ -112,12 +104,27 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
             }
         })
 
+        viewModel.newsLoadingState.observe(this, Observer {
+            Timber.d("New Loading state: $it.")
+        })
+
+        viewModel.newsLoadingError.observe(this, Observer {
+            Timber.e("Loading News Failed: ${it?.localizedMessage}")
+        })
+
+        // Retrieve data.
+        intent.getParcelableExtra<Game>(INTENT_GAME)?.let { game ->
+            collapsingToolbar.setContentScrimColor(game.getPrimaryColor())
+            updateNavigationBarColor(game.getPrimaryColor())
+
+            viewModel.setGame(game)
+            setGameInfo(game)
+        }
+
         // Set Button Listeners.
         sortAchievementsButton.setOnClickListener {
             viewModel.setAchievementSortingMethod()
         }
-
-        viewModel.fetchNews()
     }
 
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {

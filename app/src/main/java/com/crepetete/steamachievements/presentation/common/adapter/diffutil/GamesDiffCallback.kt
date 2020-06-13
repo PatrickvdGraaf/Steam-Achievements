@@ -45,10 +45,10 @@ class GamesDiffCallback(
             diffBundle.putString(KEY_NAME, newGame?.getName())
         }
         if (newGame?.getPlaytime() != oldGame?.getPlaytime()) {
-            diffBundle.putLong(KEY_TOTAL_PLAYTIME, newGame?.getPlaytime() ?: 0)
+            diffBundle.putInt(KEY_TOTAL_PLAYTIME, newGame?.getPlaytime() ?: 0)
         }
         if (newGame?.getRecentPlaytime() != oldGame?.getRecentPlaytime()) {
-            diffBundle.putLong(KEY_TOTAL_PLAYTIME, newGame?.getRecentPlaytime() ?: 0)
+            diffBundle.putInt(KEY_TOTAL_PLAYTIME, newGame?.getRecentPlaytime() ?: 0)
         }
         if (newGame?.getPercentageCompleted() != oldGame?.getPercentageCompleted()) {
             diffBundle.putFloat(KEY_PERCENTAGE, newGame?.getPercentageCompleted() ?: 0F)

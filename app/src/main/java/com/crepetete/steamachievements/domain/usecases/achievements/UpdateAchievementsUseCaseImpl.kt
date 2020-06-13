@@ -22,9 +22,7 @@ class UpdateAchievementsUseCaseImpl(
     override suspend fun invoke(userId: String?, appIds: List<String>) {
         val id = checkId(userId)
         if (id != Player.INVALID_ID) {
-            appIds.forEach {
-                achievementsRepository.updateAchievementsFromApi(id, it)
-            }
+            achievementsRepository.updateAchievementsFromApi(id, appIds)
         }
     }
 

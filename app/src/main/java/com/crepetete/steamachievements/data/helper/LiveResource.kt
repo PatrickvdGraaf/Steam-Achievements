@@ -23,8 +23,7 @@ import kotlinx.coroutines.Job
 @IntDef(STATE_LOADING, STATE_SUCCESS, STATE_FAILED)
 annotation class ResourceState
 
-data class LiveResource<T>(
-    val data: LiveData<T?>,
+data class LiveResource(
     val state: LiveData<@ResourceState Int?>,
     val error: LiveData<Exception?>,
     val job: Job? = null

@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.data.repository
 
-import com.crepetete.data.network.SteamApiService
+import com.crepetete.steamachievements.data.api.SteamApiService
 import com.crepetete.steamachievements.data.database.dao.AchievementsDao
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.repository.AchievementsRepository
@@ -33,7 +33,7 @@ class AchievementsRepositoryImpl(
                         responseAchievements.filter { achievement ->
                             achievement.name == response.apiName
                         }.forEach { resultAchievement ->
-                            resultAchievement.appId = appId.toLong()
+                            resultAchievement.appId = appId.toInt()
                             resultAchievement.unlockTime = response.getUnlockDate()
                             resultAchievement.achieved = response.achieved != 0
                             response.description?.let { desc ->
@@ -56,13 +56,17 @@ class AchievementsRepositoryImpl(
                     Timber.d(e)
                 }
             }
-            responseAchievements?.let { achievementsDao.upsert(it) }
+            responseAchievements?.let {
+                Timber.d("LIVEDATA TEST: Updating Achievements in Database")
+                achievementsDao.upsert(it)
+            }
         } catch (e: Exception) {
             Timber.d(e)
         }
     }
 
     override suspend fun updateAchievementsFromApi(userId: String, appIds: List<String>) {
+        val updatedAchievements = mutableListOf<Achievement>()
         appIds.forEach { appId ->
             val baseResponse = api.getSchemaForGame(appId)
 
@@ -79,7 +83,7 @@ class AchievementsRepositoryImpl(
                     responseAchievements.filter { achievement ->
                         achievement.name == response.apiName
                     }.forEach { resultAchievement ->
-                        resultAchievement.appId = appId.toLong()
+                        resultAchievement.appId = appId.toInt()
                         resultAchievement.unlockTime = response.getUnlockDate()
                         resultAchievement.achieved = response.achieved != 0
                         response.description?.let { desc ->
@@ -99,7 +103,18 @@ class AchievementsRepositoryImpl(
                         }
                 }
             }
-            achievementsDao.upsert(responseAchievements ?: listOf())
+            if (achievementsDao.getAchievements(appId).isEmpty()) {
+                // If no achievements were available, update the database immediately
+                achievementsDao.upsert(responseAchievements ?: listOf())
+            } else {
+                // Else, update them at the end of the update call.
+                updatedAchievements.addAll(responseAchievements ?: listOf())
+            }
+        }
+
+        if (updatedAchievements.isNotEmpty()) {
+            Timber.d("LIVEDATA TEST: Updating Achievements in Database")
+            achievementsDao.upsert(updatedAchievements)
         }
     }
 

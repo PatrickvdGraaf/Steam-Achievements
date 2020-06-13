@@ -1,21 +1,21 @@
-package com.crepetete.data.network
+package com.crepetete.steamachievements.data.api
 
 import android.content.Context
-import com.crepetete.data.network.response.base.ApiResponse
 import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.data.api.response.achievement.AchievedAchievementResponse
 import com.crepetete.steamachievements.data.api.response.achievement.GlobalAchievResponse
 import com.crepetete.steamachievements.data.api.response.game.BaseGameResponse
+import com.crepetete.steamachievements.data.api.response.game.GamesResponse
 import com.crepetete.steamachievements.data.api.response.news.NewsResponse
 import com.crepetete.steamachievements.data.api.response.schema.SchemaResponse
 import com.crepetete.steamachievements.data.api.response.user.UserResponse
-import com.crepetete.steamachievements.util.livedata.LiveDataCallAdapterFactory
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -72,7 +72,6 @@ interface SteamApiService {
             return Retrofit.Builder()
                 .baseUrl(BuildConfig.API_URL)
                 .addConverterFactory(moshiConverterFactory)
-                .addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .client(okHttpClient)
                 .build()
                 .create(SteamApiService::class.java)
@@ -92,7 +91,7 @@ interface SteamApiService {
     fun getUserInfo(
         @Query("steamids") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): ApiResponse<UserResponse>
+    ): Call<UserResponse>
 
     /**
      * Returns a list of games a player owns along with some playtime information, if the profile
@@ -102,10 +101,10 @@ interface SteamApiService {
      * requesting).
      *
      * Example URL:
-     * http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=<STEAM_API_KEY>&steamid=76561197960434622&format=json
+     * http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=<STEAM_API_KEY>&steamid=76561197960434622&format=json&include_appinfo=1
      *
      * @param id The SteamID of the account.
-     * @param include_appinfo Include game name and logo information in the output. The default is
+     * @param includeAppInfo Include game name and logo information in the output. The default is
      *          to return appids only.
      * @param includeFreeGames By default, free games like Team Fortress 2 are excluded (as
      *          technically everyone owns them). If include_played_free_games is set, they will be
@@ -117,6 +116,14 @@ interface SteamApiService {
      * Steam_Web_API#Calling_Service_interfaces. The expected input is an array of integers
      * (in JSON: "appids_filter: [ 440, 500, 550 ]" )
      */
+    @GET("/IPlayerService/GetOwnedGames/v0001/")
+    suspend fun getGamesForUserAsCall(
+        @Query("steamid") id: String,
+        @Query("key") key: String = BuildConfig.STEAM_API_KEY,
+        @Query("include_appinfo") includeAppInfo: Int = 1,
+        @Query("include_played_free_games") includeFreeGames: Int = 1
+    ): Call<GamesResponse>
+
     @GET("/IPlayerService/GetOwnedGames/v0001/")
     suspend fun getGamesForUser(
         @Query("steamid") id: String,
@@ -154,6 +161,13 @@ interface SteamApiService {
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
     ): AchievedAchievementResponse
 
+    @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
+    suspend fun getAchievementsForPlayerAsCall(
+        @Query("appid") appId: String,
+        @Query("steamid") id: String,
+        @Query("key") key: String = BuildConfig.STEAM_API_KEY
+    ): Call<AchievedAchievementResponse>
+
     /**
      * Returns on global achievements overview of a specific game in percentages.
      *
@@ -184,5 +198,5 @@ interface SteamApiService {
         @Query("count") count: String = "3",
         @Query("maxlength") maxLength: String = "10000",
         @Query("format") format: String = "json"
-    ): NewsResponse
+    ): Call<NewsResponse>
 }

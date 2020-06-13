@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.testing.OpenForTesting
+import kotlinx.coroutines.flow.Flow
 
 /**
  *
@@ -17,4 +18,7 @@ import com.crepetete.steamachievements.testing.OpenForTesting
 abstract class NewsDao : BaseDao<NewsItem>() {
     @Query("SELECT * FROM news WHERE appId = :appId")
     abstract suspend fun getNewsForGame(appId: String): List<NewsItem>?
+
+    @Query("SELECT * FROM news WHERE appId = :appId ORDER BY date DESC")
+    abstract fun getNewsForGameAsFlow(appId: String): Flow<List<NewsItem>>
 }

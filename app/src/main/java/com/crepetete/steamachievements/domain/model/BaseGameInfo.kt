@@ -7,7 +7,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
-import java.util.Calendar
 
 /**
  * Uses experimental feature [Parcelize], which removes boilerplate code.
@@ -23,18 +22,18 @@ data class BaseGameInfo(
     @PrimaryKey
     @ColumnInfo(name = "appId")
     @field:Json(name = "appid")
-    val appId: Long,
+    val appId: Int,
     @field:Json(name = "name")
     val name: String,
     @field:Json(name = "playtime_2weeks")
-    val recentPlayTime: Long,
+    val recentPlayTime: Int?,
     @field:Json(name = "playtime_forever")
-    val playTime: Long,
+    val playTime: Int,
     @field:Json(name = "img_icon_url")
     val iconUrl: String,
     @field:Json(name = "img_logo_url")
     val logoUrl: String,
     // Custom variables.
-    var colorPrimaryDark: Int = 0, // Color extracted from overall banner image color Used to set colors in views.
-    var lastUpdated: Long = Calendar.getInstance().time.time // Timer on updates which can be used to determine refreshes.
+    var colorPrimaryDark: Int?, // Color extracted from overall banner image color Used to set colors in views.
+    var lastUpdated: Long? // Timer on updates which can be used to determine refreshes.
 ) : Parcelable
