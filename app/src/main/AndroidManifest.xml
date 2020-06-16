@@ -15,10 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
+        <activity android:name=".presentation.activity.news.NewsDetailActivity"></activity>
+        <activity android:name=".presentation.activity.image.ImageFullScreenActivity" />
         <activity
-            android:name="com.crepetete.steamachievements.presentation.activity.splash.SplashScreenActivity"
+            android:name=".presentation.activity.splash.SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +33,8 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" /> <!-- LOGIN -->
-        <activity android:name="com.crepetete.steamachievements.presentation.activity.login.LoginActivity" />
-        <activity android:name="com.crepetete.steamachievements.presentation.activity.main.MainActivity">
+        <activity android:name=".presentation.activity.login.LoginActivity" />
+        <activity android:name=".presentation.activity.main.MainActivity">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_games" />
@@ -41,10 +44,10 @@
             </intent-filter>
         </activity> <!-- GAME DETAIL -->
         <activity
-            android:name="com.crepetete.steamachievements.presentation.activity.game.GameActivity"
+            android:name=".presentation.activity.game.GameActivity"
             android:theme="@style/Transparent" /> <!-- PAGER -->
         <activity
-            android:name="com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity"
+            android:name=".presentation.activity.achievements.TransparentPagerActivity"
             android:theme="@style/Transparent" />
     </application>
 

@@ -7,6 +7,7 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
@@ -130,14 +131,14 @@ class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
      */
     private fun setAchievementsImages(achievements: List<Achievement>) {
         // Empty all ImageViews to prevent wrong images appearing when the user scrolls fast.
-        itemView.achievement1.setImageDrawable(null)
-        itemView.achievement2.setImageDrawable(null)
-        itemView.achievement3.setImageDrawable(null)
-        itemView.achievement4.setImageDrawable(null)
-        itemView.achievement5.setImageDrawable(null)
-        itemView.achievement6.setImageDrawable(null)
-        itemView.achievement7.setImageDrawable(null)
-        itemView.achievement8.setImageDrawable(null)
+        itemView.achievement1.visibility = View.GONE
+        itemView.achievement2.visibility = View.GONE
+        itemView.achievement3.visibility = View.GONE
+        itemView.achievement4.visibility = View.GONE
+        itemView.achievement5.visibility = View.GONE
+        itemView.achievement6.visibility = View.GONE
+        itemView.achievement7.visibility = View.GONE
+        itemView.achievement8.visibility = View.GONE
 
         // Take the last 8 unlocked achievements and add 8 more to fill all view in case the player
         // doesn't have 8 unlocked achievements.
@@ -147,6 +148,12 @@ class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             .take(8)
             .toMutableList()
         showAchievements.addAll(achievements.take(8))
+
+        itemView.card_view_progress.visibility = if (showAchievements.isEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
 
         showAchievements.forEachIndexed { index, achievement ->
             val view = when (index) {
@@ -161,10 +168,12 @@ class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 else -> null
             }
 
+            view?.visibility = View.VISIBLE
+
             view?.let { imageView ->
                 Glide.with(imageView)
                     .load(achievement.getActualIconUrl())
-                    .error(R.drawable.ic_image_failed)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .override(itemView.context.resources.getDimensionPixelSize(R.dimen.size_achievement_small))
                     .into(imageView)
             }

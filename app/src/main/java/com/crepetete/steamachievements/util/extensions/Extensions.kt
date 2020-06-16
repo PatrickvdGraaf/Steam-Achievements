@@ -1,7 +1,6 @@
 package com.crepetete.steamachievements.util.extensions
 
 import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.view.View
 import androidx.annotation.ColorInt
@@ -16,6 +15,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.Dispatchers.Default
 import java.util.Comparator
+
 
 /**
  * Sorts a list of games using the [Default] dispatcher.
@@ -86,14 +86,12 @@ fun CardView.animateBackground(
         return
     }
 
-    val animator = ObjectAnimator.ofArgb(
-        context,
-        "backgroundColor",
-        colorFrom,
-        colorTo
-    )
-    animator.duration = duration
-    animator.start()
+    val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+    colorAnimation.duration = duration // milliseconds
+    colorAnimation.addUpdateListener { animator ->
+        setBackgroundColor(animator.animatedValue as Int)
+    }
+    colorAnimation.start()
 }
 
 fun LineDataSet.customizeDataSet(dataSetSize: Int, chart: LineChart): LineDataSet {

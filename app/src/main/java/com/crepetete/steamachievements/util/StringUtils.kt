@@ -41,20 +41,7 @@ object StringUtils {
      * value.
      */
     fun findImageUrlInText(text: String): String? {
-        val urlStartIndex = text.indexOf("http")
-        var urlEndIndex = text.indexOf(".jpg")
-        if (urlEndIndex == -1) {
-            urlEndIndex = text.indexOf(".png")
-        }
-
-        val areIndexesCorrect =
-            urlStartIndex != -1 && urlEndIndex != -1 && urlStartIndex < urlEndIndex
-
-        return if (areIndexesCorrect) {
-            // Note that 4 stands for '.jpg' /'.png' length.
-            text.substring(urlStartIndex, urlEndIndex + 4)
-        } else {
-            null
-        }
+        val regex = "http[^\\s]+(jpg|jpeg|png|tiff)\\b".toRegex()
+        return regex.find(text)?.value
     }
 }

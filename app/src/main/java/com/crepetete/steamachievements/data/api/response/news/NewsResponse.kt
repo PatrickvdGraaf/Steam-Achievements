@@ -1,7 +1,9 @@
 package com.crepetete.steamachievements.data.api.response.news
 
+import android.os.Parcelable
 import androidx.room.Entity
 import com.squareup.moshi.Json
+import kotlinx.android.parcel.Parcelize
 
 /**
  * @author: Patrick van de Graaf.
@@ -37,6 +39,7 @@ data class AppNews(
     tableName = "news",
     primaryKeys = ["gid", "appId"]
 )
+@Parcelize
 data class NewsItem(
     val gid: String,
     val title: String,
@@ -54,4 +57,4 @@ data class NewsItem(
     val feedType: String,
     @field:Json(name = "appid")
     val appId: String
-)
+) : Parcelable

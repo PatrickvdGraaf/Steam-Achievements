@@ -1,48 +1,51 @@
-package com.crepetete.steamachievements.presentation.common.adapter.viewholder
+package com.crepetete.steamachievements.presentation.activity.news
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
-import com.crepetete.steamachievements.presentation.activity.image.ImageFullScreenActivity
-import com.crepetete.steamachievements.presentation.common.adapter.callback.OnNewsItemClickListener
 import com.crepetete.steamachievements.util.Constants
 import com.crepetete.steamachievements.util.StringUtils
-import kotlinx.android.synthetic.main.view_holder_news.view.*
+import kotlinx.android.synthetic.main.activity_news_detail.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-/**
- * Code for setting up a News Item ListItem.
- *
- * @author: Patrick van de Graaf.
- * @date: Wed 11 Dec, 2019; 13:26.
- */
-class NewsViewHolder(
-    private val view: View,
-    private val newsSelectionListener: OnNewsItemClickListener
-) : RecyclerView.ViewHolder(view) {
+class NewsDetailActivity : AppCompatActivity() {
 
-    private companion object {
-        const val MAX_LENGTH_ARTICLE = 600
+    companion object {
+        private const val EXTRA_BUNDLE = "EXTRA_BUNDLE"
+        private const val EXTRA_NEWS_ITEM = "EXTRA_NEWS_ITEM"
+        fun getIntent(context: Context, newsItem: NewsItem): Intent {
+            return Intent(context, NewsDetailActivity::class.java).apply {
+                val bundle = Bundle()
+                bundle.putParcelable(EXTRA_NEWS_ITEM, newsItem)
+                putExtra(EXTRA_NEWS_ITEM, newsItem)
+                putExtra(EXTRA_BUNDLE, bundle)
+            }
+        }
     }
 
-    /**
-     * Uses a [newsItem] to set up the [view].
-     */
-    fun bind(newsItem: NewsItem?) {
-        newsItem?.let { news ->
-            with(view) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_news_detail)
+
+        intent?.getBundleExtra(EXTRA_BUNDLE)?.getParcelable<NewsItem?>(EXTRA_NEWS_ITEM)
+            ?.let { news ->
+                // TODO This data is the same as in the NewsItemViewHolder, maybe merge them into one?
                 textViewNewsTitle.text = news.title
 
                 // Show author name, email, tag text, or hide the view.
@@ -54,7 +57,7 @@ class NewsViewHolder(
                     textViewNewsAuthor.movementMethod = LinkMovementMethod.getInstance()
                 }
 
-                // Parse a readable representation for the upload date. 
+                // Parse a readable representation for the upload date.
                 val pattern = "EEE HH:mm dd-MM-yyyy"
                 val calendarSteam = Constants.steamReleaseCalendar
                 val reportDate = Calendar.getInstance()
@@ -65,49 +68,25 @@ class NewsViewHolder(
                         .format(reportDate.time)
                 }
 
-                // Show the 'more' button and separators accordingly.
-                val isTextCapped = news.contents.length > MAX_LENGTH_ARTICLE
-
-                buttonShowMore.visibility = if (isTextCapped) View.VISIBLE else View.GONE
-                viewSeparatorLeft.visibility = if (isTextCapped) View.VISIBLE else View.GONE
-                viewSeparatorRight.visibility = if (isTextCapped) View.VISIBLE else View.GONE
-                viewSeparatorFull.visibility = if (isTextCapped) View.GONE else View.VISIBLE
-
-                buttonShowMore.setOnClickListener {
-                    newsSelectionListener.onNewsItemSelected(news)
-                }
-
                 val imageUrl = StringUtils.findImageUrlInText(news.contents)
                 val text = if (imageUrl != null) {
                     news.contents.replace(imageUrl, "")
                 } else news.contents
 
-                // Show the news article main text, capped at MAX_LENGTH_ARTICLE characters.
+                textViewNewsText.text = Html.fromHtml(
+                    text
+                        .replace("[", "<")
+                        .replace("]", ">")
+                        .replace("\n", "<br/>"), Html.FROM_HTML_MODE_LEGACY
+                )
                 textViewNewsText.movementMethod = LinkMovementMethod.getInstance()
-                textViewNewsText.text =
-                    Html.fromHtml(
-                        StringUtils.limitTextLength(text, MAX_LENGTH_ARTICLE),
-                        Html.FROM_HTML_MODE_LEGACY
-                    )
 
                 // Show a banner image, if available.
                 loadImageInto(
-                    imageViewBannerNews,
+                    imageViewBanner,
                     imageUrl
                 )
-
-                imageUrl?.let { url ->
-                    imageViewBannerNews.setOnClickListener {
-                        view.context.startActivity(
-                            ImageFullScreenActivity.getIntent(
-                                view.context,
-                                url
-                            )
-                        )
-                    }
-                }
             }
-        }
     }
 
     private fun loadImageInto(imageView: ImageView, url: String?) {

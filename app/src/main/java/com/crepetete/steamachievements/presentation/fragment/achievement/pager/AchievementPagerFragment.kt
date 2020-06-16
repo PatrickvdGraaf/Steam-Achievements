@@ -1,6 +1,7 @@
 package com.crepetete.steamachievements.presentation.fragment.achievement.pager
 
-import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
@@ -42,6 +44,10 @@ class AchievementPagerFragment : Fragment() {
 
     private val viewModel: PagerFragmentViewModel by viewModel()
 
+    private var isMockingAchievedState = false
+
+    private var currentBackgroundColor: Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +56,11 @@ class AchievementPagerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        currentBackgroundColor = ContextCompat.getColor(
+            view.context,
+            R.color.colorPrimary
+        )
 
         viewModel.getAchievement().observe(viewLifecycleOwner, Observer { achievement ->
             if (achievement != null) {
@@ -60,17 +71,36 @@ class AchievementPagerFragment : Fragment() {
         // Retrieve Achievement for this Fragment through arguments.
         arguments?.getParcelable<Achievement>(INTENT_KEY_ACHIEVEMENT)?.let { achievement ->
             viewModel.setAchievementInfo(achievement)
-
-            achievement_icon_imageview.setOnClickListener {
-                if (!achievement.achieved) {
-                    achievement_icon_imageview.setOnClickListener(null)
-                    loadIcon(achievement.iconUrl ?: "")
-                }
-            }
         }
 
         content.setOnClickListener {
             activity?.onBackPressed()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Reset if the user was mocking the 'achieved' view state.
+        if (isMockingAchievedState) {
+            viewModel.getAchievement().value?.let { achievement ->
+                setAchievementInfo(achievement)
+                isMockingAchievedState = false
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isMockingAchievedState = false
+        viewModel.getAchievement().value?.let { achievement ->
+            achievement_icon_imageview.setOnClickListener {
+                if (!achievement.achieved) {
+                    achievement_icon_imageview.setOnClickListener(null)
+                    loadIcon(achievement.iconUrl ?: "")
+                    isMockingAchievedState = true
+                }
+            }
         }
     }
 
@@ -98,46 +128,38 @@ class AchievementPagerFragment : Fragment() {
     }
 
     private fun loadIcon(url: String) {
-        pulsator.visibility = View.VISIBLE
-        pulsator.start()
-
         Glide.with(achievement_icon_imageview.context)
-            .asBitmap()
             .load(url)
-            .listener(object : RequestListener<Bitmap> {
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?,
                     model: Any?,
-                    target: Target<Bitmap>?,
+                    target: Target<Drawable>?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    pulsator.hide()
-
                     return false
                 }
 
                 override fun onResourceReady(
-                    resource: Bitmap?,
+                    resource: Drawable?,
                     model: Any?,
-                    target: Target<Bitmap>?,
+                    target: Target<Drawable>?,
                     dataSource: com.bumptech.glide.load.DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    resource?.let { bitmap ->
+                    (resource as BitmapDrawable?)?.bitmap?.let { bitmap ->
                         Palette.from(bitmap).generate { palette ->
-                            val defaultColor = ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
                             val newColor = palette?.let { p ->
                                 p.darkMutedSwatch ?: p.darkVibrantSwatch
                             }
 
-                            achievement_cardview.animateBackground(defaultColor, newColor?.rgb)
+                            newColor?.rgb?.let {
+                                achievement_cardview.animateBackground(currentBackgroundColor, it)
+                                currentBackgroundColor = it
+                            }
                         }
                     }
-
-                    pulsator.hide()
 
                     return false
                 }
@@ -159,7 +181,7 @@ class AchievementPagerFragment : Fragment() {
 
         return if (calendarUnlock.get(Calendar.YEAR) > calendarSteam.get(Calendar.YEAR)) {
             DateFormat.format(
-                "HH:mm\ndd-MM-yyyy",
+                "EEE HH:mm\ndd-MM-yyyy",
                 achievement.unlockTime
             ).toString()
                 .replace("\n", " - ")

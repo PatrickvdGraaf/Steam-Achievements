@@ -127,7 +127,7 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
     private fun initRecyclerView() {
         recycler_view_games.layoutManager = LinearLayoutManager(context)
         recycler_view_games.isNestedScrollingEnabled = false
-        recycler_view_games.setHasFixedSize(true)
+        recycler_view_games.setHasFixedSize(false)
         recycler_view_games.setItemViewCacheSize(10)
 
         adapter.listener = this

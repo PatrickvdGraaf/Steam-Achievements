@@ -13,6 +13,7 @@ import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.BaseActivity
 import com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity
+import com.crepetete.steamachievements.presentation.activity.news.NewsDetailActivity
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.callback.OnNewsItemClickListener
@@ -59,8 +60,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
     private val newsAdapter by lazy {
         NewsAdapter(object : OnNewsItemClickListener {
             override fun onNewsItemSelected(item: NewsItem) {
-                Timber.d(item.gid)
-                // TODO show NewsPage.
+                startActivity(NewsDetailActivity.getIntent(applicationContext, item))
             }
         })
     }
@@ -138,7 +138,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
             nullableNews?.let { news ->
                 if (news.isNotEmpty()) {
                     newsAdapter.setItems(news)
-                    card_view_news.visibility = View.VISIBLE
+                    showView(card_view_news)
                 }
             }
         })
@@ -150,6 +150,22 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         viewModel.newsLoadingError.observe(this, Observer {
             Timber.e("Loading News Failed: ${it?.localizedMessage}")
         })
+    }
+
+    private fun showView(contentView: View?) {
+        contentView?.apply {
+            // Set the content view to 0% opacity but visible, so that it is visible
+            // (but fully transparent) during the animation.
+            alpha = 0f
+            visibility = View.VISIBLE
+
+            // Animate the content view to 100% opacity, and clear any animation
+            // listener set on the view.
+            animate()
+                .alpha(1f)
+                .setDuration(400)
+                .setListener(null)
+        }
     }
 
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
@@ -191,7 +207,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
                 textViewRecentlyPlayed.visibility = View.GONE
             }
 
-            playTimeCardView.visibility = View.VISIBLE
+            showView(playTimeCardView)
         } else {
             playTimeCardView.visibility = View.GONE
         }
@@ -204,7 +220,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
 
             // Init Graph.
             setChartData(lineChartAchievements, achievements)
-            achievementsCardView.visibility = View.VISIBLE
+            showView(achievementsCardView)
         } else {
             achievementsCardView.visibility = View.GONE
         }
@@ -267,7 +283,7 @@ class GameActivity : BaseActivity(), OnGraphDateTappedListener,
         chart.data = lineData
         chart.postInvalidate()
 
-        card_view_progress.visibility = View.VISIBLE
+        showView(card_view_progress)
     }
 
     /**

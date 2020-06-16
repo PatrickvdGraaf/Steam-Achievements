@@ -12,6 +12,8 @@
     <color name="statusbar_translucent">#64000000</color>
     <color name="backgroundAchievementsContainer">@color/colorPrimaryDark</color>
 
+    <color name="colorPrimary_20">#33171A21</color>
+
     <color name="transparent">#00000000</color>
     <color name="white">#ffffff</color>
     <color name="grey">#555555</color>
