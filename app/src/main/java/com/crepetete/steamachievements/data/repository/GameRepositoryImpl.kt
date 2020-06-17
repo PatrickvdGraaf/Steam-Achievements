@@ -80,7 +80,7 @@ class GameRepositoryImpl(
      * Steam API doesn't provide a call for one specific game, so the data will only be the stored
      * value of the last API call.
      */
-    override fun getGame(appId: String): LiveData<Game> {
+    override fun getGame(appId: String): LiveData<BaseGameInfo> {
         return gamesDao.getGame(appId).asLiveData()
     }
 

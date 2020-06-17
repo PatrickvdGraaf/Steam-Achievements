@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.domain.usecases.game
 
 import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.model.BaseGameInfo
 
 /**
  *
@@ -11,5 +11,5 @@ import com.crepetete.steamachievements.domain.model.Game
  * @date: Thu 11 Jun, 2020; 17:37.
  */
 interface GetGameUseCase {
-    operator fun invoke(appId: String): LiveData<Game>
+    operator fun invoke(appId: String): LiveData<BaseGameInfo>
 }

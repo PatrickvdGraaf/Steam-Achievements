@@ -1,39 +1,45 @@
 package com.crepetete.steamachievements.presentation.fragment.library
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.domain.model.Game
-import com.crepetete.steamachievements.presentation.activity.game.GameActivity
+import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import com.crepetete.steamachievements.presentation.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
+import com.crepetete.steamachievements.presentation.fragment.BaseFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.GamesAdapterCallback {
+class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteractionListener,
+    GamesAdapter.GamesAdapterCallback {
+
+    companion object {
+        private const val TAG = "LIBRARY_FRAGMENT"
+        private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
+
+        fun getInstance(playerId: String): LibraryFragment {
+            return LibraryFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(KEY_PLAYER_ID, playerId)
+                }
+            }
+        }
+    }
+
+    override fun getFragmentName() = TAG
 
     private val viewModel: LibraryViewModel by viewModel()
 
     private val adapter = GamesAdapter(this).apply {
         setHasStableIds(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_library, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -118,6 +124,12 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
         viewModel.updateGameData()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        (activity as? MainActivity)?.resetToolbar("Library")
+    }
+
     private fun initScrollFab() {
         fab.setOnClickListener {
             recycler_view_games.scrollToPosition(0)
@@ -163,7 +175,7 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
      * Opens GameActivity and handles animation.
      */
     override fun onGameClicked(game: Game, imageView: ImageView, background: View, title: View) {
-        startActivity(GameActivity.getInstance(requireContext(), game))
+        (activity as? MainActivity)?.showGameFragment(game)
     }
 
     /**
@@ -179,18 +191,5 @@ class LibraryFragment : Fragment(), NavBarInteractionListener, GamesAdapter.Game
      */
     override fun onSortingMethodChanged(sortingMethod: SortingType) {
         //        viewModel.rearrangeGames(sortingMethod)
-    }
-
-    companion object {
-        const val TAG = "LIBRARY_FRAGMENT"
-        private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
-
-        fun getInstance(playerId: String): LibraryFragment {
-            return LibraryFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(KEY_PLAYER_ID, playerId)
-                }
-            }
-        }
     }
 }

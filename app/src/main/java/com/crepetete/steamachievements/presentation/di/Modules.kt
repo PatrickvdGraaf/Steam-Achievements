@@ -33,9 +33,9 @@ import com.crepetete.steamachievements.domain.usecases.player.GetPlayerUseCaseIm
 import com.crepetete.steamachievements.domain.usecases.player.SaveCurrentPlayerIdUserCase
 import com.crepetete.steamachievements.domain.usecases.player.SaveCurrentPlayerIdUserCaseImpl
 import com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerViewModel
-import com.crepetete.steamachievements.presentation.activity.game.GameViewModel
 import com.crepetete.steamachievements.presentation.activity.login.AuthViewModel
 import com.crepetete.steamachievements.presentation.fragment.achievement.pager.PagerFragmentViewModel
+import com.crepetete.steamachievements.presentation.fragment.game.GameViewModel
 import com.crepetete.steamachievements.presentation.fragment.library.LibraryViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.ext.koin.viewModel

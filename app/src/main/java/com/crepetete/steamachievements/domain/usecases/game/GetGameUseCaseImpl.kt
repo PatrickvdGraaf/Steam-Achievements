@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.domain.usecases.game
 
 import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.domain.model.Game
+import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.repository.GameRepository
 
 /**
@@ -12,7 +12,7 @@ import com.crepetete.steamachievements.domain.repository.GameRepository
  * @date: Thu 11 Jun, 2020; 17:37.
  */
 class GetGameUseCaseImpl(private val gameRepository: GameRepository) : GetGameUseCase {
-    override fun invoke(appId: String): LiveData<Game> {
+    override fun invoke(appId: String): LiveData<BaseGameInfo> {
         return gameRepository.getGame(appId)
     }
 }

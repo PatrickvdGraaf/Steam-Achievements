@@ -7,23 +7,30 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.IdRes
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crepetete.steamachievements.R
+import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.BaseActivity
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
 import com.crepetete.steamachievements.presentation.common.helper.LoadingIndicator
+import com.crepetete.steamachievements.presentation.fragment.BaseFragment
 import com.crepetete.steamachievements.presentation.fragment.achievements.AchievementsFragment
+import com.crepetete.steamachievements.presentation.fragment.game.GameFragment
 import com.crepetete.steamachievements.presentation.fragment.library.LibraryFragment
 import com.crepetete.steamachievements.presentation.fragment.library.NavBarInteractionListener
 import com.crepetete.steamachievements.presentation.fragment.profile.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  *
  */
-class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseActivity(), LoadingIndicator,
+    BottomNavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         fun getInstance(context: Context, userId: String) = Intent(
@@ -35,29 +42,33 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
     @IdRes
     private var selectedNavItem = R.id.menu_library
 
-    private var currentTag = LibraryFragment.TAG
+    private var currentTag = ""
 
     private var navBarListener: NavBarInteractionListener? = null
 
     @IdRes
-    private val containerId: Int = R.id.fragment_container
+    private val containerId: Int = R.id.container
     private val fragmentManager: FragmentManager = supportFragmentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+
+        setSupportActionBar(toolbar)
+        setTranslucentStatusBar()
 
         /* Set a reference to the view responsible for showing a loader indicator. */
         //        loadingIndicator = findViewById(R.id.pulsator)
 
         handleIntent(intent)
 
-        val navigation = findViewById<BottomNavigationView>(R.id.navigation)
-        navigation.selectedItemId = R.id.menu_library
-        navigation.setOnNavigationItemSelectedListener(this)
+//        val navigation = findViewById<BottomNavigationView>(R.id.navigation)
+//        navigation.selectedItemId = R.id.menu_library
+//        navigation.setOnNavigationItemSelectedListener(this)
+//
+//        navigation.selectedItemId = R.id.menu_library
 
-        navigation.selectedItemId = R.id.menu_library
+        showLibraryFragment()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -65,6 +76,10 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
         if (intent != null) {
             handleIntent(intent)
         }
+    }
+
+    override fun setTitle(title: CharSequence?) {
+        collapsingToolbar.title = title
     }
 
     override fun onBackPressed() {
@@ -76,6 +91,14 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
         }
     }
 
+    fun resetToolbar(title: String) {
+        appbar.setExpanded(false)
+        collapsingToolbar.title = title
+
+        collapsingToolbar.setContentScrimColor(getColor(R.color.colorPrimary))
+        updateNavigationBarColor(getColor(R.color.colorPrimary))
+    }
+
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.let { query ->
@@ -85,28 +108,28 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-
-        val searchItem = menu?.findItem(R.id.action_search)
-        val searchView = searchItem?.actionView as SearchView
-        // Configure the search info and add any event listeners...
-
-        // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                navBarListener?.onSearchQueryUpdate(newText)
-                return true
-            }
-
-            override fun onQueryTextSubmit(query: String): Boolean {
-                navBarListener?.onSearchQueryUpdate(query)
-                searchView.clearFocus()
-                return true
-            }
-        })
+//        menuInflater.inflate(R.menu.menu_main, menu)
+//
+//        val searchItem = menu?.findItem(R.id.action_search)
+//        val searchView = searchItem?.actionView as SearchView
+//        // Configure the search info and add any event listeners...
+//
+//        // Associate searchable configuration with the SearchView
+//        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                navBarListener?.onSearchQueryUpdate(newText)
+//                return true
+//            }
+//
+//            override fun onQueryTextSubmit(query: String): Boolean {
+//                navBarListener?.onSearchQueryUpdate(query)
+//                searchView.clearFocus()
+//                return true
+//            }
+//        })
 
         return true
     }
@@ -148,11 +171,7 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
                 }
             }
             R.id.menu_library -> {
-                currentTag = LibraryFragment.TAG
-                fragment = fragmentManager.findFragmentByTag(currentTag)
-                if (fragment == null) {
-                    fragment = LibraryFragment.getInstance(userId)
-                }
+                showLibraryFragment()
                 navBarListener = fragment as LibraryFragment
             }
             R.id.menu_achievements -> {
@@ -204,5 +223,49 @@ class MainActivity : BaseActivity(), LoadingIndicator, BottomNavigationView.OnNa
     override fun hideLoading() {
         //        loadingIndicator.stop()
         //        loadingIndicator.visibility = View.GONE
+    }
+
+    private fun performTransAction(transaction: FragmentTransaction, fragment: BaseFragment) {
+        currentTag = fragment.getFragmentName()
+        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        transaction.replace(containerId, fragment, currentTag)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun showLibraryFragment() {
+        appbar.setExpanded(false)
+        collapsingToolbar.title = "Library"
+
+        updateNavigationBarColor(getColor(R.color.colorPrimary))
+
+        appbar.setLiftable(true)
+        appbar.setExpanded(true)
+
+        val transaction = fragmentManager.beginTransaction()
+        val fragment = LibraryFragment.getInstance(userId)
+        performTransAction(transaction, fragment)
+    }
+
+    fun showGameFragment(game: Game) {
+        collapsingToolbar.title = game.getName()
+
+        val transaction = fragmentManager.beginTransaction()
+        val fragment = GameFragment.getInstance(game)
+        performTransAction(transaction, fragment)
+
+        Glide.with(this)
+            .load(game.getBannerUrl())
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .into(banner)
+
+        appbar.setLiftable(true)
+        appbar.setExpanded(true)
+        updateNavigationBarColor(game.getPrimaryColor())
+    }
+
+    private fun updateNavigationBarColor(primaryColor: Int) {
+        collapsingToolbar.setContentScrimColor(primaryColor)
+        collapsingToolbar.setStatusBarScrimColor(primaryColor)
     }
 }

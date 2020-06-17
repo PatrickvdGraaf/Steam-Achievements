@@ -132,8 +132,7 @@ class GamesAdapter(var listener: GamesAdapterCallback) : RecyclerView.Adapter<Ga
      * Sorts the list with the current sorting method before submitting.
      */
     fun updateGames(games: List<Game>) {
-        if (games.sortedByDescending { it.getPlaytime() } != items.sortedByDescending { it.getPlaytime() }) {
-            Timber.d("LIVEDATA TEST: Updating Library RecyclerView")
+        if (games != items) {
             items = games
             filter.filter(query)
         }

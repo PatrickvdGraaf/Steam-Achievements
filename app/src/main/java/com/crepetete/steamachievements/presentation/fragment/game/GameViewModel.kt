@@ -1,4 +1,4 @@
-package com.crepetete.steamachievements.presentation.activity.game
+package com.crepetete.steamachievements.presentation.fragment.game
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -9,6 +9,7 @@ import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.data.helper.LiveResource
 import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Achievement
+import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.domain.usecases.achievements.GetAchievementsUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
@@ -46,7 +47,7 @@ class GameViewModel(
     val newsLoadingError: LiveData<Exception?> = _newsLoadingError
 
     // Room
-    val game: LiveData<Game> = Transformations.switchMap(appId) {
+    val game: LiveData<BaseGameInfo> = Transformations.switchMap(appId) {
         getGameUseCase(it.id)
     }
 
