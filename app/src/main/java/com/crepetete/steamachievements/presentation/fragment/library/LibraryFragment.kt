@@ -7,12 +7,13 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import com.crepetete.steamachievements.presentation.common.adapter.GamesAdapter
 import com.crepetete.steamachievements.presentation.common.enums.SortingType
 import com.crepetete.steamachievements.presentation.fragment.BaseFragment
+import com.crepetete.steamachievements.presentation.fragment.game.GameViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_library.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -36,19 +37,19 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
 
     override fun getFragmentName() = TAG
 
-    private val viewModel: LibraryViewModel by viewModel()
+    private val gameViewModel: GameViewModel by viewModel()
 
     private val adapter = GamesAdapter(this).apply {
         setHasStableIds(true)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Update the view with new data.
-        viewModel.gamesLiveData.observe(viewLifecycleOwner, Observer { games ->
+        gameViewModel.games.observe(viewLifecycleOwner, Observer { games ->
             if (games == null) {
-                if (viewModel.gamesLoadingState.value == LiveResource.STATE_LOADING) {
+                if (gameViewModel.gamesLoadingState.value == Resource.STATE_LOADING) {
                     // TODO add a better onboarding experience
                     showSnackBar(
                         "Loading your Library. This might take a while",
@@ -72,25 +73,25 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
                     "We couldn't find any games in your library.",
                     Snackbar.LENGTH_LONG,
                     "Retry",
-                    View.OnClickListener { viewModel.updateGameData() }
+                    View.OnClickListener { gameViewModel.updateGameData() }
                 )
             }
         })
 
         // Hide or show the pulsating loading view.
-        viewModel.gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
-            if (viewModel.gamesLiveData.value.isNullOrEmpty()) {
+        gameViewModel.gamesLoadingState.observe(viewLifecycleOwner, Observer { state ->
+            if (gameViewModel.games.value.isNullOrEmpty()) {
                 state?.let {
                     when (state) {
-                        LiveResource.STATE_LOADING -> {
+                        Resource.STATE_LOADING -> {
                             pulsator.visibility = View.VISIBLE
                             pulsator.start()
                         }
-                        LiveResource.STATE_SUCCESS -> {
+                        Resource.STATE_SUCCESS -> {
                             pulsator.stop()
                             pulsator.visibility = View.GONE
                         }
-                        LiveResource.STATE_FAILED -> {
+                        Resource.STATE_FAILED -> {
                             pulsator.stop()
                         }
                     }
@@ -102,7 +103,7 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
         })
 
         // Handle errors when updating the games list.
-        viewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
+        gameViewModel.gamesLoadingError.observe(viewLifecycleOwner, Observer { error ->
             Timber.e("Error while loading Games: $error")
             if (error is IllegalArgumentException) {
                 Timber.e("${error.localizedMessage} + {${error.message}")
@@ -121,7 +122,7 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
         initScrollFab()
         initRecyclerView()
 
-        viewModel.updateGameData()
+        gameViewModel.updateGameData()
     }
 
     override fun onResume() {

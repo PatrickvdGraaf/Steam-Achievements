@@ -2,6 +2,7 @@ package com.crepetete.steamachievements.domain.usecases.game
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.domain.repository.AchievementsRepository
 import com.crepetete.steamachievements.domain.repository.GameRepository
@@ -28,9 +29,14 @@ class GetGamesFlowUseCaseImpl(
         userId: String?,
         sortingTypeLiveData: LiveData<SortingType>?
     ): LiveData<List<Game>?> {
-        val gamesFlow = gamesRepo.getGamesAsFlow()
+        val gamesFlow = gamesRepo.getGames(userId)
         val achievementsFlow = achievementsRepo.getAchievementsAsFlow()
         return gamesFlow.combine(achievementsFlow) { gamesBases, achievements ->
+            if (gamesBases is Resource.Success<*>) {
+                (gamesBases.data as? List<*>?)?.let { list ->
+
+                }
+            }
             gamesBases?.map { base ->
                 Game(base, achievements.filter { it.appId == base.appId })
             }

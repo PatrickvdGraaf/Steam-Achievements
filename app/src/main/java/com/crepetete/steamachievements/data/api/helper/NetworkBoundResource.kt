@@ -1,19 +1,15 @@
-package com.crepetete.data.helper
+package com.crepetete.steamachievements.data.api.helper
 
-import androidx.lifecycle.MutableLiveData
-import com.crepetete.steamachievements.data.helper.LiveResource
-import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_FAILED
-import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_LOADING
-import com.crepetete.steamachievements.data.helper.LiveResource.Companion.STATE_SUCCESS
-import com.crepetete.steamachievements.data.helper.ResourceState
+import com.crepetete.steamachievements.data.helper.Resource
+import io.reactivex.Observable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import timber.log.Timber
+import java.util.Date
 
 /**
  * NetworkBoundResource is a plain class which does the job of data flow between
@@ -34,79 +30,160 @@ import timber.log.Timber
  *
  * Updated to coroutines with https://medium.com/ideas-by-idean/android-adventure-512bbd78b05f.
  */
-abstract class NetworkBoundResource<ResultType, RequestType> {
-
-    // Loading state of the job.
-    private val state = MutableLiveData<@ResourceState Int?>()
-
-    // Optional error for when the API call fails.
-    private val error = MutableLiveData<Exception?>()
+abstract class NetworkBoundResource<T> {
 
     private val job = Job()
+
+    private val ioDispatcher = Dispatchers.IO
 
     /**
      * In the init block, an instance of CoroutineScope is created and launched in the IO context
      * as background task to get the data from Network and/or local database.
      */
     init {
-        val ioDispatcher = Dispatchers.IO
         ioDispatcher + job
-
-        CoroutineScope(ioDispatcher).launch {
-            state.postValue(STATE_LOADING)
-            fetchFromNetwork()
-        }
     }
 
-    /**
-     * Fetch the data from network and persist into DB.
-     */
-    private suspend fun fetchFromNetwork() {
-        try {
-            createCall().enqueue(object : Callback<RequestType?> {
-                override fun onFailure(call: Call<RequestType?>, t: Throwable) {
-                    state.postValue(STATE_FAILED)
-                    Timber.e("API Error: ${t.localizedMessage}")
-                }
+    @FlowPreview
+    fun asFlow(): Flow<Resource<T>> {
+        return flow {
+            CoroutineScope(ioDispatcher).launch {
+                val dbValue = loadFromDb()
+                val dateFetched = getDataFetchDate(dbValue)
 
-                override fun onResponse(
-                    call: Call<RequestType?>,
-                    response: Response<RequestType?>
-                ) {
-                    if (response.isSuccessful) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            saveCallResult(response.body())
-                        }
-                        state.postValue(STATE_SUCCESS)
-                    } else {
-                        state.postValue(STATE_FAILED)
-                        Timber.e("Failed HTTP request. Response was not successful. ${response.code()}")
+                if (shouldFetch(dbValue, dateFetched)) {
+                    if (shouldLogin()) {
+                        autoReAuthenticate()
+                        emit(Resource.reAuthenticate())
                     }
+
+                    emit(Resource.loading(dbValue))
+//                loadFromNetwork(dbValue, dateFetched, this)
+
+                    if (zipRequests().isEmpty()) {
+                        val data = fetchFromNetwork()
+                        emit(Resource.success(data, dateFetched))
+                    } else {
+                        Observable
+                            .zip(zipRequests()) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    emit(Resource.success(it, dateFetched))
+                                }
+                            }
+                            // Will be triggered if all requests will end successfully (4xx and 5xx also are successful requests too)
+                            .subscribe({
+                                //Do something on successful completion of all requests
+                            }) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    //Do something on error completion of requests
+                                    emit(error(it.localizedMessage))
+                                    job.complete()
+                                }
+                            }
+                    }
+                } else {
+                    emit(Resource.success(dbValue, dateFetched))
                     job.complete()
                 }
-
-            })
-        } catch (e: Exception) {
-            state.postValue(STATE_FAILED)
-            error.postValue(e)
-            job.complete()
+            }
         }
     }
+//
+//    private suspend fun loadFromNetwork(
+//        data: T?,
+//        dataFetchDate: Date?,
+//        flowCollector: FlowCollector<Resource<T>>
+//    ) {
+//        fetchFromNetwork().enqueue(object : Callback<RequestType?> {
+//            override fun onFailure(call: Call<RequestType?>, t: Throwable) {
+//                CoroutineScope(ioDispatcher).launch {
+//                    // Post error with cached data.
+//                    flowCollector.emit(
+//                        Resource.error(
+//                            "Error while making API request.",
+//                            data,
+//                            dataFetchDate
+//                        )
+//                    )
+//                }
+//                job.complete()
+//                Timber.e("API Error: ${t.localizedMessage}")
+//            }
+//
+//            override fun onResponse(call: Call<RequestType?>, response: Response<RequestType?>) {
+//                if (response.isSuccessful) {
+//                    CoroutineScope(ioDispatcher).launch {
+//                        val dataBody = response.body()
+//
+//                        // Post result
+//                        flowCollector.emit(
+//                            Resource.success(
+//                                convertApiResult(dataBody),
+//                                dataFetchDate
+//                            )
+//                        )
+//
+//                        // Save result in DB
+//                        saveCallResult(dataBody)
+//
+//                        job.complete()
+//                    }
+//                } else {
+//                    CoroutineScope(ioDispatcher).launch {
+//                        // Post cached Data
+//                        flowCollector.emit(Resource.cached(data, dataFetchDate))
+//                        job.complete()
+//                    }
+//                    Timber.e("API Error: Failed HTTP request (${response.code()}).")
+//                }
+//            }
+//        })
+//    }
+
+    // Called to get the cached data from the database
+    protected abstract suspend fun loadFromDb(): T
+
+    // Called with the data in the database to determine when it was fetched
+    // from the network
+    protected abstract suspend fun getDataFetchDate(data: T?): Date?
+
+    // Called with the data in the database to decide whether it should be
+    // fetched from the network
+    protected abstract suspend fun shouldFetch(data: T?, dataFetchDate: Date?): Boolean
 
     /**
      * Returns an optional API result.
      */
-    protected abstract suspend fun createCall(): Call<RequestType>
+    protected abstract suspend fun fetchFromNetwork(): T?
 
     /**
      * Called to save the result of the API response into the database.
      */
-    protected abstract suspend fun saveCallResult(data: RequestType?)
+    protected abstract suspend fun saveCallResult(data: T?)
 
-    fun asLiveResource() =
-        LiveResource(
-            state,
-            error,
-            job
-        )
+    /**
+     * Here we can implement logic if we worry about logging out.
+     * Returns whether the user is allowed to make a certain call.
+     *
+     * For this app we probably don't need it, as we only need to authenticate once to get the users
+     * appId. So it returns true for now.
+     *
+     * This code serves as boilerplate if I want to use it in another app one day.
+     */
+    private fun shouldLogin(): Boolean {
+        return true
+    }
+
+    /**
+     * Here we can implement logic if we worry about logging out.
+     * Returns whether the re-authentication was successful and the call may proceed.
+     *
+     * For this app we probably don't need it, as we only need to authenticate once to get the users
+     * appId. So it returns true for now.
+     *
+     * This code serves as boilerplate if I want to use it in another app one day.
+     */
+    private fun autoReAuthenticate(): Boolean {
+        return true
+    }
 }

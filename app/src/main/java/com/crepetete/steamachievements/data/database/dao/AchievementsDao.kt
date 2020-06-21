@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 @OpenForTesting
 abstract class AchievementsDao : BaseDao<Achievement>() {
+    @Query("SELECT * FROM achievements")
+    abstract fun getAchievements(): List<Achievement>
+
     @Query("SELECT * FROM achievements WHERE appId=:appId")
     abstract fun getAchievements(appId: String): List<Achievement>
 

@@ -6,13 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.domain.usecases.achievements.GetAchievementsUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
+import com.crepetete.steamachievements.domain.usecases.game.GetGamesFlowUseCase
+import com.crepetete.steamachievements.domain.usecases.game.GetGamesUseCase
 import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCase
 import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.AchievementSortedListImpl
@@ -21,16 +23,20 @@ import com.crepetete.steamachievements.util.extensions.bindObserver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class GameViewModel(
     private val getGameUseCase: GetGameUseCase,
+    private val updateGamesUseCase: GetGamesUseCase,
     private val getAchievementsUseCase: GetAchievementsUseCase,
     private val getNewsUseCase: GetNewsSnapshotUseCase,
-    private val updateNewsUseCase: UpdateNewsUseCase
+    private val fetchNewsUseCase: UpdateNewsUseCase,
+    getGamesFlowUseCase: GetGamesFlowUseCase
 ) : ViewModel() {
 
     private val mainJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
+    private var gamesJob: Job? = null
     private var newsJob: Job? = null
 
     // ID
@@ -39,9 +45,14 @@ class GameViewModel(
         get() = _appId
 
     // Api
-    private var _newsLiveResource: LiveResource? = null
     private val _newsLoadingState = MediatorLiveData<@ResourceState Int?>()
     val newsLoadingState: LiveData<@ResourceState Int?> = _newsLoadingState
+
+    private val _gamesLoadingState = MediatorLiveData<@ResourceState Int?>()
+    val gamesLoadingState: LiveData<@ResourceState Int?> = _gamesLoadingState
+
+    private val _gamesLoadingError = MediatorLiveData<Exception?>()
+    val gamesLoadingError: LiveData<Exception?> = _gamesLoadingError
 
     private val _newsLoadingError = MediatorLiveData<Exception?>()
     val newsLoadingError: LiveData<Exception?> = _newsLoadingError
@@ -50,6 +61,8 @@ class GameViewModel(
     val game: LiveData<BaseGameInfo> = Transformations.switchMap(appId) {
         getGameUseCase(it.id)
     }
+
+    val games: LiveData<List<Game>?> = getGamesFlowUseCase()
 
     val achievements: LiveData<List<Achievement>> = Transformations.switchMap(appId) {
         getAchievementsUseCase(it.id)
@@ -104,20 +117,40 @@ class GameViewModel(
     fun setGame(newGame: Game) {
         val id = newGame.getAppId().toString()
         _appId.value = AppId(id)
-        updateNews(id)
+        fetchNews(id)
     }
 
-    private fun updateNews(appId: String) {
-        if (_newsLoadingState.value == LiveResource.STATE_LOADING) {
+    /**
+     * Request an update for all Games. If we're not fetching games already we bind our
+     * observers to the corresponding values of our LiveResource.
+     */
+    fun updateGameData() {
+        if (_gamesLoadingState.value == Resource.STATE_LOADING) {
             return
         }
 
-        updateNewsUseCase(appId).apply {
-            _newsLiveResource = this
-            newsJob = this.job
-            bindObserver(_newsLoadingState, this.state)
-            bindObserver(_newsLoadingError, this.error)
+        uiScope.launch {
+            updateGamesUseCase().apply {
+                bindObserver(_gamesLoadingState, resource.state)
+                bindObserver(_gamesLoadingError, resource.error)
+            }
         }
+    }
+
+    private fun fetchNews(appId: String) {
+        if (_newsLoadingState.value == Resource.STATE_LOADING) {
+            return
+        }
+
+        fetchNewsUseCase(appId).apply {
+            bindObserver(_newsLoadingState, this)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mainJob.cancel()
+        gamesJob?.cancel()
     }
 
     data class AppId(val id: String)

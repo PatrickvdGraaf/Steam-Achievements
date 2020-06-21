@@ -15,7 +15,7 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.crepetete.steamachievements.R
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
@@ -51,10 +51,10 @@ class LoginActivity : AppCompatActivity() {
 
             idLoadingState.observe(this@LoginActivity, Observer { state ->
                 when (state) {
-                    LiveResource.STATE_LOADING -> {
+                    Resource.STATE_LOADING -> {
                         progress.visibility = View.VISIBLE
                     }
-                    LiveResource.STATE_SUCCESS, LiveResource.STATE_FAILED ->
+                    Resource.STATE_SUCCESS, Resource.STATE_FAILED ->
                         progress.visibility = View.GONE
                 }
             })

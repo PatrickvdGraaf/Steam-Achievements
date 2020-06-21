@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.data.helper.ResourceState
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.usecases.player.GetCurrentPlayerIdUseCase
@@ -33,7 +33,7 @@ class AuthViewModel(
     private val uiScope = CoroutineScope(Dispatchers.Main + mainJob)
     private var fetchPlayerJob: Job? = null
 
-    private var _playerLiveResource: LiveResource? = null
+    private var _playerLiveResource: Resource? = null
     private val _player = MediatorLiveData<Player?>()
     private val _playerLoadingState = MediatorLiveData<@ResourceState Int?>()
     private val _playerLoadingError = MediatorLiveData<Exception?>()

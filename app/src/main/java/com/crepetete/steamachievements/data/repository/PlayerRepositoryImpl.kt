@@ -1,10 +1,10 @@
 package com.crepetete.steamachievements.data.repository
 
-import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.helper.NetworkBoundResource
 import com.crepetete.steamachievements.data.api.response.user.UserResponse
 import com.crepetete.steamachievements.data.database.dao.PlayerDao
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import com.crepetete.steamachievements.domain.model.Player
 import com.crepetete.steamachievements.domain.repository.PlayerRepository
 import com.crepetete.steamachievements.domain.repository.PreferencesRepository
@@ -16,9 +16,9 @@ class PlayerRepositoryImpl(
     private val dao: PlayerDao
 ) : PlayerRepository {
 
-    override fun getPlayer(playerId: String): LiveResource {
+    override fun getPlayer(playerId: String): Resource {
         return object : NetworkBoundResource<Player, UserResponse>() {
-            override suspend fun createCall(): Call<UserResponse> {
+            override suspend fun fetchFromNetwork(): Call<UserResponse> {
                 return api.getUserInfo(playerId)
             }
 

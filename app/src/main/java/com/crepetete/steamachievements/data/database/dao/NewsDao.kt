@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 @OpenForTesting
 abstract class NewsDao : BaseDao<NewsItem>() {
-    @Query("SELECT * FROM news WHERE appId = :appId")
-    abstract suspend fun getNewsForGame(appId: String): List<NewsItem>?
+    @Query("SELECT * FROM news WHERE appId = :appId ORDER BY date DESC")
+    abstract fun getNewsForGames(appId: String): List<NewsItem>?
 
     @Query("SELECT * FROM news WHERE appId = :appId ORDER BY date DESC")
     abstract fun getNewsForGameAsFlow(appId: String): Flow<List<NewsItem>>

@@ -35,5 +35,6 @@ data class BaseGameInfo(
     val logoUrl: String,
     // Custom variables.
     var colorPrimaryDark: Int?, // Color extracted from overall banner image color Used to set colors in views.
-    var lastUpdated: Long? // Timer on updates which can be used to determine refreshes.
+    var lastUpdated: Long?, // Timer on updates which can be used to determine refreshes.
+    var userId: String?
 ) : Parcelable

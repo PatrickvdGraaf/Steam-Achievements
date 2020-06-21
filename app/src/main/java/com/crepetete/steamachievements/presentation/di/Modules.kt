@@ -20,8 +20,8 @@ import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGameUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.game.GetGamesFlowUseCase
 import com.crepetete.steamachievements.domain.usecases.game.GetGamesFlowUseCaseImpl
-import com.crepetete.steamachievements.domain.usecases.game.UpdateGamesUseCase
-import com.crepetete.steamachievements.domain.usecases.game.UpdateGamesUseCaseImpl
+import com.crepetete.steamachievements.domain.usecases.game.GetGamesUseCase
+import com.crepetete.steamachievements.domain.usecases.game.GetGamesUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCase
 import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCaseImpl
 import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
@@ -104,10 +104,10 @@ val domainModules = module(override = true) {
 val presentationModules = module(override = true) {
     // ViewModels
     viewModel { AuthViewModel(get(), get(), get()) }
-    viewModel { LibraryViewModel(get(), get()) }
+    viewModel { LibraryViewModel() }
     viewModel { PagerFragmentViewModel() }
     viewModel { TransparentPagerViewModel() }
-    viewModel { GameViewModel(get(), get(), get(), get()) }
+    viewModel { GameViewModel(get(), get(), get(), get(), get(), get()) }
 }
 
 // UseCases
@@ -126,8 +126,8 @@ fun createSaveCurrentPlayerIdUserCase(prefsRepo: PreferencesRepository): SaveCur
 fun createGetGamesUseCase(
     gamesRepo: GameRepository,
     playerRepo: PlayerRepository
-): UpdateGamesUseCase {
-    return UpdateGamesUseCaseImpl(gamesRepo, playerRepo)
+): GetGamesUseCase {
+    return GetGamesUseCaseImpl(gamesRepo, playerRepo)
 }
 
 fun createUpdateNewsUseCase(newsRepo: NewsRepository): UpdateNewsUseCase {

@@ -1,7 +1,8 @@
 package com.crepetete.steamachievements.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
-import com.crepetete.steamachievements.data.helper.LiveResource
+import com.crepetete.steamachievements.data.helper.Resource
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -10,5 +11,5 @@ import kotlinx.coroutines.flow.Flow
  */
 interface NewsRepository {
     fun getNewsAsFlow(appId: String): Flow<List<NewsItem>>
-    fun updateNews(appId: String): LiveResource
+    fun updateNews(appId: String): LiveData<Resource<List<NewsItem>>>
 }
