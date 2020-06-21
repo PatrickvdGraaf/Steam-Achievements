@@ -1,11 +1,12 @@
 package com.crepetete.steamachievements.util.livedata
 
 import androidx.lifecycle.LiveData
-import com.crepetete.steamachievements.api.response.ApiResponse
+import com.crepetete.data.network.response.base.ApiResponse
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import java.lang.reflect.Type
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -26,7 +27,11 @@ class LiveDataCallAdapter<R>(private val responseType: Type) :
                 if (started.compareAndSet(false, true)) {
                     call.enqueue(object : Callback<R> {
                         override fun onResponse(call: Call<R>, response: Response<R>) {
-                            postValue(ApiResponse.create(response))
+                            if (response.isSuccessful) {
+                                postValue(ApiResponse.create(response))
+                            } else {
+                                Timber.e("Failed HTTP request. Response was not successful. ${response.code()}")
+                            }
                         }
 
                         override fun onFailure(call: Call<R>, throwable: Throwable) {

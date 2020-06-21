@@ -1,6 +1,6 @@
 package com.crepetete.steamachievements.util
 
-import com.crepetete.steamachievements.vo.Player
+import com.crepetete.steamachievements.domain.model.Player
 
 object TestUtil {
 

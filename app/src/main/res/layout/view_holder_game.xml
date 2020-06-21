@@ -5,6 +5,7 @@
     android:id="@+id/cardViewGame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
@@ -27,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+        <com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout
             android:id="@+id/pulsator"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -51,7 +52,7 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_image_loading" />
 
-        </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
+        </com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout>
 
         <ImageView
             android:id="@+id/image_view_total_played"
@@ -114,8 +115,9 @@
             android:id="@+id/separator"
             android:layout_width="0dp"
             android:layout_height="1dp"
+            android:layout_marginStart="@dimen/default_margin_halved"
             android:layout_marginEnd="@dimen/default_margin"
-            android:background="@color/colorAccent"
+            android:background="#66FFFFFF"
             app:layout_constraintBottom_toBottomOf="@id/imageViewGameBanner"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewGameBanner" />
@@ -207,9 +209,9 @@
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_marginStart="@dimen/default_margin"
-            android:layout_marginTop="@dimen/default_margin_halved"
+            android:layout_marginTop="@dimen/default_margin"
             android:layout_marginEnd="@dimen/default_margin"
-            android:layout_marginBottom="@dimen/default_margin_halved"
+            android:layout_marginBottom="@dimen/default_margin"
             app:layout_constraintBottom_toTopOf="@id/achievements_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -231,13 +233,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin"
-            android:layout_marginTop="@dimen/default_margin_halved"
             android:layout_marginEnd="@dimen/default_margin"
-            android:layout_marginBottom="@dimen/default_margin_halved"
+            android:layout_marginBottom="@dimen/default_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/achievement1"
+            app:layout_constraintTop_toBottomOf="@+id/card_view_progress"
             tools:text="42/42 (100%) achievements" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

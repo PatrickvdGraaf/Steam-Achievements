@@ -75,7 +75,7 @@
                     android:layout_marginBottom="@dimen/default_margin_halved"
                     tools:text="Description on how to achieve this achievement." />
 
-                <com.crepetete.steamachievements.ui.common.view.ValueWithLabelTextView
+                <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
                     android:id="@+id/label_global_stats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -107,29 +107,6 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:scaleType="fitXY"
                 tools:targetApi="m" />
-
-            <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
-                android:id="@+id/pulsator"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/default_margin"
-                app:pulse_color="@color/colorAccent"
-                app:pulse_count="4"
-                app:pulse_duration="2500"
-                app:pulse_interpolator="Decelerate"
-                app:pulse_repeat="0"
-                app:pulse_startFromScratch="false">
-
-                <ImageButton
-                    android:id="@+id/imageViewIcon"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_centerInParent="true"
-                    android:background="@color/transparent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_steam_round" />
-
-            </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -19,7 +19,7 @@
 
     <!-- LOADER -->
     <!-- Progress Bar -->
-    <com.crepetete.steamachievements.ui.common.loader.PulsatorLayout
+    <com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout
         android:id="@+id/pulsator"
         android:layout_width="128dp"
         android:layout_height="128dp"
@@ -45,7 +45,7 @@
             android:src="@drawable/ic_steam_round"
             tools:targetApi="m" />
 
-    </com.crepetete.steamachievements.ui.common.loader.PulsatorLayout>
+    </com.crepetete.steamachievements.presentation.common.loader.PulsatorLayout>
 
     <!-- FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
