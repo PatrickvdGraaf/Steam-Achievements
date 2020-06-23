@@ -32,8 +32,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import kotlinx.android.synthetic.main.fragment_game.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.ArrayList
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -59,7 +61,7 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
 
     private val appId = arguments?.getParcelable<Game>(INTENT_GAME)?.getAppId()
 
-    private val viewModel: GameViewModel by viewModel("VIEWMODEL_GAME_${appId}")
+    private val viewModel: GameViewModel by viewModel()
 
     private val newsAdapter by lazy {
         NewsAdapter(object : OnNewsItemClickListener {
@@ -126,6 +128,10 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         viewModel.achievements.observe(viewLifecycleOwner, Observer { achievements ->
             setAchievementsInfo(achievements)
         })
+
+        viewModel.graphData.observe(
+            viewLifecycleOwner,
+            Observer { entries -> setChartData(lineChartAchievements, entries) })
 
         /* Update the achievement adapter sorting method.*/
         viewModel.getAchievementSortingMethod().observe(viewLifecycleOwner, Observer { method ->
@@ -198,12 +204,27 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
     }
 
     private fun setAchievementsInfo(achievements: List<Achievement>) {
+        // Set Top Day text.
+        // TODO move to function and/or to ViewModel
+        val unlockDays = mutableListOf<Int?>()
+        achievements.map {
+            it.unlockTime?.let { date ->
+                val c: Calendar = Calendar.getInstance()
+                c.time = date
+                c.get(Calendar.DAY_OF_WEEK)
+            }
+        }.forEach {
+            unlockDays.add(it)
+        }
+        unlockDays.filterNotNull().maxBy { it }?.let {
+            valueViewTopDay.setText("Top day: ${DateFormatSymbols().weekdays[it]}.")
+        }
+
+
+        // Set Achievements container.
         if (achievements.isNotEmpty()) {
             // Move achievements to adapter.
             achievementsAdapter.setAchievements(achievements)
-
-            // Init Graph.
-            setChartData(lineChartAchievements, achievements)
             showView(achievementsCardView)
         } else {
             achievementsCardView.visibility = View.GONE
@@ -242,22 +263,13 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         lineChartAchievements.isAutoScaleMinMaxEnabled = true
     }
 
-    private fun setChartData(chart: LineChart, achievements: List<Achievement>) {
-        val achievedEntries = ArrayList<Entry>()
-
-        achievements
-            .filter {
-                it.achieved &&
-                        it.unlockTime != Date() &&
-                        it.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
-            }
-            .sortedBy { it.unlockTime }
-            .map { achievement -> achievedEntries.addEntry(achievements, achievement) }
-
+    private fun setChartData(chart: LineChart, achievedEntries: ArrayList<Entry>) {
         val dataSets: MutableList<ILineDataSet> = ArrayList()
 
-        val achievementsDataSet = LineDataSet(achievedEntries, "Completion")
-            .customizeDataSet(achievedEntries.size, chart)
+        val achievementsDataSet = LineDataSet(
+            achievedEntries,
+            "Completion"
+        ).customizeDataSet(achievedEntries.size, chart)
 
         achievementsDataSet.setDrawHighlightIndicators(false)
 
@@ -270,32 +282,10 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         showView(card_view_progress)
     }
 
-    /**
-     * This method creates an [Entry] for the [LineChart] showing Achievements completion percentages.
-     *
-     * It uses the size of the complete [achievements] list and the size of a filtered list containing
-     * only unlocked Achievements to calculate the total completion percentage at the moment the user
-     * unlocked the specific [achievement]. This value goes on the y-axis.
-     *
-     * The x-axis will contain the [Achievement.unlockTime] in millis.
-     */
-    private fun ArrayList<Entry>.addEntry(
-        achievements: List<Achievement>,
-        achievement: Achievement
-    ) {
-        // Check the users completion rate after unlocking the [achievement].
-        val unlockedAchievements = achievements
-            .filter(Achievement::achieved)
-            .map { it.unlockTime }
-            .filter { it?.before(achievement.unlockTime) == true || it == achievement.unlockTime }
-
-        // Calculate the percentage relative to the already achieved achievements at that time.
-        val completionPercentage =
-            (unlockedAchievements.size.toFloat() / achievements.size.toFloat())
-
-        achievement.unlockTime?.time?.let {
-            this.add(Entry(it.toFloat(), completionPercentage * 100F))
-        }
+    private fun isUnlocked(achievement: Achievement?): Boolean {
+        return achievement != null
+                && achievement.achieved
+                && achievement.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
     }
 
     private fun toHours(time: Int, context: Context? = null): String {

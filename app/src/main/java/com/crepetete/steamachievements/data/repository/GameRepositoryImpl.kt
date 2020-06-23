@@ -2,9 +2,9 @@ package com.crepetete.steamachievements.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.data.helper.RateLimiter
 import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.helper.NetworkBoundResource
 import com.crepetete.steamachievements.data.api.response.game.GamesResponse
 import com.crepetete.steamachievements.data.database.dao.GamesDao
 import com.crepetete.steamachievements.data.helper.LiveResource

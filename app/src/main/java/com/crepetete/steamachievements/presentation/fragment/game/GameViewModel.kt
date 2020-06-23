@@ -17,10 +17,17 @@ import com.crepetete.steamachievements.domain.usecases.news.GetNewsSnapshotUseCa
 import com.crepetete.steamachievements.domain.usecases.news.UpdateNewsUseCase
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.AchievementSortedListImpl
 import com.crepetete.steamachievements.presentation.common.adapter.sorting.Order
+import com.crepetete.steamachievements.presentation.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.util.extensions.bindObserver
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.ArrayList
+import java.util.Locale
 
 class GameViewModel(
     private val getGameUseCase: GetGameUseCase,
@@ -53,6 +60,9 @@ class GameViewModel(
 
     val achievements: LiveData<List<Achievement>> = Transformations.switchMap(appId) {
         getAchievementsUseCase(it.id)
+    }
+    val graphData: LiveData<ArrayList<Entry>> = Transformations.map(achievements) {
+        createGraphData(it)
     }
 
     val news: LiveData<List<NewsItem>> = Transformations.switchMap(appId) {
@@ -118,6 +128,77 @@ class GameViewModel(
             bindObserver(_newsLoadingState, this.state)
             bindObserver(_newsLoadingError, this.error)
         }
+    }
+
+    private fun createGraphData(achievements: List<Achievement>): ArrayList<Entry> {
+        val unlockedAchievements = achievements
+            .filter { isUnlocked(it) }
+            .sortedBy { it.unlockTime }
+
+        val achievedEntries = ArrayList<Entry>()
+        val dates: MutableMap<Long, MutableList<Achievement>> = mutableMapOf()
+        unlockedAchievements.forEach { unlockedAchievement ->
+            unlockedAchievement.unlockTime?.let { unlockTime ->
+                val sdf = SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.ENGLISH
+                )
+
+                val dateString = sdf.format(unlockTime)
+
+                sdf.parse(dateString)?.time?.let { graphDateTime ->
+                    Timber.d(
+                        "GRAPH: dateString: $dateString, graphDateTime: $graphDateTime}"
+                    )
+                    val allUnlocked =
+                        achievements.filter { isUnlocked(it) && it.unlockTime?.time ?: Long.MAX_VALUE < unlockTime.time }
+
+                    val list = dates[graphDateTime] ?: mutableListOf<Achievement>().apply {
+                        addAll(allUnlocked)
+                    }
+                    list.add(unlockedAchievement)
+                    dates[graphDateTime] = list
+                }
+            }
+        }
+
+        dates.forEach {
+            achievedEntries.addEntry(it, achievements)
+        }
+        Timber.d("GRAPH: dates: ${dates.size}")
+
+        return achievedEntries
+    }
+
+    private fun isUnlocked(achievement: Achievement?): Boolean {
+        return achievement != null
+                && achievement.achieved
+                && achievement.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
+    }
+
+    /**
+     * This method creates an [Entry] for the [LineChart] showing Achievements completion percentages.
+     *
+     * It uses the size of the complete [allAchievements] list and the size of a filtered list containing
+     * only unlocked Achievements to calculate the total completion percentage at the moment the user
+     * unlocked the specific [achievement]. This value goes on the y-axis.
+     *
+     * The x-axis will contain the [Achievement.unlockTime] in millis.
+     */
+    private fun ArrayList<Entry>.addEntry(
+        data: Map.Entry<Long, MutableList<Achievement>>,
+        allAchievements: List<Achievement>
+    ) {
+        val unlockDayMillis = data.key
+
+        // Check the users completion rate after unlocking the [achievement].
+        val unlockedAchievements = data.value
+
+        // Calculate the percentage relative to the already achieved achievements at that time.
+        val completionPercentage =
+            (unlockedAchievements.size.toFloat() / allAchievements.size.toFloat())
+
+        this.add(Entry(unlockDayMillis.toFloat(), completionPercentage * 100F))
     }
 
     data class AppId(val id: String)

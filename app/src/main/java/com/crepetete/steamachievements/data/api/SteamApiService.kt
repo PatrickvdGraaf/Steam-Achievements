@@ -60,9 +60,9 @@ interface SteamApiService {
             val okHttpClient =
                 OkHttpClient.Builder()
                     .cache(Cache(context.cacheDir, (10L * 1024L * 1024L)))
-                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .connectTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
                     .addInterceptor(HttpLoggingInterceptor().apply {
                         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC
                         else HttpLoggingInterceptor.Level.NONE
