@@ -264,6 +264,18 @@ class MainActivity : BaseActivity(), LoadingIndicator,
         updateNavigationBarColor(game.getPrimaryColor())
     }
 
+    fun showAllAchievementsFragment() {
+        collapsingToolbar.title = "Achievements"
+
+        val transaction = fragmentManager.beginTransaction()
+        val fragment = AchievementsFragment.getInstance(userId)
+        performTransAction(transaction, fragment)
+
+        appbar.setLiftable(false)
+        appbar.setExpanded(false)
+        updateNavigationBarColor(getColor(R.color.colorPrimary))
+    }
+
     private fun updateNavigationBarColor(primaryColor: Int) {
         collapsingToolbar.setContentScrimColor(primaryColor)
         collapsingToolbar.setStatusBarScrimColor(primaryColor)

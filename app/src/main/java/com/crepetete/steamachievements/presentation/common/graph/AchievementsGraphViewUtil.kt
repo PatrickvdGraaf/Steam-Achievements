@@ -18,7 +18,7 @@ import java.util.Date
  */
 class AchievementsGraphViewUtil {
     companion object {
-        val steamReleaseDate = Constants.steamReleaseCalendar.time
+        val steamReleaseDate: Date = Constants.steamReleaseCalendar.time
 
         /**
          * Shows a Graph where a line indicates the total completion percentage for a game over

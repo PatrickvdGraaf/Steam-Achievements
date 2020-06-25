@@ -42,9 +42,17 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
         setHasStableIds(true)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setViewModelObservers()
 
+        initScrollFab()
+        initRecyclerView()
+
+        viewModel.updateGameData()
+    }
+
+    fun setViewModelObservers() {
         // Update the view with new data.
         viewModel.gamesLiveData.observe(viewLifecycleOwner, Observer { games ->
             if (games == null) {
@@ -117,11 +125,6 @@ class LibraryFragment : BaseFragment(R.layout.fragment_library), NavBarInteracti
                 )
             }
         })
-
-        initScrollFab()
-        initRecyclerView()
-
-        viewModel.updateGameData()
     }
 
     override fun onResume() {

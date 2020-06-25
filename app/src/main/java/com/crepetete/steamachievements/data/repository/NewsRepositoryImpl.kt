@@ -1,7 +1,7 @@
 package com.crepetete.steamachievements.data.repository
 
-import com.crepetete.data.helper.NetworkBoundResource
 import com.crepetete.steamachievements.data.api.SteamApiService
+import com.crepetete.steamachievements.data.api.helper.NetworkBoundResource
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.data.api.response.news.NewsResponse
 import com.crepetete.steamachievements.data.database.dao.NewsDao

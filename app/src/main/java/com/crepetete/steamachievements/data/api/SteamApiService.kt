@@ -60,9 +60,9 @@ interface SteamApiService {
             val okHttpClient =
                 OkHttpClient.Builder()
                     .cache(Cache(context.cacheDir, (10L * 1024L * 1024L)))
-                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .connectTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
                     .addInterceptor(HttpLoggingInterceptor().apply {
                         level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC
                         else HttpLoggingInterceptor.Level.NONE
@@ -150,7 +150,7 @@ interface SteamApiService {
      * Returns a list of achievements for this user by app id
      *
      * Example URL:
-     * http://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=440&key=<STEAM_API_KEY>&steamid=76561197972495328
+     * http://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?appid=440&key=<STEAM_API_KEY>&steamid=76561197972495328
      * @param id 64 bit Steam User ID to return achievements for.
      * @param appId The ID for the game you're requesting
      */
@@ -160,13 +160,6 @@ interface SteamApiService {
         @Query("steamid") id: String,
         @Query("key") key: String = BuildConfig.STEAM_API_KEY
     ): AchievedAchievementResponse
-
-    @GET("/ISteamUserStats/GetPlayerAchievements/v0001/")
-    suspend fun getAchievementsForPlayerAsCall(
-        @Query("appid") appId: String,
-        @Query("steamid") id: String,
-        @Query("key") key: String = BuildConfig.STEAM_API_KEY
-    ): Call<AchievedAchievementResponse>
 
     /**
      * Returns on global achievements overview of a specific game in percentages.

@@ -2,11 +2,8 @@ package com.crepetete.steamachievements.presentation.fragment.achievements
 
 import android.animation.ValueAnimator
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crepetete.steamachievements.R
@@ -14,10 +11,12 @@ import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.presentation.common.view.CircularProgressBar
+import com.crepetete.steamachievements.presentation.fragment.BaseFragment
 import com.jjoe64.graphview.GraphView
 import java.text.DecimalFormat
 
-class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchievementClickListener {
+class AchievementsFragment : BaseFragment(R.layout.fragment_achievements),
+    HorizontalAchievementsAdapter.OnAchievementClickListener {
     // TODO decide whether to implement this or make the adapter accept null as listener.
     override fun onAchievementClick(index: Int, sortedList: List<Achievement>) {
         // No implementation yet.
@@ -26,8 +25,9 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     companion object {
         const val TAG = "ACHIEVEMENTS_FRAGMENT"
         private const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
+        private const val FRAGMENT_NAME = "ALL_ACHIEVEMENTS_FRAGMENT"
 
-        fun getInstance(playerId: String): Fragment {
+        fun getInstance(playerId: String): AchievementsFragment {
             return AchievementsFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_PLAYER_ID, playerId)
@@ -55,16 +55,10 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
     // Achievements over Time Graph
     private lateinit var achievementsOverTimeGraph: GraphView
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(
-            R.layout.fragment_achievements, container,
-            false
-        )
+    override fun getFragmentName() = FRAGMENT_NAME
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         textViewAllAchievements = view.findViewById(R.id.textview_total_achievements)
         textViewCompletion = view.findViewById(R.id.textview_completion)
@@ -83,11 +77,6 @@ class AchievementsFragment : Fragment(), HorizontalAchievementsAdapter.OnAchieve
             LinearLayoutManager.HORIZONTAL, false
         )
 
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         if (achievementCount > 0) {
             setTotalAchievementsInfo(achievementCount)
             setCompletionPercentage(completionPercentage)

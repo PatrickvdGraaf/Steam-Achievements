@@ -1,4 +1,4 @@
-package com.crepetete.data.helper
+package com.crepetete.steamachievements.data.api.helper
 
 import androidx.lifecycle.MutableLiveData
 import com.crepetete.steamachievements.data.helper.LiveResource

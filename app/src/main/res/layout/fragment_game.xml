@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
@@ -24,17 +23,18 @@
             android:layout_marginStart="@dimen/default_margin_halved"
             android:layout_marginEnd="@dimen/default_margin_halved"
             android:layout_marginBottom="@dimen/default_margin"
-            android:alpha="0"
             android:animateLayoutChanges="true"
             android:elevation="@dimen/elevation_card_large"
-            android:visibility="gone"
             app:cardBackgroundColor="@color/cardview_bg_info"
             app:cardCornerRadius="@dimen/corner_radius_medium"
             app:cardUseCompatPadding="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:alpha="1">
+            app:layout_constraintTop_toTopOf="parent">
+            <!--            android:alpha="0"-->
+            <!--            android:visibility="gone"-->
+            <!--            tools:alpha="1"-->
+            <!--            tools:visibility="visible"-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/playTimeContainer"
@@ -48,36 +48,56 @@
                     style="@style/AppTheme.Text.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginHorizontal="@dimen/default_margin"
                     android:text="@string/header_playtime"
                     app:layout_constraintBottom_toTopOf="@+id/textViewRecentlyPlayed"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
-                    android:id="@+id/textViewRecentlyPlayed"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/default_margin_halved"
-                    app:label="@string/header_recent_playtime"
-                    app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
-                    app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
-                    app:valueText="1h 23m" />
-
+                <!-- TOTAL PLAYTIME -->
                 <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
                     android:id="@+id/totalPlayedTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/default_margin"
+                    android:layout_marginTop="@dimen/default_margin_halved"
+                    app:label="@string/header_total_playtime"
+                    app:layout_constraintEnd_toStartOf="@+id/textViewRecentlyPlayed"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewRecentlyPlayed"
+                    app:valueText="123h 45m" />
+
+                <!-- RECENT PLAYTIME -->
+                <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
+                    android:id="@+id/textViewRecentlyPlayed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/default_margin"
+                    android:layout_marginTop="@dimen/default_margin_halved"
+                    app:label="@string/header_recent_playtime"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@+id/totalPlayedTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/playtime_header_textview"
+                    app:valueText="1h 23m" />
+
+                <!--MOST PLAYED DAY -->
+                <com.crepetete.steamachievements.presentation.common.view.ValueWithLabelTextView
+                    android:id="@+id/valueViewTopDay"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/default_margin"
                     android:layout_marginTop="@dimen/default_margin_halved"
                     app:label="@string/header_total_playtime"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/playtime_header_textview"
-                    app:layout_constraintStart_toStartOf="@+id/playtime_header_textview"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewRecentlyPlayed"
-                    app:valueText="123h 45m" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/totalPlayedTextView"
+                    app:valueText="Most played on: Saturday." />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -119,7 +139,7 @@
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/header_achievements"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonSortAchievements"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -132,12 +152,12 @@
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/sorting_method_achieved"
                     app:layout_constraintBottom_toTopOf="@+id/recyclerViewAchievements"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonSortAchievements"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewAchievementsHeader" />
 
                 <Button
-                    android:id="@+id/sortAchievementsButton"
+                    android:id="@+id/buttonSortAchievements"
                     style="@style/AppTheme.Button.Clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -229,14 +249,20 @@
                     android:id="@+id/lineChartAchievements"
                     android:layout_width="match_parent"
                     android:layout_height="260dp"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginTop="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:layout_marginBottom="@dimen/default_margin"
-                    android:paddingStart="@dimen/default_margin"
-                    android:paddingEnd="@dimen/default_margin"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_margin="@dimen/default_margin"
+                    android:paddingHorizontal="@dimen/default_margin"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonAllAchievements"
                     app:layout_constraintTop_toBottomOf="@+id/text_view_graph" />
+
+                <Button
+                    android:id="@+id/buttonAllAchievements"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/default_margin"
+                    android:text="More achievement stats"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lineChartAchievements" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

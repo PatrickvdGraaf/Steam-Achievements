@@ -1,24 +1,33 @@
 package com.crepetete.steamachievements.presentation.fragment.game
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity
+import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import com.crepetete.steamachievements.presentation.activity.news.NewsDetailActivity
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.callback.OnNewsItemClickListener
-import com.crepetete.steamachievements.presentation.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.presentation.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.presentation.fragment.BaseFragment
-import com.crepetete.steamachievements.util.extensions.customizeDataSet
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Description
@@ -32,8 +41,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import kotlinx.android.synthetic.main.fragment_game.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.ArrayList
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -57,9 +68,7 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         }
     }
 
-    private val appId = arguments?.getParcelable<Game>(INTENT_GAME)?.getAppId()
-
-    private val viewModel: GameViewModel by viewModel("VIEWMODEL_GAME_${appId}")
+    private val viewModel: GameViewModel by viewModel()
 
     private val newsAdapter by lazy {
         NewsAdapter(object : OnNewsItemClickListener {
@@ -75,13 +84,10 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
 
     override fun getFragmentName() = TAG
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        setViewModelObservers()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setViewModelObservers()
 
         // Retrieve data.
         arguments?.getParcelable<Game>(INTENT_GAME)?.let { game ->
@@ -89,8 +95,14 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         }
 
         // Set Button Listeners.
-        sortAchievementsButton.setOnClickListener {
+        buttonSortAchievements.setOnClickListener {
             viewModel.setAchievementSortingMethod()
+        }
+
+        buttonAllAchievements.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+
+        buttonAllAchievements.setOnClickListener {
+            (activity as? MainActivity)?.showAllAchievementsFragment()
         }
 
         // Prepare RecyclerView.
@@ -126,6 +138,13 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         viewModel.achievements.observe(viewLifecycleOwner, Observer { achievements ->
             setAchievementsInfo(achievements)
         })
+
+        viewModel.graphData.observe(
+            viewLifecycleOwner,
+            Observer { entries ->
+                setChartData(lineChartAchievements, entries)
+            }
+        )
 
         /* Update the achievement adapter sorting method.*/
         viewModel.getAchievementSortingMethod().observe(viewLifecycleOwner, Observer { method ->
@@ -198,12 +217,27 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
     }
 
     private fun setAchievementsInfo(achievements: List<Achievement>) {
+        // Set Top Day text.
+        // TODO move to function and/or to ViewModel
+        val unlockDays = mutableListOf<Int?>()
+        achievements.map {
+            it.unlockTime?.let { date ->
+                val c: Calendar = Calendar.getInstance()
+                c.time = date
+                c.get(Calendar.DAY_OF_WEEK)
+            }
+        }.forEach {
+            unlockDays.add(it)
+        }
+        unlockDays.filterNotNull().maxBy { it }?.let {
+            valueViewTopDay.setText("Top day: ${DateFormatSymbols().weekdays[it]}.")
+        }
+
+
+        // Set Achievements container.
         if (achievements.isNotEmpty()) {
             // Move achievements to adapter.
             achievementsAdapter.setAchievements(achievements)
-
-            // Init Graph.
-            setChartData(lineChartAchievements, achievements)
             showView(achievementsCardView)
         } else {
             achievementsCardView.visibility = View.GONE
@@ -242,59 +276,83 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         lineChartAchievements.isAutoScaleMinMaxEnabled = true
     }
 
-    private fun setChartData(chart: LineChart, achievements: List<Achievement>) {
-        val achievedEntries = ArrayList<Entry>()
+    private fun setChartData(chart: LineChart, achievedEntries: ArrayList<Entry>) {
+        Glide.with(chart.context)
+            .asBitmap()
+            .load(viewModel.game.value?.getBannerUrl())
+            .listener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
 
-        achievements
-            .filter {
-                it.achieved &&
-                        it.unlockTime != Date() &&
-                        it.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
-            }
-            .sortedBy { it.unlockTime }
-            .map { achievement -> achievedEntries.addEntry(achievements, achievement) }
+                override fun onResourceReady(
+                    resource: Bitmap?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    dataSource: com.bumptech.glide.load.DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    resource?.let { bitmap ->
+                        Palette.from(bitmap).generate { palette ->
+                            val backgroundColor =
+                                palette?.lightMutedSwatch?.rgb ?: ContextCompat.getColor(
+                                    chart.context,
+                                    R.color.white
+                                )
 
-        val dataSets: MutableList<ILineDataSet> = ArrayList()
+                            val achievementsDataSet = LineDataSet(
+                                achievedEntries,
+                                "Completion"
+                            )
 
-        val achievementsDataSet = LineDataSet(achievedEntries, "Completion")
-            .customizeDataSet(achievedEntries.size, chart)
+                            customizeDataSet(
+                                achievementsDataSet,
+                                achievedEntries.size,
+                                backgroundColor
+                            )
 
-        achievementsDataSet.setDrawHighlightIndicators(false)
+                            val dataSets: MutableList<ILineDataSet> = ArrayList()
 
-        dataSets.add(achievementsDataSet)
+                            dataSets.add(achievementsDataSet)
 
-        val lineData = LineData(dataSets)
-        chart.data = lineData
-        chart.postInvalidate()
+                            val lineData = LineData(dataSets)
+                            chart.data = lineData
+                            chart.postInvalidate()
 
-        showView(card_view_progress)
+                            showView(card_view_progress)
+                        }
+                    }
+
+                    return false
+                }
+            }).submit()
     }
 
-    /**
-     * This method creates an [Entry] for the [LineChart] showing Achievements completion percentages.
-     *
-     * It uses the size of the complete [achievements] list and the size of a filtered list containing
-     * only unlocked Achievements to calculate the total completion percentage at the moment the user
-     * unlocked the specific [achievement]. This value goes on the y-axis.
-     *
-     * The x-axis will contain the [Achievement.unlockTime] in millis.
-     */
-    private fun ArrayList<Entry>.addEntry(
-        achievements: List<Achievement>,
-        achievement: Achievement
+    private fun customizeDataSet(
+        dateSet: LineDataSet,
+        dataSetSize: Int,
+        gradientColor: Int? = null
     ) {
-        // Check the users completion rate after unlocking the [achievement].
-        val unlockedAchievements = achievements
-            .filter(Achievement::achieved)
-            .map { it.unlockTime }
-            .filter { it?.before(achievement.unlockTime) == true || it == achievement.unlockTime }
+        dateSet.setDrawFilled(true)
+        dateSet.setDrawValues(false)
 
-        // Calculate the percentage relative to the already achieved achievements at that time.
-        val completionPercentage =
-            (unlockedAchievements.size.toFloat() / achievements.size.toFloat())
+        // Line color (?)
+        dateSet.color = R.color.colorAccent
 
-        achievement.unlockTime?.time?.let {
-            this.add(Entry(it.toFloat(), completionPercentage * 100F))
+        // Background gradient
+        gradientColor?.let { gradient ->
+            dateSet.fillDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(gradient, Color.TRANSPARENT)
+            ).apply { cornerRadius = 0f }
+        }
+
+        for (index in 0..dataSetSize - 2) {
+            dateSet.circleColors[0] = dateSet.color
         }
     }
 
