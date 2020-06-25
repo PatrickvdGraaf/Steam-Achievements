@@ -40,3 +40,9 @@
 -keep interface com.squareup.** { *; }
 -dontwarn rx.**
 -dontwarn retrofit.**
+
+# (https://github.com/ReactiveX/RxJava/issues/6670)
+-dontwarn org.reactivestreams.FlowAdapters
+-dontwarn org.reactivestreams.**
+-dontwarn java.util.concurrent.flow.**
+-dontwarn java.util.concurrent.**

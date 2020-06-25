@@ -36,4 +36,10 @@ data class BaseGameInfo(
     // Custom variables.
     var colorPrimaryDark: Int?, // Color extracted from overall banner image color Used to set colors in views.
     var lastUpdated: Long? // Timer on updates which can be used to determine refreshes.
-) : Parcelable
+) : Parcelable {
+    fun getBannerUrl() =
+        "http://media.steampowered.com/steamcommunity/public/images/apps" +
+                "/$appId" +
+                "/$logoUrl" +
+                ".jpg"
+}

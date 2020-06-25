@@ -11,7 +11,8 @@ import com.crepetete.steamachievements.presentation.fragment.achievement.pager.A
  *
  * Creates [AchievementPagerFragment]s for each Achievement.
  */
-class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class ScreenSlidePagerAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private var achievementData: List<Achievement> = listOf()
 
     /**
@@ -32,7 +33,8 @@ class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(f
         }
     }
 
-    override fun getItem(position: Int) = AchievementPagerFragment.getInstance(achievementData[position])
+    override fun getItem(position: Int) =
+        AchievementPagerFragment.getInstance(achievementData[position])
 
     override fun getCount() = achievementData.size
 

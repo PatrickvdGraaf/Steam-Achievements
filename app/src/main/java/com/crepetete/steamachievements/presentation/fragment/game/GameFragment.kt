@@ -1,10 +1,19 @@
 package com.crepetete.steamachievements.presentation.fragment.game
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.domain.model.Achievement
@@ -15,10 +24,8 @@ import com.crepetete.steamachievements.presentation.activity.news.NewsDetailActi
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.NewsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.callback.OnNewsItemClickListener
-import com.crepetete.steamachievements.presentation.common.graph.AchievementsGraphViewUtil
 import com.crepetete.steamachievements.presentation.common.graph.point.OnGraphDateTappedListener
 import com.crepetete.steamachievements.presentation.fragment.BaseFragment
-import com.crepetete.steamachievements.util.extensions.customizeDataSet
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Description
@@ -59,8 +66,6 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         }
     }
 
-    private val appId = arguments?.getParcelable<Game>(INTENT_GAME)?.getAppId()
-
     private val viewModel: GameViewModel by viewModel()
 
     private val newsAdapter by lazy {
@@ -77,13 +82,10 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
 
     override fun getFragmentName() = TAG
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        setViewModelObservers()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setViewModelObservers()
 
         // Retrieve data.
         arguments?.getParcelable<Game>(INTENT_GAME)?.let { game ->
@@ -131,7 +133,10 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
 
         viewModel.graphData.observe(
             viewLifecycleOwner,
-            Observer { entries -> setChartData(lineChartAchievements, entries) })
+            Observer { entries ->
+                setChartData(lineChartAchievements, entries)
+            }
+        )
 
         /* Update the achievement adapter sorting method.*/
         viewModel.getAchievementSortingMethod().observe(viewLifecycleOwner, Observer { method ->
@@ -264,28 +269,83 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
     }
 
     private fun setChartData(chart: LineChart, achievedEntries: ArrayList<Entry>) {
-        val dataSets: MutableList<ILineDataSet> = ArrayList()
+        Glide.with(chart.context)
+            .asBitmap()
+            .load(viewModel.game.value?.getBannerUrl())
+            .listener(object : RequestListener<Bitmap> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
 
-        val achievementsDataSet = LineDataSet(
-            achievedEntries,
-            "Completion"
-        ).customizeDataSet(achievedEntries.size, chart)
+                override fun onResourceReady(
+                    resource: Bitmap?,
+                    model: Any?,
+                    target: Target<Bitmap>?,
+                    dataSource: com.bumptech.glide.load.DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    resource?.let { bitmap ->
+                        Palette.from(bitmap).generate { palette ->
+                            val backgroundColor =
+                                palette?.lightMutedSwatch?.rgb ?: ContextCompat.getColor(
+                                    chart.context,
+                                    R.color.white
+                                )
 
-        achievementsDataSet.setDrawHighlightIndicators(false)
+                            val achievementsDataSet = LineDataSet(
+                                achievedEntries,
+                                "Completion"
+                            )
 
-        dataSets.add(achievementsDataSet)
+                            customizeDataSet(
+                                achievementsDataSet,
+                                achievedEntries.size,
+                                backgroundColor
+                            )
 
-        val lineData = LineData(dataSets)
-        chart.data = lineData
-        chart.postInvalidate()
+                            val dataSets: MutableList<ILineDataSet> = ArrayList()
 
-        showView(card_view_progress)
+                            dataSets.add(achievementsDataSet)
+
+                            val lineData = LineData(dataSets)
+                            chart.data = lineData
+                            chart.postInvalidate()
+
+                            showView(card_view_progress)
+                        }
+                    }
+
+                    return false
+                }
+            }).submit()
     }
 
-    private fun isUnlocked(achievement: Achievement?): Boolean {
-        return achievement != null
-                && achievement.achieved
-                && achievement.unlockTime?.after(AchievementsGraphViewUtil.steamReleaseDate) == true
+    private fun customizeDataSet(
+        dateSet: LineDataSet,
+        dataSetSize: Int,
+        gradientColor: Int? = null
+    ) {
+        dateSet.setDrawFilled(true)
+        dateSet.setDrawValues(false)
+
+        // Line color (?)
+        dateSet.color = R.color.colorAccent
+
+        // Background gradient
+        gradientColor?.let { gradient ->
+            dateSet.fillDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(gradient, Color.TRANSPARENT)
+            ).apply { cornerRadius = 0f }
+        }
+
+        for (index in 0..dataSetSize - 2) {
+            dateSet.circleColors[0] = dateSet.color
+        }
     }
 
     private fun toHours(time: Int, context: Context? = null): String {

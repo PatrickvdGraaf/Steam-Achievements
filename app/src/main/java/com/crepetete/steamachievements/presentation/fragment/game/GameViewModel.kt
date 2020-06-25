@@ -131,21 +131,25 @@ class GameViewModel(
     }
 
     private fun createGraphData(achievements: List<Achievement>): ArrayList<Entry> {
+        // Filter all unlocked Achievements so we can calculate completion percentages.
         val unlockedAchievements = achievements
             .filter { isUnlocked(it) }
             .sortedBy { it.unlockTime }
 
-        val achievedEntries = ArrayList<Entry>()
+        // Create a Map with achievements per date (in millis/Long)
         val dates: MutableMap<Long, MutableList<Achievement>> = mutableMapOf()
         unlockedAchievements.forEach { unlockedAchievement ->
+            // We will groups achievements per day that they were unlocked on.
             unlockedAchievement.unlockTime?.let { unlockTime ->
-                val sdf = SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.ENGLISH
-                )
+                // Filter only that info.
+                // It's important to use the American format here. Will cause bugs otherwise.
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
+                // Make a representation of the unlockTime minus the hour and seconds
                 val dateString = sdf.format(unlockTime)
 
+                // Now parse it back to a Date object. Its unlock time can now be used as a key in
+                // the dates map.
                 sdf.parse(dateString)?.time?.let { graphDateTime ->
                     Timber.d(
                         "GRAPH: dateString: $dateString, graphDateTime: $graphDateTime}"
@@ -162,6 +166,8 @@ class GameViewModel(
             }
         }
 
+        // Use the map when we're done to create entries.
+        val achievedEntries = ArrayList<Entry>()
         dates.forEach {
             achievedEntries.addEntry(it, achievements)
         }
