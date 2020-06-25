@@ -139,7 +139,7 @@
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/header_achievements"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonSortAchievements"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -152,12 +152,12 @@
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/sorting_method_achieved"
                     app:layout_constraintBottom_toTopOf="@+id/recyclerViewAchievements"
-                    app:layout_constraintEnd_toStartOf="@+id/sortAchievementsButton"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonSortAchievements"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewAchievementsHeader" />
 
                 <Button
-                    android:id="@+id/sortAchievementsButton"
+                    android:id="@+id/buttonSortAchievements"
                     style="@style/AppTheme.Button.Clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -249,14 +249,20 @@
                     android:id="@+id/lineChartAchievements"
                     android:layout_width="match_parent"
                     android:layout_height="260dp"
-                    android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginTop="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
-                    android:layout_marginBottom="@dimen/default_margin"
-                    android:paddingStart="@dimen/default_margin"
-                    android:paddingEnd="@dimen/default_margin"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_margin="@dimen/default_margin"
+                    android:paddingHorizontal="@dimen/default_margin"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonAllAchievements"
                     app:layout_constraintTop_toBottomOf="@+id/text_view_graph" />
+
+                <Button
+                    android:id="@+id/buttonAllAchievements"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/default_margin"
+                    android:text="More achievement stats"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lineChartAchievements" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

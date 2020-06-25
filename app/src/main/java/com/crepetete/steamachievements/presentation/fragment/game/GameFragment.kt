@@ -14,12 +14,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.crepetete.steamachievements.BuildConfig
 import com.crepetete.steamachievements.R
 import com.crepetete.steamachievements.data.api.response.news.NewsItem
 import com.crepetete.steamachievements.domain.model.Achievement
 import com.crepetete.steamachievements.domain.model.BaseGameInfo
 import com.crepetete.steamachievements.domain.model.Game
 import com.crepetete.steamachievements.presentation.activity.achievements.TransparentPagerActivity
+import com.crepetete.steamachievements.presentation.activity.main.MainActivity
 import com.crepetete.steamachievements.presentation.activity.news.NewsDetailActivity
 import com.crepetete.steamachievements.presentation.common.adapter.HorizontalAchievementsAdapter
 import com.crepetete.steamachievements.presentation.common.adapter.NewsAdapter
@@ -93,8 +95,14 @@ class GameFragment : BaseFragment(R.layout.fragment_game), OnGraphDateTappedList
         }
 
         // Set Button Listeners.
-        sortAchievementsButton.setOnClickListener {
+        buttonSortAchievements.setOnClickListener {
             viewModel.setAchievementSortingMethod()
+        }
+
+        buttonAllAchievements.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+
+        buttonAllAchievements.setOnClickListener {
+            (activity as? MainActivity)?.showAllAchievementsFragment()
         }
 
         // Prepare RecyclerView.
