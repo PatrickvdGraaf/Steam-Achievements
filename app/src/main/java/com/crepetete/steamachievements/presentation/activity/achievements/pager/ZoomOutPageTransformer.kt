@@ -1,9 +1,9 @@
 package com.crepetete.steamachievements.presentation.activity.achievements.pager
 
 import android.view.View
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 
-class ZoomOutPageTransformer : ViewPager.PageTransformer {
+class ZoomOutPageTransformer : ViewPager2.PageTransformer {
 
     override fun transformPage(view: View, position: Float) {
         val pageWidth = view.width

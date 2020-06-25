@@ -99,7 +99,6 @@ dependencies {
     def material_version = '1.1.0'
     def okhttp_version = '4.5.0'
     def palette_version = '1.0.0'
-    def recyclerview_version = '1.1.0'
     def retrofit_version = '2.8.1'
     def room_version = '2.2.5'
     def timber_version = '4.7.1'
@@ -109,7 +108,6 @@ dependencies {
 
     // Android
     implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "androidx.cardview:cardview:$cardview_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
     implementation "androidx.palette:palette:$palette_version"

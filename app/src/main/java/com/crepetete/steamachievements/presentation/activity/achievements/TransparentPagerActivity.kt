@@ -31,7 +31,7 @@ class TransparentPagerActivity : BaseActivity() {
 
     private val viewModel: TransparentPagerViewModel by viewModel()
 
-    private val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
+    private val pagerAdapter = ScreenSlidePagerAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,10 +44,7 @@ class TransparentPagerActivity : BaseActivity() {
         pager.adapter = pagerAdapter
 
         // Set ViewPager settings.
-        pager.setPageTransformer(
-            true,
-            ZoomOutPageTransformer()
-        )
+        pager.setPageTransformer(ZoomOutPageTransformer())
 
         viewModel.achievementData.observe(this, Observer {
             pagerAdapter.updateAchievements(it)
